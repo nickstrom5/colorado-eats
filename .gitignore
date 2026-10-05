@@ -10,3 +10,5 @@ docs/screenshots/dev-*
 playbook/brand/concept-*
 __pycache__/
 .DS_Store
+playbook/app-store/iphone/
+playbook/app-store/ipad/
