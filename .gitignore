@@ -1,6 +1,6 @@
 # private: scraped/official raw files, Google 2021 snapshot, pipeline caches, the leaderboard (Google-derived)
-data/
-site/
+/data/
+/site/
 .venv/
 DerivedData*/
 build/
