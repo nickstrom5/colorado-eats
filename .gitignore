@@ -1,0 +1,12 @@
+# private: scraped/official raw files, Google 2021 snapshot, pipeline caches, the leaderboard (Google-derived)
+data/
+site/
+.venv/
+DerivedData*/
+build/
+*.xcodeproj
+.simulators
+docs/screenshots/dev-*
+playbook/brand/concept-*
+__pycache__/
+.DS_Store

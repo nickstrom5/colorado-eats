@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en" data-base="/colorado-eats">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Colorado Eats: Green Chile, Brewpub &amp; Restaurant App</title>
+<meta name="description" content="A free iPhone and iPad guide to 16,564 Colorado restaurants, with hand-checked green chile spots, 256 licensed brewpubs and ski-town dining.">
+<link rel="canonical" href="https://nickstrom5.github.io/colorado-eats/">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="theme-color" content="#002868">
+<!-- Smart App Banner: once the App Store Connect record exists, replace APP_ID with the numeric Apple ID and uncomment.
+<meta name="apple-itunes-app" content="app-id=APP_ID">
+-->
+<meta property="og:title" content="Colorado Eats: Green Chile, Brewpub &amp; Restaurant App">
+<meta property="og:description" content="A free iPhone and iPad guide to 16,564 Colorado restaurants, with hand-checked green chile spots, 256 licensed brewpubs and ski-town dining.">
+<meta property="og:url" content="https://nickstrom5.github.io/colorado-eats/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Colorado Eats">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://nickstrom5.github.io/colorado-eats/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Colorado Eats: Green chile &amp; brewpub guide. Colorado restaurants, with hand-checked green chile, ski-town dining and the state&#x27;s oldest places.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Colorado Eats: Green Chile, Brewpub &amp; Restaurant App">
+<meta name="twitter:description" content="A free iPhone and iPad guide to 16,564 Colorado restaurants, with hand-checked green chile spots, 256 licensed brewpubs and ski-town dining.">
+<meta name="twitter:image" content="https://nickstrom5.github.io/colorado-eats/og.png">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23002868'/%3E%3Cpath d='M6 55 L12 51 L19 53 L26 46 L31 49 L37 43 L43 48 L50 45 L58 50 V58 Q58 64 52 64 H12 Q6 64 6 58 Z' fill='%23173A80'/%3E%3Ccircle cx='32' cy='34' r='15' fill='%23FF9D52'/%3E%3Cpath d='M32 21 C27 28 27 40 30 48' stroke='%23C9443A' stroke-width='2' fill='none' opacity='.6'/%3E%3Cpath d='M33 20 C37 12 46 12 50 15 C45 20 38 21 33 20 Z' fill='%234C9A35'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="/colorado-eats/favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/colorado-eats/apple-touch-icon.png">
+<link rel="manifest" href="/colorado-eats/site.webmanifest">
+<style>
+  :root {
+    --bg: #f7f8fb; --surface: #fff; --surface2: #eef1f7; --rule: #dde2ec;
+    --ink: #0f1b33; --ink2: #2a3a5a; --muted: #55627a;
+    --green: #002868; --green2: #1c3f86; --gold: #ffd700; --goldsoft: #fff1a6; --red: #bf0a30;
+    --radius: 16px;
+    --display: "Avenir Next Condensed", "HelveticaNeue-CondensedBold", "Arial Narrow", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0d1424; --surface: #141d31; --surface2: #1b2640; --rule: #2a3654; --ink: #eef1f8; --ink2: #cfd6e6; --muted: #9aa6bf; --green: #a9c1ff; --green2: #8aa8f0; --red: #ff6b86; }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: var(--green); text-underline-offset: 2px; }
+  a:focus-visible, summary:focus-visible, button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; border-radius: 6px; }
+  .skip { position: absolute; left: -9999px; top: 0; background: var(--gold); color: #0f1b33; padding: 10px 14px; font-weight: 700; z-index: 10; }
+  .skip:focus { left: 8px; top: 8px; }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+  header.site { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 0; border-bottom: 4px solid var(--gold); box-shadow: 0 3px 0 var(--red); }
+  .logo { display: flex; align-items: center; gap: 10px; font: 800 22px/1 var(--display); text-transform: uppercase; letter-spacing: .01em; color: var(--green); text-decoration: none; }
+  header.site nav { display: flex; flex-wrap: wrap; gap: 4px 16px; justify-content: flex-end; }
+  header.site nav a { color: var(--ink2); text-decoration: none; font-size: 15px; }
+  header.site nav a:hover { color: var(--green); text-decoration: underline; }
+  h1, h2 { font-family: var(--display); font-weight: 800; color: var(--green); letter-spacing: -.005em; }
+  h1 { font-size: clamp(36px, 7.5vw, 56px); line-height: 1.02; margin: 0 0 16px; text-transform: uppercase; }
+  h1 .kicker { display: block; font: 700 15px/1.4 -apple-system, system-ui, sans-serif; letter-spacing: .06em; color: var(--muted); margin-bottom: 12px; }
+  h2 { font-size: 32px; line-height: 1.1; margin: 0 0 10px; }
+  h3 { font-size: 18px; margin: 0; line-height: 1.3; }
+  .lede { font-size: 19px; color: var(--ink2); margin: 0 0 26px; }
+  .hero { padding: 44px 0 28px; }
+  section { padding: 36px 0; border-top: 1px solid var(--rule); }
+  section.hero { border: 0; }
+  .sub { color: var(--ink2); margin: 0 0 22px; }
+  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; background: var(--gold); color: #0f1b33; font-weight: 700; padding: 14px 20px; border-radius: 14px; text-decoration: none; font-size: 17px; }
+  .btn svg { width: 22px; height: 22px; }
+  .btn-ghost { background: transparent; color: var(--green); border: 2px solid var(--green); }
+  .pill { font-size: 14px; color: var(--muted); }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 28px 0 0; padding: 0; list-style: none; }
+  .stats li { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 14px; }
+  .stats b { display: block; font: 800 30px/1 var(--display); color: var(--green); }
+  .stats span { font-size: 14px; color: var(--muted); }
+  .steps { display: grid; gap: 12px; list-style: none; margin: 0; padding: 0; }
+  .step { display: flex; gap: 14px; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 18px; }
+  .step .n { flex: 0 0 32px; height: 32px; border-radius: 50%; background: var(--gold); color: #0f1b33; font-weight: 800; display: grid; place-items: center; }
+  .step p { margin: 4px 0 0; color: var(--ink2); }
+  .shots { display: flex; gap: 14px; overflow-x: auto; margin: 0 -20px; padding: 4px 20px 14px; scroll-snap-type: x proximity; list-style: none; }
+  .shots li { flex: 0 0 auto; width: 210px; scroll-snap-align: start; }
+  .shots img { display: block; width: 210px; height: auto; border-radius: 24px; border: 1px solid var(--rule); background: var(--surface2); }
+  .shots p { font-size: 14px; color: var(--muted); margin: 8px 2px 0; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .card { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 18px; }
+  .card p { margin: 6px 0 0; color: var(--ink2); }
+  a.card { display: block; text-decoration: none; color: var(--ink); }
+  a.card:hover h3 { text-decoration: underline; color: var(--green); }
+  .cities { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; }
+  .cities a { display: inline-block; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--rule); background: var(--surface); text-decoration: none; color: var(--ink); font-size: 15px; }
+  .cities a:hover { border-color: var(--green); }
+  details { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 2px 18px; margin-bottom: 10px; }
+  summary { cursor: pointer; padding: 14px 0; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; color: var(--green); font-weight: 800; }
+  details[open] summary::after { content: "\2013"; }
+  details p { margin: 0 0 16px; color: var(--ink2); }
+  .final { text-align: center; }
+  .final .cta-row { justify-content: center; }
+  nav.crumbs { font-size: 14px; color: var(--muted); padding: 16px 0 0; }
+  nav.crumbs ol { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  nav.crumbs li + li::before { content: "/"; margin-right: 6px; color: var(--rule); }
+  nav.crumbs a { color: var(--muted); }
+  .places { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+  .places li { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 14px 16px; min-width: 0; overflow-wrap: anywhere; }
+  .places .where { margin: 2px 0 0; font-size: 15px; color: var(--muted); }
+  .places .facts { margin: 8px 0 0; font-size: 15px; color: var(--ink2); }
+  .places .facts b { color: var(--ink); font-weight: 600; }
+  .places .note { margin: 6px 0 0; font-size: 15px; color: var(--ink2); }
+  .places .link { font-size: 14px; }
+  .tag { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; background: var(--goldsoft); color: #0f1b33; border-radius: 6px; padding: 1px 6px; margin-right: 4px; }
+  .tag-mi { background: #bf0a30; color: #fff; }
+  .tag-jb { background: #002868; color: #fff; }
+  .toc { columns: 2; padding-left: 20px; margin: 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--rule); }
+  td.n { text-align: right; font-variant-numeric: tabular-nums; }
+  .fine { font-size: 14px; color: var(--muted); }
+  .legal h2 { font-size: 26px; margin-top: 28px; }
+  .legal p, .legal li { color: var(--ink2); }
+  footer { padding: 32px 0 56px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--rule); margin-top: 20px; }
+  footer nav { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+  footer a { color: var(--muted); }
+  footer p { margin: 12px 0 0; }
+  @media (max-width: 600px) {
+    .grid2 { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: 1fr 1fr; }
+    .toc { columns: 1; }
+    header.site { flex-direction: column; align-items: flex-start; }
+    header.site nav { justify-content: flex-start; }
+  }
+</style>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "MobileApplication",
+   "@id": "https://nickstrom5.github.io/colorado-eats/#app",
+   "name": "Colorado Eats: Restaurants",
+   "alternateName": [
+    "Colorado Eats",
+    "CO Eats",
+    "Colorado Eats: Green Chile & Brewpub Guide"
+   ],
+   "description": "A free guide to 16,564 Colorado restaurants, with hand-checked lists of 47 green chile spots, 45 ski-town restaurants and the state's oldest places, 256 licensed brewpubs and the MICHELIN Guide and James Beard honorees. Sort by distance, open Apple Maps' live place card for hours and photos, and save places for your next trip.",
+   "url": "https://nickstrom5.github.io/colorado-eats/",
+   "image": "https://nickstrom5.github.io/colorado-eats/og.png",
+   "operatingSystem": "iOS, iPadOS",
+   "applicationCategory": "TravelApplication",
+   "applicationSubCategory": "Food & Drink",
+   "inLanguage": "en",
+   "publisher": {
+    "@id": "https://nickstrom5.github.io/colorado-eats/#org"
+   },
+   "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD",
+    "category": "free"
+   },
+   "screenshot": "https://nickstrom5.github.io/colorado-eats/img/screen-home.png"
+  },
+  {
+   "@type": "Organization",
+   "@id": "https://nickstrom5.github.io/colorado-eats/#org",
+   "name": "Colorado Eats",
+   "url": "https://nickstrom5.github.io/colorado-eats/",
+   "logo": {
+    "@type": "ImageObject",
+    "url": "https://nickstrom5.github.io/colorado-eats/icon-512.png",
+    "width": 512,
+    "height": 512
+   },
+   "email": "work-with-nick@gmail.com",
+   "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer support",
+    "email": "work-with-nick@gmail.com",
+    "availableLanguage": "en"
+   }
+  },
+  {
+   "@type": "WebSite",
+   "@id": "https://nickstrom5.github.io/colorado-eats/#website",
+   "name": "Colorado Eats",
+   "alternateName": [
+    "CO Eats",
+    "Colorado Eats app"
+   ],
+   "url": "https://nickstrom5.github.io/colorado-eats/",
+   "inLanguage": "en",
+   "publisher": {
+    "@id": "https://nickstrom5.github.io/colorado-eats/#org"
+   }
+  }
+ ]
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "FAQPage",
+ "@id": "https://nickstrom5.github.io/colorado-eats/#faq",
+ "mainEntity": [
+  {
+   "@type": "Question",
+   "name": "Is Colorado Eats free?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Yes. The app is free, with no ads, no in-app purchases and no account."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Where do the green chile spots and ski-town restaurants come from?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "We checked each one by hand in fall 2026: every place on the green chile, game and steakhouse, ski-town and oldest lists has a 2025 or 2026 source such as its own menu page or a dated local news story. Brewpubs are the places with a state Brew Pub license. The rest of the 16,564 restaurants come from Overture Maps' open place data, Denver's business licenses and the state's liquor licenses."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Does the app show ratings and reviews?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Not its own. Tap a place and Apple Maps' own place card opens inside the app with Apple's current ratings, hours, photos and directions. Our lists are never ordered by ratings."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Does it need my location?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Only if you want lists sorted by distance. Your location stays on your iPhone or iPad and is never sent to us. Everything else works without it."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "What are the inspection results?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "For Boulder County, the app shows Boulder County Public Health's official result at each place's latest inspection, as recorded: Pass, Re-Inspection Required or Closure, with the risk points behind it. We never compute a grade of our own. Other counties don't publish inspections in bulk."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "A place closed or is missing. How do I tell you?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Email work-with-nick@gmail.com with the name and town. Corrections go into the next update."
+   }
+  },
+  {
+   "@type": "Question",
+   "name": "Is there an Android version?",
+   "acceptedAnswer": {
+    "@type": "Answer",
+    "text": "Not yet. Colorado Eats is for iPhone and iPad. If enough people ask at work-with-nick@gmail.com, it moves up the list."
+   }
+  }
+ ]
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="wrap">
+  <header class="site">
+    <a class="logo" href="/colorado-eats/" aria-label="Colorado Eats home"><svg viewBox="0 0 64 64" width="30" height="30" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#002868"/><path d="M6 55 L12 51 L19 53 L26 46 L31 49 L37 43 L43 48 L50 45 L58 50 V58 Q58 64 52 64 H12 Q6 64 6 58 Z" fill="#173A80"/><circle cx="32" cy="34" r="15" fill="#FF9D52"/><path d="M32 21 C27 28 27 40 30 48" stroke="#C9443A" stroke-width="2" fill="none" opacity=".6"/><path d="M33 20 C37 12 46 12 50 15 C45 20 38 21 33 20 Z" fill="#4C9A35"/></svg>Colorado Eats</a>
+    <nav aria-label="Main">
+      <a href="/colorado-eats/colorado-green-chile.html">Green chile</a>
+      <a href="/colorado-eats/colorado-brewpubs.html">Brewpubs</a>
+      <a href="/colorado-eats/colorado-ski-town-restaurants.html">Ski towns</a>
+      <a href="/colorado-eats/#cities">Cities</a>
+      <a href="/colorado-eats/explore/">Search</a>
+    </nav>
+  </header>
+  <main id="main">
+  <section class="hero">
+    <h1><span class="kicker">Colorado Eats: the green chile & brewpub guide for iPhone and iPad</span>Colorado's restaurants, and the green chile worth the drive</h1>
+    <p class="lede">Colorado Eats is a free Colorado restaurant guide. Find a smothered burrito near you, a brewpub for after the hike and a dining room in the next ski town, from lists we checked by hand, plus 16,564 restaurants, cafés, bars and bakeries in 314 towns.</p>
+    <div class="cta-row"><a class="btn store-btn" href="mailto:work-with-nick@gmail.com?subject=Colorado%20Eats%20early%20access&amp;body=Send%20me%20the%20TestFlight%20link."><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.5 2-3.7 2.1-3.8-1.2-1.7-3-1.9-3.6-2-1.5-.2-3 .9-3.8.9-.8 0-2-.9-3.3-.9-1.7 0-3.3 1-4.1 2.5-1.8 3.1-.5 7.6 1.3 10.1.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.3.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.9-4zM14 5.2c.7-.8 1.2-2 1-3.2-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1.1 3.1 1.1.1 2.3-.6 3-1.4z"/></svg><span class="store-label">Get early access</span></a><a class="btn btn-ghost" href="/colorado-eats/explore/">Search on the web</a><span class="pill store-note">Free. No ads, no account. Coming to the App Store.</span></div>
+    <ul class="stats" aria-label="What's in the app">
+      <li><b>47</b><span>green chile spots</span></li>
+      <li><b>256</b><span>brewpubs</span></li>
+      <li><b>85</b><span>MICHELIN &amp; James Beard</span></li>
+      <li><b>16,564</b><span>restaurants</span></li>
+    </ul>
+  </section>
+
+  <section id="what">
+    <h2>A Colorado restaurant guide that knows what's smothered</h2>
+    <p class="sub">General restaurant apps rank by star ratings and can't tell you where the slopper is. Colorado Eats starts from the things people here look for: green chile, a brewpub that makes its own beer, a dining room in a ski town, bison and elk, and the saloons that have been open since the mining days. The hand-checked lists were checked open in fall 2026, and the brewpubs come from the state's own license list. For ratings, hours and photos, each place opens Apple Maps' own live card.</p>
+  </section>
+
+  <section id="how">
+    <h2>How it works</h2>
+    <ol class="steps">
+      <li class="step"><div class="n" aria-hidden="true">1</div><div><h3>Pick a guide.</h3><p>Green Chile, Brewpubs, Ski Town Dining, Game &amp; Steakhouses, MICHELIN &amp; James Beard, Oldest Places, or search every restaurant by name, town, street or dish.</p></div></li>
+      <li class="step"><div class="n" aria-hidden="true">2</div><div><h3>See what's near you.</h3><p>Sort by distance, filter by town or cuisine, or browse the map.</p></div></li>
+      <li class="step"><div class="n" aria-hidden="true">3</div><div><h3>Go.</h3><p>Open Apple Maps' place card for live hours and photos, call, get directions, or save it for your next trip.</p></div></li>
+    </ol>
+  </section>
+
+  <section id="screens">
+    <h2>What it looks like</h2>
+    <ul class="shots" tabindex="0" aria-label="Colorado Eats app screenshots">
+      <li><picture><source srcset="/colorado-eats/img/screen-home.webp" type="image/webp"><img src="/colorado-eats/img/screen-home.png" alt="Colorado Eats home screen: Green Chile, Brewpubs, Ski Town Dining, Game &amp; Steakhouses, MICHELIN &amp; James Beard, Oldest Places and Inspections guides, with a search box for every restaurant in the state." width="480" height="1043" decoding="async"></picture><p>Guides for green chile, brewpubs and ski towns.</p></li><li><picture><source srcset="/colorado-eats/img/screen-greenchile.webp" type="image/webp"><img src="/colorado-eats/img/screen-greenchile.png" alt="The hand-checked Green Chile list in Colorado Eats, sorted by distance from downtown Denver." width="480" height="1043" decoding="async"></picture><p>Green chile nearest you first.</p></li><li><picture><source srcset="/colorado-eats/img/screen-detail.webp" type="image/webp"><img src="/colorado-eats/img/screen-detail.png" alt="The Buckhorn Exchange in Denver in Colorado Eats: address, a button for ratings, hours and photos in Apple Maps, bison and elk on the menu, open since 1893." width="480" height="1043" loading="lazy" decoding="async"></picture><p>Each place, with live Apple Maps hours and photos.</p></li><li><picture><source srcset="/colorado-eats/img/screen-map.webp" type="image/webp"><img src="/colorado-eats/img/screen-map.png" alt="Colorado Eats map of Colorado with pins for green chile spots." width="480" height="1043" loading="lazy" decoding="async"></picture><p>The map, by guide.</p></li><li><picture><source srcset="/colorado-eats/img/screen-honors.webp" type="image/webp"><img src="/colorado-eats/img/screen-honors.png" alt="MICHELIN &amp; James Beard list in Colorado Eats." width="480" height="1043" loading="lazy" decoding="async"></picture><p>MICHELIN Guide and James Beard honorees.</p></li>
+    </ul>
+  </section>
+  <section id="guides">
+    <h2>Colorado food guides</h2>
+    <p class="sub">The app's lists, readable on the web.</p>
+    <div class="grid2">
+      <a class="card" href="/colorado-eats/colorado-green-chile.html"><h3>Colorado green chile guide</h3><p>47 hand-checked places, Pueblo sloppers included.</p></a>
+      <a class="card" href="/colorado-eats/colorado-brewpubs.html"><h3>Colorado brewpubs</h3><p>All 256 restaurants with a state Brew Pub license.</p></a>
+      <a class="card" href="/colorado-eats/colorado-ski-town-restaurants.html"><h3>Ski town dining</h3><p>45 restaurants in Aspen, Vail, Breckenridge, Telluride and more.</p></a>
+      <a class="card" href="/colorado-eats/colorado-game-steakhouses.html"><h3>Game &amp; steakhouses</h3><p>39 places for bison, elk, trout and steak.</p></a>
+      <a class="card" href="/colorado-eats/colorado-michelin-james-beard.html"><h3>MICHELIN &amp; James Beard</h3><p>85 honored Colorado restaurants.</p></a>
+      <a class="card" href="/colorado-eats/colorado-oldest-restaurants.html"><h3>Colorado's oldest restaurants</h3><p>30 places with a verified founding year.</p></a>
+    </div>
+  </section>
+
+  <section id="cities">
+    <h2>Green chile, brewpubs and more by city</h2>
+    <p class="sub">The guides for Colorado's biggest cities and resort towns.</p>
+    <ul class="cities"><li><a href="/colorado-eats/cities/denver.html">Denver</a></li><li><a href="/colorado-eats/cities/colorado-springs.html">Colorado Springs</a></li><li><a href="/colorado-eats/cities/aurora.html">Aurora</a></li><li><a href="/colorado-eats/cities/fort-collins.html">Fort Collins</a></li><li><a href="/colorado-eats/cities/boulder.html">Boulder</a></li><li><a href="/colorado-eats/cities/pueblo.html">Pueblo</a></li><li><a href="/colorado-eats/cities/lakewood.html">Lakewood</a></li><li><a href="/colorado-eats/cities/longmont.html">Longmont</a></li><li><a href="/colorado-eats/cities/greeley.html">Greeley</a></li><li><a href="/colorado-eats/cities/golden.html">Golden</a></li><li><a href="/colorado-eats/cities/grand-junction.html">Grand Junction</a></li><li><a href="/colorado-eats/cities/durango.html">Durango</a></li><li><a href="/colorado-eats/cities/aspen.html">Aspen</a></li><li><a href="/colorado-eats/cities/breckenridge.html">Breckenridge</a></li><li><a href="/colorado-eats/cities/steamboat-springs.html">Steamboat Springs</a></li><li><a href="/colorado-eats/cities/vail.html">Vail</a></li></ul>
+  </section>
+
+  <section id="pricing">
+    <h2>Free, and staying that way</h2>
+    <p class="sub">No ads, no subscription, no in-app purchases, no account. The whole guide is built into the app, so lists open instantly and work with a weak signal in the mountains.</p>
+  </section>
+
+  <section id="privacy">
+    <h2>Your plans are your business</h2>
+    <p class="sub">Colorado Eats collects nothing. If you allow location, it only sorts lists by distance on your device. Saved places stay on your device. This website sets no cookies and runs no trackers. <a href="/colorado-eats/privacy.html">Read the privacy policy</a>.</p>
+  </section>
+
+  <section id="faq">
+    <h2>Questions</h2>
+    <details><summary>Is Colorado Eats free?</summary><p>Yes. The app is free, with no ads, no in-app purchases and no account.</p></details><details><summary>Where do the green chile spots and ski-town restaurants come from?</summary><p>We checked each one by hand in fall 2026: every place on the green chile, game and steakhouse, ski-town and oldest lists has a 2025 or 2026 source such as its own menu page or a dated local news story. Brewpubs are the places with a state Brew Pub license. The rest of the 16,564 restaurants come from Overture Maps&#x27; open place data, Denver&#x27;s business licenses and the state&#x27;s liquor licenses.</p></details><details><summary>Does the app show ratings and reviews?</summary><p>Not its own. Tap a place and Apple Maps&#x27; own place card opens inside the app with Apple&#x27;s current ratings, hours, photos and directions. Our lists are never ordered by ratings.</p></details><details><summary>Does it need my location?</summary><p>Only if you want lists sorted by distance. Your location stays on your iPhone or iPad and is never sent to us. Everything else works without it.</p></details><details><summary>What are the inspection results?</summary><p>For Boulder County, the app shows Boulder County Public Health&#x27;s official result at each place&#x27;s latest inspection, as recorded: Pass, Re-Inspection Required or Closure, with the risk points behind it. We never compute a grade of our own. Other counties don&#x27;t publish inspections in bulk.</p></details><details><summary>A place closed or is missing. How do I tell you?</summary><p>Email work-with-nick@gmail.com with the name and town. Corrections go into the next update.</p></details><details><summary>Is there an Android version?</summary><p>Not yet. Colorado Eats is for iPhone and iPad. If enough people ask at work-with-nick@gmail.com, it moves up the list.</p></details>
+  </section>
+
+  <section id="download" class="final">
+    <h2>Find your next green chile</h2>
+    <p class="sub">Colorado Eats is coming to the App Store for iPhone and iPad. Free.</p>
+    <div class="cta-row"><a class="btn store-btn" href="mailto:work-with-nick@gmail.com?subject=Colorado%20Eats%20early%20access&amp;body=Send%20me%20the%20TestFlight%20link."><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.5 2-3.7 2.1-3.8-1.2-1.7-3-1.9-3.6-2-1.5-.2-3 .9-3.8.9-.8 0-2-.9-3.3-.9-1.7 0-3.3 1-4.1 2.5-1.8 3.1-.5 7.6 1.3 10.1.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.3.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.9-4zM14 5.2c.7-.8 1.2-2 1-3.2-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1.1 3.1 1.1.1 2.3-.6 3-1.4z"/></svg><span class="store-label">Get early access</span></a></div>
+  </section>
+  </main>
+  <footer>
+    <nav aria-label="Footer">
+      <a href="/colorado-eats/">Colorado Eats app</a>
+      <a href="/colorado-eats/explore/">Search Colorado restaurants</a>
+      <a href="/colorado-eats/colorado-green-chile.html">Colorado green chile</a>
+      <a href="/colorado-eats/colorado-brewpubs.html">Colorado brewpubs</a>
+      <a href="/colorado-eats/colorado-ski-town-restaurants.html">Ski town dining</a>
+      <a href="/colorado-eats/colorado-michelin-james-beard.html">MICHELIN &amp; James Beard</a>
+      <a href="/colorado-eats/colorado-oldest-restaurants.html">Oldest restaurants</a>
+      <a href="/colorado-eats/privacy.html">Privacy policy</a>
+      <a href="/colorado-eats/terms.html">Terms of use</a>
+      <a href="mailto:work-with-nick@gmail.com">Email us</a>
+    </nav>
+    <p>Place data: hand-checked research by Colorado Eats (fall 2026); Overture Maps Foundation (CDLA Permissive 2.0); © OpenStreetMap contributors (ODbL); Colorado Department of Revenue liquor licenses and Boulder County Public Health inspections (data.colorado.gov, public domain); City and County of Denver Open Data. Not affiliated with or endorsed by any restaurant, team, chain or government agency, the MICHELIN Guide or the James Beard Foundation. MICHELIN and the MICHELIN Guide are trademarks of Michelin; James Beard Foundation and James Beard Award are trademarks of the James Beard Foundation. Places open and close, so check before you go.</p>
+    <p>© 2026 Colorado Eats.</p>
+  </footer>
+</div>
+<script>
+  // Once the App Store listing exists, paste its URL here (looks like https://apps.apple.com/app/id123456789).
+  // Every button switches from "Get early access" to "Download on the App Store" automatically.
+  // Also fill in the apple-itunes-app meta tag in <head> on every page (re-run scripts/make-site.py after editing it there).
+  var APP_STORE_URL = "";
+  if (APP_STORE_URL) {
+    document.querySelectorAll(".store-btn").forEach(function (b) { b.href = APP_STORE_URL; b.rel = "noopener"; });
+    document.querySelectorAll(".store-label").forEach(function (l) { l.textContent = "Download on the App Store"; });
+    document.querySelectorAll(".store-note").forEach(function (n) { n.textContent = "Free for iPhone and iPad."; });
+  }
+</script>
+</body>
+</html>

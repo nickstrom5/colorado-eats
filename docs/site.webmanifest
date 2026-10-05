@@ -1,0 +1,21 @@
+{
+  "name": "Colorado Eats",
+  "short_name": "CO Eats",
+  "description": "Green chile & brewpub guide, plus 16,564 Colorado restaurants.",
+  "start_url": "/colorado-eats/",
+  "display": "browser",
+  "background_color": "#f7f8fb",
+  "theme_color": "#002868",
+  "icons": [
+    {
+      "src": "/colorado-eats/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/colorado-eats/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

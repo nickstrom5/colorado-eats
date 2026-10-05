@@ -1,0 +1,136 @@
+{
+ "generated": "2026-10-05",
+ "domain": "https://nickstrom5.github.io/colorado-eats",
+ "restaurants": 16564,
+ "towns": 314,
+ "counties": 64,
+ "green_chile": 47,
+ "brewpubs": 256,
+ "ski_town": 45,
+ "game": 39,
+ "honors": 85,
+ "michelin": {
+  "1 MICHELIN Star": 9,
+  "2 MICHELIN Stars": 1,
+  "MICHELIN Recommended": 40,
+  "Bib Gourmand": 13
+ },
+ "james_beard": 37,
+ "oldest": 30,
+ "pueblo_green_chile": 10,
+ "sloppers": 6,
+ "cities": {
+  "Denver": {
+   "restaurants": 3125,
+   "green_chile_near": 21,
+   "brewpubs_near": 48,
+   "ski_near": 0,
+   "honors": 50
+  },
+  "Colorado Springs": {
+   "restaurants": 1542,
+   "green_chile_near": 5,
+   "brewpubs_near": 21,
+   "ski_near": 0,
+   "honors": 2
+  },
+  "Aurora": {
+   "restaurants": 834,
+   "green_chile_near": 15,
+   "brewpubs_near": 11,
+   "ski_near": 0,
+   "honors": 4
+  },
+  "Fort Collins": {
+   "restaurants": 575,
+   "green_chile_near": 1,
+   "brewpubs_near": 11,
+   "ski_near": 0,
+   "honors": 0
+  },
+  "Boulder": {
+   "restaurants": 507,
+   "green_chile_near": 0,
+   "brewpubs_near": 11,
+   "ski_near": 0,
+   "honors": 11
+  },
+  "Pueblo": {
+   "restaurants": 361,
+   "green_chile_near": 9,
+   "brewpubs_near": 5,
+   "ski_near": 0,
+   "honors": 0
+  },
+  "Lakewood": {
+   "restaurants": 419,
+   "green_chile_near": 22,
+   "brewpubs_near": 43,
+   "ski_near": 0,
+   "honors": 0
+  },
+  "Longmont": {
+   "restaurants": 350,
+   "green_chile_near": 0,
+   "brewpubs_near": 11,
+   "ski_near": 0,
+   "honors": 0
+  },
+  "Greeley": {
+   "restaurants": 264,
+   "green_chile_near": 0,
+   "brewpubs_near": 1,
+   "ski_near": 0,
+   "honors": 0
+  },
+  "Golden": {
+   "restaurants": 168,
+   "green_chile_near": 15,
+   "brewpubs_near": 10,
+   "ski_near": 0,
+   "honors": 0
+  },
+  "Grand Junction": {
+   "restaurants": 276,
+   "green_chile_near": 0,
+   "brewpubs_near": 7,
+   "ski_near": 0,
+   "honors": 1
+  },
+  "Durango": {
+   "restaurants": 183,
+   "green_chile_near": 3,
+   "brewpubs_near": 6,
+   "ski_near": 5,
+   "honors": 0
+  },
+  "Aspen": {
+   "restaurants": 131,
+   "green_chile_near": 0,
+   "brewpubs_near": 2,
+   "ski_near": 7,
+   "honors": 4
+  },
+  "Breckenridge": {
+   "restaurants": 133,
+   "green_chile_near": 1,
+   "brewpubs_near": 0,
+   "ski_near": 5,
+   "honors": 2
+  },
+  "Steamboat Springs": {
+   "restaurants": 137,
+   "green_chile_near": 1,
+   "brewpubs_near": 3,
+   "ski_near": 3,
+   "honors": 0
+  },
+  "Vail": {
+   "restaurants": 108,
+   "green_chile_near": 1,
+   "brewpubs_near": 1,
+   "ski_near": 8,
+   "honors": 2
+  }
+ }
+}
