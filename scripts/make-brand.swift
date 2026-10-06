@@ -1,5 +1,5 @@
-// Regenerates the brand images: the app icon (a Palisade peach on flag blue with a Front Range ridge, Nick's pick 2026-10-05,
-// concept C of scripts/icon-concepts.swift, made flat instead of glossy on 2026-10-06), playbook/brand/, and the site's og.png, favicons and manifest icons.
+// Regenerates the brand images: the app icon (a flat Pueblo green chile on flag blue with a Front Range ridge, Nick's pick 2026-10-06,
+// concept A of scripts/icon-concepts-2.swift; it replaced the Palisade peach, which was not local enough), playbook/brand/, and the site's og.png, favicons and manifest icons.
 // Usage: swift scripts/make-brand.swift   (run from co-eats/)
 import AppKit
 import CoreGraphics
@@ -43,34 +43,39 @@ func ground(_ c: CGContext, _ s: CGFloat) {
     }
 }
 
-/// C: a Palisade peach with its blush, crease, stem and one leaf.
-func peach(_ c: CGContext, _ s: CGFloat) {
-    let body = CGMutablePath()
-    body.addEllipse(in: CGRect(x: s * 0.22, y: s * 0.24, width: s * 0.56, height: s * 0.54))
-    c.saveGState(); c.addPath(body); c.clip()
-    // flat, not glossy (Nick, 2026-10-06): one solid peach colour with a single flat blush on the right, no highlight gradient
-    c.setFillColor(rgb(0xFFA35A)); c.fill(CGRect(x: 0, y: 0, width: s, height: s))
-    c.setFillColor(rgb(0xF7864F)); c.fillEllipse(in: CGRect(x: s * 0.50, y: s * 0.20, width: s * 0.40, height: s * 0.40))
-    // the crease
-    let crease = CGMutablePath()
-    crease.move(to: P(s, 0.50, 0.76)); crease.addCurve(to: P(s, 0.44, 0.30), control1: P(s, 0.40, 0.62), control2: P(s, 0.38, 0.42))
-    c.setStrokeColor(rgb(0xC9443A, 0.55)); c.setLineWidth(s * 0.02); c.setLineCap(.round); c.addPath(crease); c.strokePath()
+/// A: a Pueblo green chile, flat: one green with a darker underside, a lighter flat highlight, calyx and curled stem.
+func chile(_ c: CGContext, _ s: CGFloat) {
+    let pod = CGMutablePath()
+    pod.move(to: P(s, 0.27, 0.72))
+    pod.addCurve(to: P(s, 0.86, 0.27), control1: P(s, 0.60, 0.82), control2: P(s, 0.84, 0.58))
+    pod.addCurve(to: P(s, 0.70, 0.30), control1: P(s, 0.83, 0.25), control2: P(s, 0.76, 0.26))
+    pod.addCurve(to: P(s, 0.20, 0.53), control1: P(s, 0.58, 0.36), control2: P(s, 0.38, 0.44))
+    pod.addCurve(to: P(s, 0.27, 0.72), control1: P(s, 0.13, 0.57), control2: P(s, 0.16, 0.70))
+    pod.closeSubpath()
+    c.saveGState(); c.addPath(pod); c.clip()
+    c.setFillColor(rgb(0x4E9A2E)); c.fill(CGRect(x: 0, y: 0, width: s, height: s))
+    // the darker underside: a flat band along the bottom edge
+    let under = CGMutablePath()
+    under.move(to: P(s, 0.14, 0.58)); under.addCurve(to: P(s, 0.88, 0.29), control1: P(s, 0.40, 0.49), control2: P(s, 0.66, 0.40))
+    under.addLine(to: P(s, 0.88, 0.0)); under.addLine(to: P(s, 0.0, 0.0)); under.closeSubpath()
+    c.setFillColor(rgb(0x3A7A21)); c.addPath(under); c.fillPath()
+    // one flat lighter stripe along the top
+    let hi = CGMutablePath()
+    hi.move(to: P(s, 0.31, 0.665)); hi.addCurve(to: P(s, 0.74, 0.43), control1: P(s, 0.53, 0.72), control2: P(s, 0.69, 0.55))
+    c.setStrokeColor(rgb(0x7CC04F)); c.setLineWidth(s * 0.03); c.setLineCap(.round); c.addPath(hi); c.strokePath()
     c.restoreGState()
-    // stem and leaf
+    let cap = CGMutablePath()
+    cap.move(to: P(s, 0.18, 0.66)); cap.addCurve(to: P(s, 0.34, 0.73), control1: P(s, 0.21, 0.76), control2: P(s, 0.29, 0.77))
+    cap.addCurve(to: P(s, 0.18, 0.66), control1: P(s, 0.29, 0.65), control2: P(s, 0.22, 0.61))
+    c.setFillColor(rgb(0x2F5E1A)); c.addPath(cap); c.fillPath()
     let stem = CGMutablePath()
-    stem.move(to: P(s, 0.50, 0.75)); stem.addCurve(to: P(s, 0.53, 0.84), control1: P(s, 0.51, 0.79), control2: P(s, 0.52, 0.82))
-    c.setStrokeColor(rgb(0x6B4A2B)); c.setLineWidth(s * 0.03); c.addPath(stem); c.strokePath()
-    let leaf = CGMutablePath()
-    leaf.move(to: P(s, 0.52, 0.80)); leaf.addCurve(to: P(s, 0.80, 0.86), control1: P(s, 0.60, 0.92), control2: P(s, 0.74, 0.93))
-    leaf.addCurve(to: P(s, 0.52, 0.80), control1: P(s, 0.72, 0.78), control2: P(s, 0.60, 0.75))
-    c.setFillColor(rgb(0x4C9A35)); c.addPath(leaf); c.fillPath()
-    c.setStrokeColor(rgb(0x2E6E25)); c.setLineWidth(s * 0.008)
-    let vein = CGMutablePath(); vein.move(to: P(s, 0.54, 0.80)); vein.addCurve(to: P(s, 0.77, 0.86), control1: P(s, 0.62, 0.84), control2: P(s, 0.70, 0.86))
-    c.addPath(vein); c.strokePath()
+    stem.move(to: P(s, 0.25, 0.72)); stem.addCurve(to: P(s, 0.25, 0.86), control1: P(s, 0.22, 0.78), control2: P(s, 0.21, 0.83))
+    stem.addCurve(to: P(s, 0.33, 0.88), control1: P(s, 0.28, 0.89), control2: P(s, 0.31, 0.89))
+    c.setStrokeColor(rgb(0x5A8A2A)); c.setLineWidth(s * 0.045); c.setLineCap(.round); c.addPath(stem); c.strokePath()
 }
 
 func icon(_ size: Int) -> CGImage {
-    canvas(size, size) { c in let s = CGFloat(size); ground(c, s); peach(c, s) }
+    canvas(size, size) { c in let s = CGFloat(size); ground(c, s); chile(c, s) }
 }
 
 func text(_ c: CGContext, _ str: String, font: NSFont, color: CGColor, at p: CGPoint) {
@@ -98,7 +103,7 @@ let og = canvas(1200, 630) { c in
     text(c, "EATS", font: heavy(128), color: gold, at: CGPoint(x: 66, y: 204))
     text(c, "Green chile & brewpub guide · \(count) Colorado restaurants", font: NSFont.systemFont(ofSize: 32, weight: .semibold), color: white, at: CGPoint(x: 70, y: 150))
     text(c, "Free for iPhone and iPad", font: NSFont.systemFont(ofSize: 30, weight: .regular), color: gold, at: CGPoint(x: 70, y: 96))
-    c.saveGState(); c.translateBy(x: 780, y: 170); peach(c, 380); c.restoreGState()
+    c.saveGState(); c.translateBy(x: 770, y: 150); chile(c, 400); c.restoreGState()
     c.setFillColor(red); c.fill(CGRect(x: 0, y: 0, width: 1200, height: 10))
 }
 save(og, "docs/og.png")

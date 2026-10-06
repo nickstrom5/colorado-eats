@@ -9,7 +9,7 @@ Three products share this folder and one data pipeline (built 2026-10-05 from th
 - **The website** in `docs/` (GitHub Pages): https://nickstrom5.github.io/colorado-eats/ until Nick's Cloudflare `CNAME colorado → nickstrom5.github.io`
   (DNS only) resolves; then `CO_DOMAIN=colorado.eatsranked.com` for `scripts/make-site.py` (it writes `docs/CNAME`).
 
-Nick's calls (2026-10-05): the name above, the Palisade peach icon (`scripts/make-brand.swift`), the Colorado flag palette (blue #002868, red #BF0A30,
+Nick's calls (2026-10-05): the name above, the flat Pueblo green chile icon (`scripts/make-brand.swift`; it replaced a Palisade peach on 2026-10-06: "something more local to CO", and flat, not glossy), the Colorado flag palette (blue #002868, red #BF0A30,
 gold #FFD700 only as a fill under blue text). Light mode only in the app.
 
 ## Data rules (the app's promise)

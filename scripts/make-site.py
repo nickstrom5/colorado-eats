@@ -121,8 +121,8 @@ def png_size(path):
 
 
 APPLE = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.5 2-3.7 2.1-3.8-1.2-1.7-3-1.9-3.6-2-1.5-.2-3 .9-3.8.9-.8 0-2-.9-3.3-.9-1.7 0-3.3 1-4.1 2.5-1.8 3.1-.5 7.6 1.3 10.1.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.3.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.9-4zM14 5.2c.7-.8 1.2-2 1-3.2-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1.1 3.1 1.1.1 2.3-.6 3-1.4z"/></svg>'
-# the app icon in miniature: a Palisade peach on flag blue over a Front Range ridge
-LOGO = '<svg viewBox="0 0 64 64" width="30" height="30" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#002868"/><path d="M6 55 L12 51 L19 53 L26 46 L31 49 L37 43 L43 48 L50 45 L58 50 V58 Q58 64 52 64 H12 Q6 64 6 58 Z" fill="#173A80"/><circle cx="32" cy="34" r="15" fill="#FF9D52"/><path d="M32 21 C27 28 27 40 30 48" stroke="#C9443A" stroke-width="2" fill="none" opacity=".6"/><path d="M33 20 C37 12 46 12 50 15 C45 20 38 21 33 20 Z" fill="#4C9A35"/></svg>'
+# the app icon in miniature: a Pueblo green chile on flag blue over a Front Range ridge
+LOGO = '<svg viewBox="0 0 64 64" width="30" height="30" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#002868"/><path d="M6 55 L12 51 L19 53 L26 46 L31 49 L37 43 L43 48 L50 45 L58 50 V58 Q58 64 52 64 H12 Q6 64 6 58 Z" fill="#173A80"/><path d="M17.3 17.9 C38.4 11.5 53.8 26.9 55 46.7 C53.1 48 48.6 47.4 44.8 44.8 C37.1 41 24.3 35.8 12.8 30.1 C8.3 27.5 10.2 19.2 17.3 17.9 Z" fill="#4E9A2E"/><ellipse cx="16" cy="20" rx="5" ry="3" fill="#2F5E1A"/><path d="M16 18 C14 14 13.5 11 16 9 C18 7.5 20 7.5 21.2 8" stroke="#5A8A2A" stroke-width="3" stroke-linecap="round" fill="none"/></svg>'
 FAVICON = "data:image/svg+xml," + LOGO.replace('width="30" height="30" ', "").replace(' aria-hidden="true"', "").replace("<svg ", "<svg xmlns='http://www.w3.org/2000/svg' ").replace('"', "'").replace("#", "%23").replace("<", "%3C").replace(">", "%3E")
 
 CSS = """
