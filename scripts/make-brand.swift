@@ -1,5 +1,5 @@
 // Regenerates the brand images: the app icon (a Palisade peach on flag blue with a Front Range ridge, Nick's pick 2026-10-05,
-// concept C of scripts/icon-concepts.swift), playbook/brand/, and the site's og.png, favicons and manifest icons.
+// concept C of scripts/icon-concepts.swift, made flat instead of glossy on 2026-10-06), playbook/brand/, and the site's og.png, favicons and manifest icons.
 // Usage: swift scripts/make-brand.swift   (run from co-eats/)
 import AppKit
 import CoreGraphics
@@ -48,8 +48,9 @@ func peach(_ c: CGContext, _ s: CGFloat) {
     let body = CGMutablePath()
     body.addEllipse(in: CGRect(x: s * 0.22, y: s * 0.24, width: s * 0.56, height: s * 0.54))
     c.saveGState(); c.addPath(body); c.clip()
-    let grad = CGGradient(colorsSpace: CGColorSpace(name: CGColorSpace.sRGB)!, colors: [rgb(0xFFD27A), rgb(0xFF9D52), rgb(0xE8503F)] as CFArray, locations: [0, 0.45, 1])!
-    c.drawRadialGradient(grad, startCenter: P(s, 0.36, 0.62), startRadius: 0, endCenter: P(s, 0.56, 0.42), endRadius: s * 0.42, options: [.drawsAfterEndLocation])
+    // flat, not glossy (Nick, 2026-10-06): one solid peach colour with a single flat blush on the right, no highlight gradient
+    c.setFillColor(rgb(0xFFA35A)); c.fill(CGRect(x: 0, y: 0, width: s, height: s))
+    c.setFillColor(rgb(0xF7864F)); c.fillEllipse(in: CGRect(x: s * 0.50, y: s * 0.20, width: s * 0.40, height: s * 0.40))
     // the crease
     let crease = CGMutablePath()
     crease.move(to: P(s, 0.50, 0.76)); crease.addCurve(to: P(s, 0.44, 0.30), control1: P(s, 0.40, 0.62), control2: P(s, 0.38, 0.42))
