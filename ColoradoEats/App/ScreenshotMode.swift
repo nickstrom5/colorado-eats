@@ -23,7 +23,8 @@ enum ScreenshotMode {
         model.filters = Filters()
         // downtown Denver, so "nearest" lists have distances without a permission prompt
         model.screenshotLocation = CLLocation(latitude: 39.7439, longitude: -104.9926)
-        let pick = { (n: String) in model.places.first { $0.name == n } }
+        // by name, ignoring case: a rebuild that takes the research spelling ("El Taco de Mexico") still finds the place
+        let pick = { (n: String) in model.places.first { $0.name.caseInsensitiveCompare(n) == .orderedSame } }
         for n in ["Buckhorn Exchange", "Gray's Coors Tavern", "El Taco De Mexico", "The Wolf's Tailor"] {
             if let p = pick(n), !model.isSaved(p) { model.toggleSaved(p) }
         }

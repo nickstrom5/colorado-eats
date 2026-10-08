@@ -2,6 +2,7 @@
 <html lang="en" data-base="/colorado-eats">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-BgJmbaINEQUFu7virxVOdfOaikMdCK8nl/GiBpr6iOc='; style-src 'sha256-JeEbKAxrCGuD2MWvCogkmSAwRUpKYVYtHGEElvImwTs='; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Terms of Use: Colorado Eats Green Chile &amp; Restaurant App</title>
 <meta name="description" content="The Colorado Eats terms of use: a free Colorado restaurant guide, provided as is. Check before you go, and see where each listing and result comes from.">
@@ -33,12 +34,13 @@
   :root {
     --bg: #f7f8fb; --surface: #fff; --surface2: #eef1f7; --rule: #dde2ec;
     --ink: #0f1b33; --ink2: #2a3a5a; --muted: #55627a;
-    --green: #002868; --green2: #1c3f86; --gold: #ffd700; --goldsoft: #fff1a6; --red: #bf0a30;
+    --green: #002868; --green2: #1c3f86; --on-green: #fff; --gold: #ffd700; --goldsoft: #fff1a6; --red: #bf0a30;
+    --focus: #002868;
     --radius: 16px;
     --display: "Avenir Next Condensed", "HelveticaNeue-CondensedBold", "Arial Narrow", system-ui, sans-serif;
   }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #0d1424; --surface: #141d31; --surface2: #1b2640; --rule: #2a3654; --ink: #eef1f8; --ink2: #cfd6e6; --muted: #9aa6bf; --green: #a9c1ff; --green2: #8aa8f0; --red: #ff6b86; }
+    :root { --bg: #0d1424; --surface: #141d31; --surface2: #1b2640; --rule: #2a3654; --ink: #eef1f8; --ink2: #cfd6e6; --muted: #9aa6bf; --green: #a9c1ff; --green2: #8aa8f0; --on-green: #0d1424; --red: #ff6b86; --focus: #ffd700; }
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
@@ -46,7 +48,7 @@
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
   body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
   a { color: var(--green); text-underline-offset: 2px; }
-  a:focus-visible, summary:focus-visible, button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; border-radius: 6px; }
+  a:focus-visible, summary:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
   .skip { position: absolute; left: -9999px; top: 0; background: var(--gold); color: #0f1b33; padding: 10px 14px; font-weight: 700; z-index: 10; }
   .skip:focus { left: 8px; top: 8px; }
   .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
@@ -57,7 +59,7 @@
   header.site nav a:hover { color: var(--green); text-decoration: underline; }
   h1, h2 { font-family: var(--display); font-weight: 800; color: var(--green); letter-spacing: -.005em; }
   h1 { font-size: clamp(36px, 7.5vw, 56px); line-height: 1.02; margin: 0 0 16px; text-transform: uppercase; }
-  h1 .kicker { display: block; font: 700 15px/1.4 -apple-system, system-ui, sans-serif; letter-spacing: .06em; color: var(--muted); margin-bottom: 12px; }
+  .kicker { font: 700 15px/1.4 -apple-system, system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
   h2 { font-size: 32px; line-height: 1.1; margin: 0 0 10px; }
   h3 { font-size: 18px; margin: 0; line-height: 1.3; }
   .lede { font-size: 19px; color: var(--ink2); margin: 0 0 26px; }
@@ -90,6 +92,7 @@
   .cities { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; }
   .cities a { display: inline-block; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--rule); background: var(--surface); text-decoration: none; color: var(--ink); font-size: 15px; }
   .cities a:hover { border-color: var(--green); }
+  .cities a[aria-current] { border-color: var(--green); font-weight: 700; }
   details { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 2px 18px; margin-bottom: 10px; }
   summary { cursor: pointer; padding: 14px 0; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
   summary::-webkit-details-marker { display: none; }
@@ -103,19 +106,26 @@
   nav.crumbs li + li::before { content: "/"; margin-right: 6px; color: var(--rule); }
   nav.crumbs a { color: var(--muted); }
   .places { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
-  .places li { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 14px 16px; min-width: 0; overflow-wrap: anywhere; }
+  .places li { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 14px 16px; min-width: 0; overflow-wrap: anywhere; scroll-margin-top: 12px; }
+  .places li:target { border-color: var(--green); box-shadow: 0 0 0 2px var(--green); }
   .places .where { margin: 2px 0 0; font-size: 15px; color: var(--muted); }
   .places .facts { margin: 8px 0 0; font-size: 15px; color: var(--ink2); }
   .places .facts b { color: var(--ink); font-weight: 600; }
   .places .note { margin: 6px 0 0; font-size: 15px; color: var(--ink2); }
+  .places .fine { margin: 6px 0 0; }
   .places .link { font-size: 14px; }
   .tag { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; background: var(--goldsoft); color: #0f1b33; border-radius: 6px; padding: 1px 6px; margin-right: 4px; }
   .tag-mi { background: #bf0a30; color: #fff; }
   .tag-jb { background: #002868; color: #fff; }
   .toc { columns: 2; padding-left: 20px; margin: 0; }
   table { border-collapse: collapse; width: 100%; font-size: 15px; }
-  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--rule); }
-  td.n { text-align: right; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+  .tbl { overflow-x: auto; }
+  .tbl th[scope=row] { font-weight: 600; overflow-wrap: anywhere; }
+  .tbl .addr { display: block; font-size: 13px; font-weight: 400; color: var(--muted); }
+  .res { display: inline-block; font: 800 12px/1.4 -apple-system, system-ui, sans-serif; letter-spacing: .04em; text-transform: uppercase; padding: 2px 6px; border-radius: 6px; }
+  .res-0 { background: #ddefe3; color: #0e5a2b; } .res-1 { background: #ffe9c2; color: #6b3a00; } .res-2 { background: #f9d5db; color: #7a0019; }
   .fine { font-size: 14px; color: var(--muted); }
   .legal h2 { font-size: 26px; margin-top: 28px; }
   .legal p, .legal li { color: var(--ink2); }
@@ -129,6 +139,12 @@
     .toc { columns: 1; }
     header.site { flex-direction: column; align-items: flex-start; }
     header.site nav { justify-content: flex-start; }
+    header.site nav a, footer nav a, nav.crumbs a { display: inline-block; padding: 10px 0; }
+    footer nav { gap: 0 18px; }
+    th, td { padding: 8px 4px; font-size: 14px; }
+    .tbl th, .tbl td { padding: 8px 3px; font-size: 13px; }
+    .res { font-size: 11px; letter-spacing: .02em; padding: 2px 4px; }
+    nav.crumbs ol { align-items: center; }
   }
 </style>
 <script type="application/ld+json">
@@ -161,7 +177,7 @@
       <a href="/colorado-eats/colorado-green-chile.html">Green chile</a>
       <a href="/colorado-eats/colorado-brewpubs.html">Brewpubs</a>
       <a href="/colorado-eats/colorado-ski-town-restaurants.html">Ski towns</a>
-      <a href="/colorado-eats/#cities">Cities</a>
+      <a href="/colorado-eats/cities/">Cities</a>
       <a href="/colorado-eats/explore/">Search</a>
     </nav>
   </header>
@@ -169,7 +185,7 @@
   <main id="main" class="legal">
   <section class="hero">
     <h1>Terms of use</h1>
-    <p class="lede">The plain-language terms for the Colorado Eats app and this website. Last updated 2026-10-05.</p>
+    <p class="lede">The plain-language terms for the Colorado Eats app and this website. Last updated 2026-10-07.</p>
   </section>
   <section>
     <h2>What the app is</h2>
@@ -177,12 +193,14 @@
     <h2>Check before you go</h2>
     <p>Restaurants open, close, change their hours and change their menus, and mountain-town places close for part of spring and fall. Dishes, seasons and founding years are what each place or a named source said when we checked in fall 2026. We work to keep the lists right, but we can't promise that any listing is current or complete. Call the restaurant before you make the trip.</p>
     <h2>Inspection results</h2>
-    <p>The Inspections guide shows Boulder County Public Health's official result at each place's latest inspection, as published on data.colorado.gov: Pass, Re-Inspection Required or Closure, with the risk points recorded. We show the results as recorded and compute no grade of our own. An inspection is a snapshot of one day, and the published records can lag. For the agency's own records, contact Boulder County Public Health.</p>
+    <p>The Inspections guide and the Boulder County inspections page show Boulder County Public Health's official result at each place's latest inspection, as published on data.colorado.gov: Pass (0–49 risk points), Re-Inspection Required (50–109) or Closure (110+ points). Boulder County also records a Closure when it closes a place for an imminent health hazard, such as a sewage backup, whatever the points. Fewer points is better. We show the results as recorded and compute no grade of our own. An inspection is a snapshot of one day, and the published records can lag. For the agency's own records, contact Boulder County Public Health.</p>
     <h2>Other people's content</h2>
     <p>Ratings, reviews, hours and photos in each place card come from Apple Maps and are Apple's and its providers', under Apple's terms. Restaurant names and trademarks belong to their owners. MICHELIN and the MICHELIN Guide are trademarks of Michelin; James Beard Foundation and James Beard Award are trademarks of the James Beard Foundation. Colorado Eats is not affiliated with any restaurant, team, chain, award body or government agency.</p>
     <h2>Data sources and licenses</h2>
     <ul>
       <li>Overture Maps Foundation places data, under the Community Data License Agreement, Permissive 2.0; boundaries and water under the Open Database License. © OpenStreetMap contributors, Overture Maps Foundation.</li>
+      <li>Overture Maps Foundation addresses data, compiled from open address sources under permissive licenses (see docs.overturemaps.org/attribution), used to place official records on the map.</li>
+      <li>U.S. Census Bureau Geocoder (public domain), used for addresses Overture's address points don't cover.</li>
       <li>Colorado Department of Revenue, Liquor Enforcement Division: active liquor licenses (data.colorado.gov, public domain).</li>
       <li>Boulder County Public Health: restaurant inspections (data.colorado.gov, public domain).</li>
       <li>City and County of Denver Open Data: active business licenses, provided as is without warranty.</li>
@@ -204,20 +222,24 @@
       <a href="/colorado-eats/colorado-green-chile.html">Colorado green chile</a>
       <a href="/colorado-eats/colorado-brewpubs.html">Colorado brewpubs</a>
       <a href="/colorado-eats/colorado-ski-town-restaurants.html">Ski town dining</a>
+      <a href="/colorado-eats/colorado-game-steakhouses.html">Game &amp; steakhouses</a>
       <a href="/colorado-eats/colorado-michelin-james-beard.html">MICHELIN &amp; James Beard</a>
       <a href="/colorado-eats/colorado-oldest-restaurants.html">Oldest restaurants</a>
+      <a href="/colorado-eats/boulder-county-restaurant-inspections.html">Boulder County inspections</a>
+      <a href="/colorado-eats/cities/">Cities and towns</a>
       <a href="/colorado-eats/privacy.html">Privacy policy</a>
       <a href="/colorado-eats/terms.html">Terms of use</a>
       <a href="mailto:work-with-nick@gmail.com">Email us</a>
     </nav>
-    <p>Place data: hand-checked research by Colorado Eats (fall 2026); Overture Maps Foundation (CDLA Permissive 2.0); © OpenStreetMap contributors (ODbL); Colorado Department of Revenue liquor licenses and Boulder County Public Health inspections (data.colorado.gov, public domain); City and County of Denver Open Data. Not affiliated with or endorsed by any restaurant, team, chain or government agency, the MICHELIN Guide or the James Beard Foundation. MICHELIN and the MICHELIN Guide are trademarks of Michelin; James Beard Foundation and James Beard Award are trademarks of the James Beard Foundation. Places open and close, so check before you go.</p>
+    <p>Place data: hand-checked research by Colorado Eats (fall 2026); Overture Maps Foundation places (CDLA Permissive 2.0) and addresses (open address sources under permissive licenses, docs.overturemaps.org/attribution); © OpenStreetMap contributors (ODbL); U.S. Census Bureau Geocoder (public domain); Colorado Department of Revenue liquor licenses and Boulder County Public Health inspections (data.colorado.gov, public domain); City and County of Denver Open Data. Not affiliated with or endorsed by any restaurant, team, chain or government agency, the MICHELIN Guide or the James Beard Foundation. MICHELIN and the MICHELIN Guide are trademarks of Michelin; James Beard Foundation and James Beard Award are trademarks of the James Beard Foundation. Places open and close, so check before you go.</p>
     <p>© 2026 Colorado Eats.</p>
   </footer>
 </div>
 <script>
   // Once the App Store listing exists, paste its URL here (looks like https://apps.apple.com/app/id123456789).
-  // Every button switches from "Get early access" to "Download on the App Store" automatically.
-  // Also fill in the apple-itunes-app meta tag in <head> on every page (re-run scripts/make-site.py after editing it there).
+  // Every button switches from "Get early access" to "Download on the App Store" automatically (then use Apple's badge artwork,
+  // see store_button() in scripts/make-site.py). Also fill in the apple-itunes-app meta tag in <head> on every page, and put the
+  // MobileApplication "offers" back in the landing page's JSON-LD (re-run scripts/make-site.py after editing it there).
   var APP_STORE_URL = "";
   if (APP_STORE_URL) {
     document.querySelectorAll(".store-btn").forEach(function (b) { b.href = APP_STORE_URL; b.rel = "noopener"; });

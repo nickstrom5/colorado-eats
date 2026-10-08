@@ -7,6 +7,9 @@ build/
 *.xcodeproj
 .simulators
 docs/screenshots/dev-*
+docs/screenshots/small-dev-*
+# the private leaderboard generator (it builds the Google-2021 page in site/), as in wi-eats
+scripts/make-leaderboard.py
 playbook/brand/concept-*
 __pycache__/
 .DS_Store

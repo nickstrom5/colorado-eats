@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HomeView: View {
     @Environment(AppModel.self) private var model
+    @Environment(\.horizontalSizeClass) private var sizeClass
     @State private var lastRandom: String?
     private let columns = [GridItem(.adaptive(minimum: 158), spacing: 12)]
 
@@ -48,7 +49,7 @@ struct HomeView: View {
             RidgeLine().frame(height: 22).padding(.bottom, 4)
             Text("Green chile & brewpub guide")
                 .font(.headline).foregroundStyle(Theme.ink)
-            Text("Hand-checked green chile, ski-town dining and the oldest places, every brewpub with a state license, plus \(model.restaurantCount.formatted()) restaurants in \(model.towns.count.formatted()) towns.")
+            Text("Hand-checked green chile, ski-town dining and the oldest places, brewpubs holding a Colorado Brew Pub or Distillery Pub license, plus \(model.restaurantCount.formatted()) restaurants in \(model.towns.count.formatted()) towns.")
                 .font(.subheadline).foregroundStyle(Theme.ink2)
         }
         .padding(.top, 8)
@@ -58,7 +59,8 @@ struct HomeView: View {
         Button {
             if let p = model.randomPick(from: .greenChile, excluding: lastRandom) {
                 lastRandom = p.id
-                model.guidesPath.append(.place(p))
+                // iPhone pushes it; iPad shows it in the place column (a growing stack there would resurface after a size change)
+                if sizeClass != .regular { model.guidesPath.append(.place(p)) }
                 model.selectedPlace = p
             }
         } label: {
@@ -94,7 +96,9 @@ struct GuideCard: View {
         .frame(maxWidth: .infinity, minHeight: 150, alignment: .topLeading)
         .background(RoundedRectangle(cornerRadius: 14).fill(Theme.surface))
         .overlay(RoundedRectangle(cornerRadius: 14).strokeBorder(guide.isColorado ? Color(hex: 0xC9A800) : Theme.rule))
-        .accessibilityElement(children: .combine)
-        .accessibilityHint(guide == .nearMe ? "" : "\(count) places")
+        // one reading of the count, after the title ("Green Chile. Hand-checked …", "47 places")
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(guide.title). \(guide.subtitle)")
+        .accessibilityValue(guide != .nearMe && guide != .all ? "\(count) \(count == 1 ? "place" : "places")" : "")
     }
 }

@@ -2,7 +2,7 @@
 
 Adapted from wi-eats/pipeline/common.py (itself from chi-eats/pipeline/build.py): Wisconsin-only words out, Colorado ones in.
 """
-import os, re
+import os, re, unicodedata
 from rapidfuzz import fuzz
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
@@ -14,7 +14,9 @@ STOP = {"THE", "INC", "LLC", "CO", "CORP", "RESTAURANT", "RESTAURANTS", "AND", "
 
 
 def norm_name(s):
-    s = (s or "").upper().replace("&", " AND ").replace("'S", "S").replace("’S", "S")
+    # accents become their letters ("Méxican" -> MEXICAN): deleting them left fragments like "M" that matched other businesses
+    s = unicodedata.normalize("NFKD", s or "").encode("ascii", "ignore").decode()
+    s = s.upper().replace("&", " AND ").replace("'S", "S").replace("’S", "S")
     s = re.sub(r"[^A-Z0-9 ]", " ", s)
     s = re.sub(r"\b\d{2,}\b", " ", s)  # store numbers like "#1234"
     return " ".join(w for w in s.split() if w not in STOP)
@@ -57,9 +59,15 @@ def nice(s, addr=False):
     s = re.sub(r"(?i)'S\s+'S\b", "'S", s)
     s = re.sub(r"(?i)\bMC\s+([A-Z]{2,})", r"MC\1", s)
     if addr:   # "55 E MAIN ST STE 4" -> drop the dangling unit / stray number
+        s = re.sub(r"^[^\d,]{3,},\s*(?=\d)", "", s)   # "Enter through the back, 3542 Walnut St"
         m = re.match(r"^(\d+[A-Z]?(?:\s*-\s*\d+)?\s+.+?\b(?:ST|AVE|BLVD|DR|RD|PL|CT|PKWY|TER|WAY|LN|HWY|PLZ|SQ|CIR|TRL|MARKET)\b)", s, re.I)
         if m and UNIT_TAIL.search(s[m.end():]):
-            s = m.group(1)
+            road_no = re.match(r"^\s+(\d+[A-Z]?)\b", s[m.end():])
+            # "8080 County Rd 12", "411 US Hwy 285": the number is the road's, not a unit
+            if road_no and re.search(r"(?:\b(?:CO|COUNTY|US|STATE|SH|CR)\s+(?:RD|ROAD|HWY)|\bHWY)$", m.group(1), re.I):
+                s = m.group(1) + " " + road_no.group(1)
+            else:
+                s = m.group(1)
     if not s:
         return s
     out = []
@@ -77,7 +85,8 @@ def canon_city(c):
     """One spelling per town: St/Saint -> St., Mt/Mount -> Mount, Ft -> Fort, Spgs -> Springs, "City of X" -> X, case fixes."""
     if not isinstance(c, str) or not c.strip():
         return None
-    c = re.sub(r",?\s*(?:CO|Colo\.?|Colorado)$", "", c.strip(), flags=re.I)
+    # a state suffix needs a comma or a space before it: "Frisco" and "Rico" end in "co" too (they once became "Fris" and "Ri")
+    c = re.sub(r"(?:,\s*|\s+)(?:CO|Colo\.?|Colorado)$", "", c.strip(), flags=re.I) or c.strip()
     c = re.sub(r"^(?:City and County|City|Town)\s+of\s+", "", c, flags=re.I)
     c = nice(c) if c.isupper() or c.islower() else c
     c = re.sub(r"\b(?:Saint|St)\b\.?\s*", "St. ", c)
@@ -100,7 +109,8 @@ def canon_city(c):
             "mountainvillage": "Mountain Village", "beavercreek": "Beaver Creek", "fortlupton": "Fort Lupton", "fortmorgan": "Fort Morgan",
             "pueblowest": "Pueblo West", "blackhawk": "Black Hawk", "centralcity": "Central City", "hotsulphursprings": "Hot Sulphur Springs",
             "grandlake": "Grand Lake", "dupont": "DuPont", "castlepines": "Castle Pines", "mcclave": "McClave", "mccoy": "McCoy",
-            "denvercounty": "Denver", "denvercity": "Denver"}.get(key, c)
+            "denvercounty": "Denver", "denvercity": "Denver", "grandjct": "Grand Junction", "fredrick": "Frederick",
+            "petersonafb": "Peterson Space Force Base", "raymer": "New Raymer", "northeastjefferson": "Arvada"}.get(key, c)
 
 
 def town_key(c):
@@ -122,7 +132,8 @@ GREEN CHILE CHILI BURRITO BURRITOS TAPROOM TAPHOUSE DEN BISTRO TRADING POST WEST
 
 
 def _stems(s):
-    return {w if w in GENERIC else (w[:-1] if len(w) > 3 and w.endswith("S") else w) for w in s.split()} - GENERIC
+    # one- and two-letter fragments ("A", "C", "MR", "LE") never count as a distinctive word
+    return {w if w in GENERIC else (w[:-1] if len(w) > 3 and w.endswith("S") else w) for w in s.split() if len(w) >= 3 or w.isdigit()} - GENERIC
 
 
 def name_sim(a, b):
@@ -172,7 +183,7 @@ CUISINE_RULES = [
     ("Soul & Southern", _W(r"SOUL|SOUTHERN|CREOLE|GUMBO|BISCUITS?|GRITS|CHICKEN WAFFLES")),
     ("Healthy & Vegan", _W(r"VEGAN|VEGETARIAN|SALADS?|JUICE|JUICERY|SMOOTHIES?|SWEETGREEN|PLANT BASED|ACAI|HEALTHY|ORGANIC|JAMBA|NOODLES AND COMPANY|MAD GREENS|MODERN MARKET|GARBANZO")),
     ("Breakfast & Diner", _W(r"BREAKFAST|PANCAKES?|DINER|BRUNCH|EGGS?|IHOP|DENNYS|PERKINS|YOLK|OMELETTES?|OMELETS?|SUNRISE|MORNING|WAFFLES?|GRIDDLE|SKILLETS?|SNOOZE|LUCILES|VILLAGE INN|BAGEL")),
-    ("German & European", _W(r"POLISH|POLSKA|UKRAINIAN|GERMAN|BAVARIAN|SERBIAN|BOSNIAN|CROATIAN|RUSSIAN|FRENCH|BISTRO|BRASSERIE|IRISH|BRITISH|SWEDISH|NORWEGIAN|NORSKE|DANISH|SPANISH|TAPAS|PORTUGUESE|EUROPEAN|LITHUANIAN|CZECH|HUNGARIAN|ROMANIAN|GEORGIAN|PIEROGI|PIEROGIES|HAUS|BIERGARTEN|BEER GARDEN|BIERHALLE|RATHSKELLER|STUBE|SCHNITZEL|SWISS|SLOVENIAN|FONDUE")),
+    ("German & European", _W(r"POLISH|POLSKA|UKRAINIAN|GERMAN|BAVARIAN|SERBIAN|BOSNIAN|CROATIAN|RUSSIAN|FRENCH|BRASSERIE|IRISH|BRITISH|SWEDISH|NORWEGIAN|NORSKE|DANISH|SPANISH|TAPAS|PORTUGUESE|EUROPEAN|LITHUANIAN|CZECH|HUNGARIAN|ROMANIAN|GEORGIAN|PIEROGI|PIEROGIES|HAUS|BIERGARTEN|BEER GARDEN|BIERHALLE|RATHSKELLER|STUBE|SCHNITZEL|SWISS|SLOVENIAN|FONDUE")),
     ("Bar & Pub", _W(r"PUB|TAVERN|BAR|SALOON|LOUNGE|TAP|TAPS|TAPROOM|TAPHOUSE|BREWING|BREWERY|BREWPUB|BEER|ALE HOUSE|GASTROPUB|COCKTAILS?|WINE|WINERY|DISTILLERY|DISTILLING|INN|PADDY|BARS")),
 ]
 GCAT = [(c, re.compile(p)) for c, p in [

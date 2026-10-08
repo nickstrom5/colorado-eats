@@ -9,6 +9,7 @@ struct PlaceDetailView: View {
     @State private var mapItem: MKMapItem?
     @State private var lookingUp = false
     @State private var notOnAppleMaps = false
+    @State private var appleMapsFailed = false
 
     var body: some View {
         ScrollView {
@@ -17,7 +18,7 @@ struct PlaceDetailView: View {
                 actions
                 if let c = place.coordinate { mapSnippet(c) }
                 if place.handChecked && (place.note != nil || place.dishes != nil || place.founded != nil || place.seasonal != nil) { checked }
-                if place.isHonored { honors }
+                if place.hasHonors { honors }
                 if let i = place.inspection { inspections(i) }
                 records
                 listing
@@ -25,8 +26,7 @@ struct PlaceDetailView: View {
             .padding(16)
         }
         .background(Theme.surface)
-        .navigationTitle(place.name)
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineTitle(place.name)
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
                 Button { model.toggleSaved(place) } label: {
@@ -41,6 +41,26 @@ struct PlaceDetailView: View {
             Button("OK", role: .cancel) {}
         } message: {
             Text("Apple Maps doesn't have a listing for \(place.name) at this spot, so there are no ratings or hours to show here.")
+        }
+        .alert("Couldn't reach Apple Maps", isPresented: $appleMapsFailed) {
+            Button("Try again") { lookUp() }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Check your connection and try again.")
+        }
+    }
+
+    /// Apple's place card for this place; "not on Apple Maps" only when Apple answered and had no listing here.
+    private func lookUp() {
+        lookingUp = true
+        Task {
+            let result = await AppleMaps.findItem(for: place)
+            lookingUp = false
+            switch result {
+            case .found(let item): mapItem = item
+            case .notListed: notOnAppleMaps = true
+            case .failed: appleMapsFailed = true
+            }
         }
     }
 
@@ -67,14 +87,7 @@ struct PlaceDetailView: View {
 
     private var actions: some View {
         VStack(spacing: 10) {
-            Button {
-                lookingUp = true
-                Task {
-                    let item = await AppleMaps.findItem(for: place)
-                    lookingUp = false
-                    if let item { mapItem = item } else { notOnAppleMaps = true }
-                }
-            } label: {
+            Button { lookUp() } label: {
                 HStack {
                     if lookingUp { ProgressView().tint(Theme.green) } else { Image(systemName: "star.bubble") }
                     Text("Ratings, hours & photos").fontWeight(.semibold)
@@ -120,6 +133,7 @@ struct PlaceDetailView: View {
         .clipShape(RoundedRectangle(cornerRadius: 14))
         .onTapGesture { AppleMaps.openInMaps(place) }
         .accessibilityLabel("Map of \(place.name). Opens Apple Maps.")
+        .accessibilityAddTraits(.isButton)
     }
 
     private var checked: some View {
@@ -127,10 +141,13 @@ struct PlaceDetailView: View {
             VStack(alignment: .leading, spacing: 8) {
                 if let note = place.note { Text(note).font(.subheadline).foregroundStyle(Theme.ink2) }
                 if let d = place.dishes { fact("On the menu", d.components(separatedBy: "; ").joined(separator: ", ")) }
-                if let f = place.founded { fact("Open here since", "\(f)") }
-                if let fn = place.foundedNote { Text(fn).font(.caption).foregroundStyle(Theme.ink2) }
+                if let f = place.founded {
+                    fact("Open here since", "\(f)")
+                    // the note explains the year; without a year it only repeated the description above
+                    if let fn = place.foundedNote { Text(fn).font(.caption).foregroundStyle(Theme.ink2) }
+                }
                 if let sea = place.seasonal { fact("Season", sea) }
-                Text("Checked in Sep–Oct 2026 against a 2025 or 2026 source: the place's own site or menu, or local news. Menus and seasons change, and mountain places close for mud season in spring and fall, so check before you go.")
+                Text("Checked by hand against a 2025 or 2026 source: the place's own site or menu, or local news. Menus and seasons change, and mountain places close for mud season in spring and fall, so check before you go.")
                     .font(.caption).foregroundStyle(Theme.ink2)
             }
         }
@@ -157,13 +174,18 @@ struct PlaceDetailView: View {
                 HStack(alignment: .center, spacing: 12) {
                     ResultBadge(result: i.r, large: true)
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Latest inspection \(i.d)").font(.headline).foregroundStyle(Theme.ink)
+                        Text(DayFormat.text(i.d).map { "Latest inspection \($0)" } ?? "Latest inspection: date not published").font(.headline).foregroundStyle(Theme.ink)
                         Text("\(i.p) risk point\(i.p == 1 ? "" : "s") · official result, as recorded").font(.caption).foregroundStyle(Theme.muted)
                     }
                 }
-                ForEach(i.h, id: \.self) { v in
+                if i.d == nil || i.h.contains(where: { $0.d == nil }) {
+                    Text("Inspection date not published: recorded during Boulder County's September 2025 system move.")
+                        .font(.caption).foregroundStyle(Theme.ink2)
+                }
+                // by position: a routine inspection and its same-day re-inspection are two entries, and undated ones can look alike
+                ForEach(Array(i.h.enumerated()), id: \.offset) { _, v in
                     HStack(alignment: .firstTextBaseline) {
-                        Text(v.d).font(.subheadline).monospacedDigit().foregroundStyle(Theme.ink2)
+                        Text(DayFormat.text(v.d) ?? "Date not published").font(.subheadline).monospacedDigit().foregroundStyle(Theme.ink2)
                         Text(v.t).font(.subheadline).foregroundStyle(Theme.muted)
                         Spacer(minLength: 8)
                         Text("\(v.r.label) · \(v.p) pts").font(.subheadline.weight(.semibold)).foregroundStyle(Theme.ink).multilineTextAlignment(.trailing)
@@ -172,7 +194,7 @@ struct PlaceDetailView: View {
                 if let items = i.i, !items.isEmpty {
                     fact("Cited at the latest inspection", items.prefix(8).joined(separator: "; ") + (items.count > 8 ? "…" : ""))
                 }
-                Text("Colorado rates retail food inspections Pass (0–49 risk points), Re-Inspection Required (50–109) or Closure (110+, or an imminent health hazard at any score); fewer points is better. Source: Boulder County Public Health on data.colorado.gov, inspections through \(model.inspectionsThrough), published \(model.inspectionsPublished). One inspection is a snapshot of one day.")
+                Text("Colorado rates retail food inspections Pass (0–49 risk points), Re-Inspection Required (50–109) or Closure (110+ points). Boulder County also records a Closure when it closes a place for an imminent health hazard, such as a sewage backup, whatever the points. Fewer points is better. Source: Boulder County Public Health on data.colorado.gov, inspections through \(DayFormat.text(model.inspectionsThrough) ?? model.inspectionsThrough), published \(DayFormat.text(model.inspectionsPublished) ?? model.inspectionsPublished). One inspection is a snapshot of one day.")
                     .font(.caption).foregroundStyle(Theme.muted)
             }
         }
@@ -182,13 +204,10 @@ struct PlaceDetailView: View {
         section("Official records") {
             VStack(alignment: .leading, spacing: 8) {
                 ForEach(place.licenses, id: \.self) { l in
-                    kv(l.src, [l.type, l.id, l.exp.map { "expires " + $0 }].compactMap { $0 }.joined(separator: " · "))
+                    kv(l.src, [l.type, Self.unbroken(l.id), expires(l)].compactMap { $0 }.joined(separator: " · "))
                 }
-                kv("Serves alcohol", place.liquor.map { "Yes · \($0) license" } ?? "— (no on-premises liquor license matched)")
-                Text(place.licenses.isEmpty && place.inspection == nil
-                     ? "No Denver license, state liquor license or Boulder County inspection record matched this place. Most Colorado counties don't publish their records in bulk, so a missing record means unknown, not unlicensed."
-                     : "From the City and County of Denver's active business licenses and the Colorado Department of Revenue's active liquor licenses (as of \(model.liquorUpdated)).")
-                    .font(.caption).foregroundStyle(Theme.muted)
+                kv("Serves alcohol", place.servesAlcohol)
+                Text(recordsNote).font(.caption).foregroundStyle(Theme.muted)
             }
         }
     }
@@ -204,10 +223,36 @@ struct PlaceDetailView: View {
         }
     }
 
+    /// A license on the state's active list stays valid while its renewal is pending, so only a date on or after the list's own
+    /// date is shown (the pipeline already leaves the others out; an older data file had them).
+    private func expires(_ l: LicenseRecord) -> String? {
+        guard let exp = l.exp, exp >= model.liquorUpdated, let text = DayFormat.text(exp) else { return nil }
+        return "expires " + text
+    }
+
+    /// "2024-BFN-0006294" with non-breaking hyphens, so a license number never wraps in the middle
+    private static func unbroken(_ id: String) -> String { id.replacingOccurrences(of: "-", with: "\u{2011}") }
+
+    /// Where the records above come from, naming only the lists this place actually matched.
+    private var recordsNote: String {
+        let denver = place.licenses.contains { $0.src.hasPrefix("Denver") }
+        let state = place.licenses.contains { $0.src.hasPrefix("Colorado") }
+        let unknown = "Most Colorado counties don't publish their records in bulk, so a missing record means unknown, not unlicensed."
+        if !denver && !state {
+            return place.inspection == nil
+                ? "No Denver license, state liquor license or Boulder County inspection record matched this place. " + unknown
+                : "No Denver license or state liquor license matched this place; its Boulder County inspections are above. " + unknown
+        }
+        var from: [String] = []
+        if denver { from.append("the City and County of Denver's active business licenses" + (DayFormat.text(model.denverUpdated).map { " (as of \($0))" } ?? "")) }
+        if state { from.append("the Colorado Department of Revenue's active liquor licenses (as of \(DayFormat.text(model.liquorUpdated) ?? model.liquorUpdated))") }
+        return "From " + from.joined(separator: " and ") + "."
+    }
+
     private var listingNote: String {
         let checked = place.handChecked
         if place.source == "research" {
-            return "On our hand-checked list (checked in Sep–Oct 2026 against a 2025 or 2026 source). The open map data didn't list it as a place to eat, so it's placed from its own map listing or street address."
+            return "On our hand-checked list (checked against a 2025 or 2026 source). The open map data didn't list it as a place to eat, so it's placed from its own map listing or street address."
         }
         switch place.tier {
         case .licensed:
@@ -220,7 +265,7 @@ struct PlaceDetailView: View {
                 ? "A high-confidence listing in Overture's open map data."
                 : "A single listing in Overture's open map data, so it may be closed or misfiled."
             let measured = rate.map { " Checked against Denver's licenses and Boulder County's inspected facilities, listings like this matched an official record \($0) of the time." } ?? ""
-            return base + measured + (checked ? " It's also on our hand-checked list, checked in Sep–Oct 2026 against a 2025 or 2026 source." : "")
+            return base + measured + (checked ? " It's also on our hand-checked list, checked against a 2025 or 2026 source." : "")
         }
     }
 

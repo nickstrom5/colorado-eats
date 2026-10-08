@@ -79,9 +79,9 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
 }
 
 extension CLLocation {
-    /// "0.4 mi", "12 mi"
+    /// "0.4 mi", "12 mi", "1,012 mi" (an App Reviewer in California is a thousand miles out)
     func milesText(to other: CLLocation) -> String {
         let mi = distance(from: other) / 1609.344
-        return mi < 10 ? String(format: "%.1f mi", mi) : "\(Int(mi.rounded())) mi"
+        return (mi < 10 ? mi.formatted(.number.precision(.fractionLength(1))) : Int(mi.rounded()).formatted()) + " mi"
     }
 }

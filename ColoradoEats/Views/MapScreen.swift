@@ -18,6 +18,9 @@ struct MapScreen: View {
     /// 16,000+ restaurants at once kept Wisconsin's map busy for a minute and more in QA, so the Everything layer fills in
     /// only once you zoom to about town size (this many degrees of latitude on screen), and only for what's in view.
     private static let everythingSpan = 0.3
+    /// Even town size is thousands of places in Denver (QA counted 5,900 pins there: the map pegged the CPU and grew to 358 MB),
+    /// so the Everything layer shows at most this many: the honored and Colorado picks first, then the ones nearest the center.
+    static let pinCap = 600
 
     /// The map's narrower side, in degrees of latitude. MapKit stretches the other side to fit the view, so a tall, narrow iPad column
     /// zoomed to a town shows 0.3°+ of latitude; judging by the narrower side keeps "town size" the same on every screen shape.
@@ -42,7 +45,8 @@ struct MapScreen: View {
     var body: some View {
         let layerPlaces = model.places.filter { layer.guide.includes($0) && model.filters.allows($0) && $0.coordinate != nil }
         let zoomedOut = layer == .all && (region.map(Self.townSpan) ?? .infinity) > Self.everythingSpan
-        let places = layer != .all ? layerPlaces : zoomedOut ? [] : layerPlaces.filter(inView)
+        let nearby = layer != .all || zoomedOut ? [] : layerPlaces.filter(inView)
+        let places = layer != .all ? layerPlaces : Self.capped(nearby, around: region?.center)
         ZStack(alignment: .top) {
             ClusteredMap(places: places, showsUser: location.location != nil, center: centerOn, onRegion: { region = $0 }) { p in
                 if let selection { selection.wrappedValue = p } else { pushed = p }
@@ -65,15 +69,22 @@ struct MapScreen: View {
                     .padding(.horizontal, 12)
                 }
                 Text(notice ?? (zoomedOut ? "Zoom in to a town to see all \(layerPlaces.count.formatted()) places"
+                               : places.count < nearby.count ? "Zoom in to see all \(nearby.count.formatted()) places here"
                                : "\(places.count.formatted()) \(layer == .all ? "places here" : "places") · tap a pin, then its name"))
                     .font(.caption).foregroundStyle(Theme.ink2)
                     .padding(.horizontal, 10).padding(.vertical, 4).background(Capsule().fill(.thinMaterial))
             }
             .padding(.top, 8)
         }
-        .navigationTitle("Map")
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineTitle("Map")
         .navigationDestination(item: $pushed) { PlaceDetailView(place: $0) }
+        // iPhone-size: the open place is also the model's, so an iPad layout opens on it; and the reverse after an iPad layout
+        .onChange(of: pushed) { _, p in if let p { model.selectedPlace = p } }
+        .onChange(of: model.handoffPlace, initial: true) { _, p in
+            guard selection == nil, model.tab == .map, let p else { return }
+            model.handoffPlace = nil
+            pushed = p
+        }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -129,10 +140,24 @@ extension MapScreen {
         Task { try? await Task.sleep(for: .seconds(5)); if notice == text { notice = nil } }
     }
 
-    /// On screen, with half a screen of margin so panning doesn't show empty edges.
+    /// On screen, with a quarter screen of margin on each side so a small pan doesn't show empty edges.
     private func inView(_ p: Place) -> Bool {
         guard let r = region, let c = p.coordinate else { return false }
-        return abs(c.latitude - r.center.latitude) <= r.span.latitudeDelta && abs(c.longitude - r.center.longitude) <= r.span.longitudeDelta
+        return abs(c.latitude - r.center.latitude) <= 0.75 * r.span.latitudeDelta && abs(c.longitude - r.center.longitude) <= 0.75 * r.span.longitudeDelta
+    }
+
+    /// At most `pinCap` pins: the honored places and Colorado picks first (the ones with priority pins), then the nearest to the center.
+    static func capped(_ places: [Place], around center: CLLocationCoordinate2D?, limit: Int = pinCap) -> [Place] {
+        guard places.count > limit, let center else { return places }
+        let k = cos(center.latitude * .pi / 180)
+        func d2(_ p: Place) -> Double {
+            guard let c = p.coordinate else { return .greatestFiniteMagnitude }
+            let dy = c.latitude - center.latitude, dx = (c.longitude - center.longitude) * k
+            return dy * dy + dx * dx
+        }
+        return places.map { ($0, $0.isHonored || $0.isClassic, d2($0)) }
+            .sorted { $0.1 != $1.1 ? $0.1 : $0.2 < $1.2 }
+            .prefix(limit).map(\.0)
     }
 }
 
@@ -224,11 +249,13 @@ final class PlaceMarker: MKMarkerAnnotationView {
         info.accessibilityLabel = "Details"
         rightCalloutAccessoryView = info
         guard let p = (annotation as? PlaceAnnotation)?.place else { return }
-        let classic = (p.handChecked && (p.tags.contains(.greenChile) || p.tags.contains(.skiDining) || p.tags.contains(.game))) || p.tags.contains(.brewpub)
+        let classic = p.isClassic
         markerTintColor = UIColor(p.michelin != .none ? Theme.red : classic ? Theme.gold : Theme.green)
         glyphTintColor = UIColor(classic && p.michelin == .none ? Theme.green : .white)
-        glyphImage = UIImage(systemName: p.michelin != .none ? "star.fill" : p.tags.contains(.greenChile) ? "flame.fill" : p.tags.contains(.brewpub) ? "mug.fill"
-                             : p.tags.contains(.skiDining) ? "mountain.2.fill" : "fork.knife")
+        // a star only where MICHELIN gave stars; Recommended and Bib Gourmand get a neutral rosette
+        let starred = p.michelin.rawValue >= Michelin.oneStar.rawValue
+        glyphImage = UIImage(systemName: starred ? "star.fill" : p.michelin != .none ? "rosette" : p.tags.contains(.greenChile) ? "flame.fill"
+                             : p.tags.contains(.brewpub) ? "mug.fill" : p.tags.contains(.skiDining) ? "mountain.2.fill" : "fork.knife")
         displayPriority = p.isHonored || classic ? .defaultHigh : .defaultLow
     }
 }
@@ -237,7 +264,12 @@ final class ClusterMarker: MKMarkerAnnotationView {
     override var annotation: MKAnnotation? {
         didSet {
             markerTintColor = UIColor(Theme.green)
-            glyphText = (annotation as? MKClusterAnnotation).map { "\($0.memberAnnotations.count)" }
+            let n = (annotation as? MKClusterAnnotation)?.memberAnnotations.count ?? 0
+            glyphText = "\(n)"
+            // VoiceOver read a bare number
+            isAccessibilityElement = true
+            accessibilityLabel = "\(n.formatted()) places"
+            accessibilityHint = "Zooms in to show them"
             displayPriority = .defaultHigh
         }
     }

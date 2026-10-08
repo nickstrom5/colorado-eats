@@ -2,17 +2,18 @@
 <html lang="en" data-base="/colorado-eats">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-BgJmbaINEQUFu7virxVOdfOaikMdCK8nl/GiBpr6iOc='; style-src 'sha256-JeEbKAxrCGuD2MWvCogkmSAwRUpKYVYtHGEElvImwTs='; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Breckenridge Restaurants, Green Chile &amp; Brewpubs Guide</title>
-<meta name="description" content="Green chile, brewpubs, MICHELIN and James Beard honorees and the oldest restaurants in and near Breckenridge, Colorado, checked in fall 2026, plus local places.">
+<title>Breckenridge, Colorado Ski Dining, Green Chile &amp; MICHELIN</title>
+<meta name="description" content="Breckenridge, Colorado: 5 ski-town restaurants, 1 hand-checked green chile spot, 2 MICHELIN or James Beard honorees and the oldest restaurants (back to 1879).">
 <link rel="canonical" href="https://nickstrom5.github.io/colorado-eats/cities/breckenridge.html">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="theme-color" content="#002868">
 <!-- Smart App Banner: once the App Store Connect record exists, replace APP_ID with the numeric Apple ID and uncomment.
 <meta name="apple-itunes-app" content="app-id=APP_ID">
 -->
-<meta property="og:title" content="Breckenridge Restaurants, Green Chile &amp; Brewpubs Guide">
-<meta property="og:description" content="Green chile, brewpubs, MICHELIN and James Beard honorees and the oldest restaurants in and near Breckenridge, Colorado, checked in fall 2026, plus local places.">
+<meta property="og:title" content="Breckenridge, Colorado Ski Dining, Green Chile &amp; MICHELIN">
+<meta property="og:description" content="Breckenridge, Colorado: 5 ski-town restaurants, 1 hand-checked green chile spot, 2 MICHELIN or James Beard honorees and the oldest restaurants (back to 1879).">
 <meta property="og:url" content="https://nickstrom5.github.io/colorado-eats/cities/breckenridge.html">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="Colorado Eats">
@@ -22,8 +23,8 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Colorado Eats: Green chile &amp; brewpub guide. Colorado restaurants, with hand-checked green chile, ski-town dining and the state&#x27;s oldest places.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Breckenridge Restaurants, Green Chile &amp; Brewpubs Guide">
-<meta name="twitter:description" content="Green chile, brewpubs, MICHELIN and James Beard honorees and the oldest restaurants in and near Breckenridge, Colorado, checked in fall 2026, plus local places.">
+<meta name="twitter:title" content="Breckenridge, Colorado Ski Dining, Green Chile &amp; MICHELIN">
+<meta name="twitter:description" content="Breckenridge, Colorado: 5 ski-town restaurants, 1 hand-checked green chile spot, 2 MICHELIN or James Beard honorees and the oldest restaurants (back to 1879).">
 <meta name="twitter:image" content="https://nickstrom5.github.io/colorado-eats/og.png">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23002868'/%3E%3Cpath d='M6 55 L12 51 L19 53 L26 46 L31 49 L37 43 L43 48 L50 45 L58 50 V58 Q58 64 52 64 H12 Q6 64 6 58 Z' fill='%23173A80'/%3E%3Cpath d='M17.3 17.9 C38.4 11.5 53.8 26.9 55 46.7 C53.1 48 48.6 47.4 44.8 44.8 C37.1 41 24.3 35.8 12.8 30.1 C8.3 27.5 10.2 19.2 17.3 17.9 Z' fill='%234E9A2E'/%3E%3Cellipse cx='16' cy='20' rx='5' ry='3' fill='%232F5E1A'/%3E%3Cpath d='M16 18 C14 14 13.5 11 16 9 C18 7.5 20 7.5 21.2 8' stroke='%235A8A2A' stroke-width='3' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
 <link rel="icon" type="image/png" sizes="32x32" href="/colorado-eats/favicon-32.png">
@@ -33,12 +34,13 @@
   :root {
     --bg: #f7f8fb; --surface: #fff; --surface2: #eef1f7; --rule: #dde2ec;
     --ink: #0f1b33; --ink2: #2a3a5a; --muted: #55627a;
-    --green: #002868; --green2: #1c3f86; --gold: #ffd700; --goldsoft: #fff1a6; --red: #bf0a30;
+    --green: #002868; --green2: #1c3f86; --on-green: #fff; --gold: #ffd700; --goldsoft: #fff1a6; --red: #bf0a30;
+    --focus: #002868;
     --radius: 16px;
     --display: "Avenir Next Condensed", "HelveticaNeue-CondensedBold", "Arial Narrow", system-ui, sans-serif;
   }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #0d1424; --surface: #141d31; --surface2: #1b2640; --rule: #2a3654; --ink: #eef1f8; --ink2: #cfd6e6; --muted: #9aa6bf; --green: #a9c1ff; --green2: #8aa8f0; --red: #ff6b86; }
+    :root { --bg: #0d1424; --surface: #141d31; --surface2: #1b2640; --rule: #2a3654; --ink: #eef1f8; --ink2: #cfd6e6; --muted: #9aa6bf; --green: #a9c1ff; --green2: #8aa8f0; --on-green: #0d1424; --red: #ff6b86; --focus: #ffd700; }
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
@@ -46,7 +48,7 @@
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
   body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
   a { color: var(--green); text-underline-offset: 2px; }
-  a:focus-visible, summary:focus-visible, button:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; border-radius: 6px; }
+  a:focus-visible, summary:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
   .skip { position: absolute; left: -9999px; top: 0; background: var(--gold); color: #0f1b33; padding: 10px 14px; font-weight: 700; z-index: 10; }
   .skip:focus { left: 8px; top: 8px; }
   .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
@@ -57,7 +59,7 @@
   header.site nav a:hover { color: var(--green); text-decoration: underline; }
   h1, h2 { font-family: var(--display); font-weight: 800; color: var(--green); letter-spacing: -.005em; }
   h1 { font-size: clamp(36px, 7.5vw, 56px); line-height: 1.02; margin: 0 0 16px; text-transform: uppercase; }
-  h1 .kicker { display: block; font: 700 15px/1.4 -apple-system, system-ui, sans-serif; letter-spacing: .06em; color: var(--muted); margin-bottom: 12px; }
+  .kicker { font: 700 15px/1.4 -apple-system, system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
   h2 { font-size: 32px; line-height: 1.1; margin: 0 0 10px; }
   h3 { font-size: 18px; margin: 0; line-height: 1.3; }
   .lede { font-size: 19px; color: var(--ink2); margin: 0 0 26px; }
@@ -90,6 +92,7 @@
   .cities { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; }
   .cities a { display: inline-block; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--rule); background: var(--surface); text-decoration: none; color: var(--ink); font-size: 15px; }
   .cities a:hover { border-color: var(--green); }
+  .cities a[aria-current] { border-color: var(--green); font-weight: 700; }
   details { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 2px 18px; margin-bottom: 10px; }
   summary { cursor: pointer; padding: 14px 0; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
   summary::-webkit-details-marker { display: none; }
@@ -103,19 +106,26 @@
   nav.crumbs li + li::before { content: "/"; margin-right: 6px; color: var(--rule); }
   nav.crumbs a { color: var(--muted); }
   .places { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
-  .places li { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 14px 16px; min-width: 0; overflow-wrap: anywhere; }
+  .places li { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 14px 16px; min-width: 0; overflow-wrap: anywhere; scroll-margin-top: 12px; }
+  .places li:target { border-color: var(--green); box-shadow: 0 0 0 2px var(--green); }
   .places .where { margin: 2px 0 0; font-size: 15px; color: var(--muted); }
   .places .facts { margin: 8px 0 0; font-size: 15px; color: var(--ink2); }
   .places .facts b { color: var(--ink); font-weight: 600; }
   .places .note { margin: 6px 0 0; font-size: 15px; color: var(--ink2); }
+  .places .fine { margin: 6px 0 0; }
   .places .link { font-size: 14px; }
   .tag { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; background: var(--goldsoft); color: #0f1b33; border-radius: 6px; padding: 1px 6px; margin-right: 4px; }
   .tag-mi { background: #bf0a30; color: #fff; }
   .tag-jb { background: #002868; color: #fff; }
   .toc { columns: 2; padding-left: 20px; margin: 0; }
   table { border-collapse: collapse; width: 100%; font-size: 15px; }
-  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--rule); }
-  td.n { text-align: right; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+  .tbl { overflow-x: auto; }
+  .tbl th[scope=row] { font-weight: 600; overflow-wrap: anywhere; }
+  .tbl .addr { display: block; font-size: 13px; font-weight: 400; color: var(--muted); }
+  .res { display: inline-block; font: 800 12px/1.4 -apple-system, system-ui, sans-serif; letter-spacing: .04em; text-transform: uppercase; padding: 2px 6px; border-radius: 6px; }
+  .res-0 { background: #ddefe3; color: #0e5a2b; } .res-1 { background: #ffe9c2; color: #6b3a00; } .res-2 { background: #f9d5db; color: #7a0019; }
   .fine { font-size: 14px; color: var(--muted); }
   .legal h2 { font-size: 26px; margin-top: 28px; }
   .legal p, .legal li { color: var(--ink2); }
@@ -129,16 +139,22 @@
     .toc { columns: 1; }
     header.site { flex-direction: column; align-items: flex-start; }
     header.site nav { justify-content: flex-start; }
+    header.site nav a, footer nav a, nav.crumbs a { display: inline-block; padding: 10px 0; }
+    footer nav { gap: 0 18px; }
+    th, td { padding: 8px 4px; font-size: 14px; }
+    .tbl th, .tbl td { padding: 8px 3px; font-size: 13px; }
+    .res { font-size: 11px; letter-spacing: .02em; padding: 2px 4px; }
+    nav.crumbs ol { align-items: center; }
   }
 </style>
 <script type="application/ld+json">
 {
  "@context": "https://schema.org",
  "@type": "Article",
- "headline": "Breckenridge green chile, brewpubs and restaurants",
- "description": "Green chile, brewpubs, MICHELIN and James Beard honorees and the oldest restaurants in and near Breckenridge, Colorado, checked in fall 2026, plus local places.",
+ "headline": "Breckenridge ski town dining and green chile, and more",
+ "description": "Breckenridge, Colorado: 5 ski-town restaurants, 1 hand-checked green chile spot, 2 MICHELIN or James Beard honorees and the oldest restaurants (back to 1879).",
  "datePublished": "2026-10-05",
- "dateModified": "2026-10-05",
+ "dateModified": "2026-10-07",
  "inLanguage": "en",
  "mainEntityOfPage": "https://nickstrom5.github.io/colorado-eats/cities/breckenridge.html",
  "image": "https://nickstrom5.github.io/colorado-eats/og.png",
@@ -173,7 +189,7 @@
    "@type": "ListItem",
    "position": 2,
    "name": "Cities",
-   "item": "https://nickstrom5.github.io/colorado-eats/#cities"
+   "item": "https://nickstrom5.github.io/colorado-eats/cities/"
   },
   {
    "@type": "ListItem",
@@ -185,7 +201,7 @@
 }
 </script>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"ItemList","name":"Green chile, brewpubs and honored restaurants near Breckenridge","url":"https://nickstrom5.github.io/colorado-eats/cities/breckenridge.html","numberOfItems":7,"itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"Restaurant","name":"ODI Old Dillon Inn","address":{"@type":"PostalAddress","streetAddress":"325 Blue River Pkwy","addressLocality":"Silverthorne","addressRegion":"CO","addressCountry":"US","postalCode":"80498"},"url":"https://theolddilloninn.com/","servesCuisine":"Bar & Pub"}},{"@type":"ListItem","position":2,"item":{"@type":"Restaurant","name":"Briar Rose Chophouse and Saloon","address":{"@type":"PostalAddress","streetAddress":"109 Lincoln Ave","addressLocality":"Breckenridge","addressRegion":"CO","addressCountry":"US","postalCode":"80424"},"url":"https://www.briarrosechophouse.com/","servesCuisine":"Steakhouse"}},{"@type":"ListItem","position":3,"item":{"@type":"Restaurant","name":"Radicato","address":{"@type":"PostalAddress","streetAddress":"137 South Main St","addressLocality":"Breckenridge","addressRegion":"CO","addressCountry":"US","postalCode":"80424"},"url":"http://radicatobreck.com","servesCuisine":"Italian"}},{"@type":"ListItem","position":4,"item":{"@type":"Restaurant","name":"Rootstalk Breckenridge","address":{"@type":"PostalAddress","streetAddress":"207 N Main St","addressLocality":"Breckenridge","addressRegion":"CO","addressCountry":"US","postalCode":"80424"},"url":"http://www.rootstalkbreck.com/","servesCuisine":"American & Other"}},{"@type":"ListItem","position":5,"item":{"@type":"Restaurant","name":"The Gold Pan Saloon","address":{"@type":"PostalAddress","streetAddress":"103 N Main St","addressLocality":"Breckenridge","addressRegion":"CO","addressCountry":"US","postalCode":"80424"},"url":"https://thegoldpansaloon.com/","foundingDate":"1879","servesCuisine":"Bar & Pub"}},{"@type":"ListItem","position":6,"item":{"@type":"Restaurant","name":"Butterhorn Bakery & Cafe","address":{"@type":"PostalAddress","streetAddress":"408 E Main St","addressLocality":"Fris","addressRegion":"CO","addressCountry":"US","postalCode":"80443"},"servesCuisine":"Bakery & Sweets"}},{"@type":"ListItem","position":7,"item":{"@type":"Restaurant","name":"The Mint - Silverthor","address":{"@type":"PostalAddress","streetAddress":"347 Blue River Pkwy","addressLocality":"Silverthorne","addressRegion":"CO","addressCountry":"US","postalCode":"80498"},"url":"https://mintsteakhouse.com/","servesCuisine":"American & Other"}}]}
+{"@context":"https://schema.org","@type":"ItemList","name":"Breckenridge: ski town dining, green chile, MICHELIN & James Beard, oldest restaurants and game & steakhouses","url":"https://nickstrom5.github.io/colorado-eats/cities/breckenridge.html","numberOfItems":7,"itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"Restaurant","name":"Old Dillon Inn","url":"https://nickstrom5.github.io/colorado-eats/cities/breckenridge.html#old-dillon-inn-80498","address":{"@type":"PostalAddress","streetAddress":"325 Blue River Pkwy","addressLocality":"Silverthorne","addressRegion":"CO","postalCode":"80498","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":39.63096,"longitude":-106.07402},"sameAs":"https://theolddilloninn.com/","servesCuisine":"Bar & Pub"}},{"@type":"ListItem","position":2,"item":{"@type":"Restaurant","name":"Briar Rose Chophouse & Saloon","url":"https://nickstrom5.github.io/colorado-eats/cities/breckenridge.html#briar-rose-chophouse-saloon-80424","address":{"@type":"PostalAddress","streetAddress":"109 Lincoln Ave","addressLocality":"Breckenridge","addressRegion":"CO","postalCode":"80424","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":39.48212,"longitude":-106.04538},"sameAs":"https://www.briarrosechophouse.com/","servesCuisine":"Steakhouse"}},{"@type":"ListItem","position":3,"item":{"@type":"Restaurant","name":"Gold Pan Saloon","url":"https://nickstrom5.github.io/colorado-eats/cities/breckenridge.html#gold-pan-saloon-80424","address":{"@type":"PostalAddress","streetAddress":"103 N Main St","addressLocality":"Breckenridge","addressRegion":"CO","postalCode":"80424","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":39.48249,"longitude":-106.04634},"sameAs":"https://thegoldpansaloon.com/","foundingDate":"1879","servesCuisine":"Bar & Pub"}},{"@type":"ListItem","position":4,"item":{"@type":"Restaurant","name":"Radicato","url":"https://nickstrom5.github.io/colorado-eats/cities/breckenridge.html#radicato-80424","address":{"@type":"PostalAddress","streetAddress":"137 South Main St","addressLocality":"Breckenridge","addressRegion":"CO","postalCode":"80424","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":39.48087,"longitude":-106.04641},"servesCuisine":"Italian"}},{"@type":"ListItem","position":5,"item":{"@type":"Restaurant","name":"Rootstalk","url":"https://nickstrom5.github.io/colorado-eats/cities/breckenridge.html#rootstalk-80424","address":{"@type":"PostalAddress","streetAddress":"207 N Main St","addressLocality":"Breckenridge","addressRegion":"CO","postalCode":"80424","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":39.4841,"longitude":-106.04628}}},{"@type":"ListItem","position":6,"item":{"@type":"Restaurant","name":"Butterhorn Bakery & Cafe","url":"https://nickstrom5.github.io/colorado-eats/cities/breckenridge.html#butterhorn-bakery-cafe-80443","address":{"@type":"PostalAddress","streetAddress":"408 E Main St","addressLocality":"Frisco","addressRegion":"CO","postalCode":"80443","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":39.57585,"longitude":-106.09701},"servesCuisine":"Bakery & Sweets"}},{"@type":"ListItem","position":7,"item":{"@type":"Restaurant","name":"The Historic Mint","url":"https://nickstrom5.github.io/colorado-eats/cities/breckenridge.html#the-historic-mint-80498","address":{"@type":"PostalAddress","streetAddress":"347 Blue River Pkwy","addressLocality":"Silverthorne","addressRegion":"CO","postalCode":"80498","addressCountry":"US"},"geo":{"@type":"GeoCoordinates","latitude":39.63133,"longitude":-106.07417},"sameAs":"https://mintsteakhouse.com/"}}]}
 </script>
 </head>
 <body>
@@ -197,24 +213,26 @@
       <a href="/colorado-eats/colorado-green-chile.html">Green chile</a>
       <a href="/colorado-eats/colorado-brewpubs.html">Brewpubs</a>
       <a href="/colorado-eats/colorado-ski-town-restaurants.html">Ski towns</a>
-      <a href="/colorado-eats/#cities">Cities</a>
+      <a href="/colorado-eats/cities/">Cities</a>
       <a href="/colorado-eats/explore/">Search</a>
     </nav>
   </header>
-<nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/colorado-eats/">Home</a></li><li><a href="/colorado-eats/#cities">Cities</a></li><li aria-current="page">Breckenridge</li></ol></nav>
+<nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/colorado-eats/">Home</a></li><li><a href="/colorado-eats/cities/">Cities</a></li><li aria-current="page">Breckenridge</li></ol></nav>
   <main id="main">
   <section class="hero">
-    <h1><span class="kicker">Colorado Eats · Breckenridge, Colorado</span>Breckenridge green chile, brewpubs &amp; restaurants</h1>
-    <p class="lede">In and around Breckenridge: 1 green chile spots, 2 honored restaurants and 5 ski-town restaurants, each checked in fall 2026. The Colorado Eats app has all 133 restaurants, cafés, bars and bakeries in Breckenridge and sorts them by distance from you.</p>
-    <div class="cta-row"><a class="btn store-btn" href="mailto:work-with-nick@gmail.com?subject=Colorado%20Eats%20early%20access&amp;body=Send%20me%20the%20TestFlight%20link."><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.5 2-3.7 2.1-3.8-1.2-1.7-3-1.9-3.6-2-1.5-.2-3 .9-3.8.9-.8 0-2-.9-3.3-.9-1.7 0-3.3 1-4.1 2.5-1.8 3.1-.5 7.6 1.3 10.1.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.3.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.7-1-2.9-4zM14 5.2c.7-.8 1.2-2 1-3.2-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1.1 3.1 1.1.1 2.3-.6 3-1.4z"/></svg><span class="store-label">Get early access</span></a><span class="pill store-note">Free for iPhone and iPad. Coming to the App Store.</span></div>
+    <p class="kicker">Colorado Eats · Breckenridge, Colorado</p>
+    <h1>Breckenridge ski town dining and green chile, and more</h1>
+    <p class="lede">In and around Breckenridge: 1 green chile spot, 2 MICHELIN or James Beard honorees, 5 ski-town restaurants and 3 game and steak places. The green chile, ski-town and game and steak lists were hand-checked in fall 2026 against 2025–26 sources. The Colorado Eats app lists 120 restaurants, cafés, bars and bakeries in Breckenridge and sorts them by distance from you.</p>
+    <div class="cta-row"><a class="btn store-btn" href="mailto:work-with-nick@gmail.com?subject=Colorado%20Eats%20early%20access&amp;body=Send%20me%20the%20TestFlight%20link."><span class="store-label">Get early access</span></a><span class="pill store-note">Free iPhone and iPad app, coming soon to the App Store.</span></div>
+    
   </section>
-<section id="green-chile"><h2>Green chile in and near Breckenridge</h2><p class="sub">Places in Breckenridge first, then others within 12 miles, closest first. <a href="/colorado-eats/colorado-green-chile.html">All 47 Colorado green chile spots</a>.</p><ol class="places"><li><h3>ODI Old Dillon Inn</h3><p class="where">325 Blue River Pkwy, Silverthorne · 11 mi from Breckenridge</p><p class="facts"><span class="tag">Green chile</span><span class="tag">Game &amp; steak</span> <b>On the menu:</b> pork poblano green chile, breakfast burrito smothered in green chile, huevos rancheros, Prospector elk stew, tacos and enchiladas</p><p class="note">Revived Summit County saloon, reopened in 2026 after nearly 20 years dark, serving poblano green chile, smothered burritos and elk stew.</p><p class="link"><a href="https://theolddilloninn.com/" rel="noopener nofollow">theolddilloninn.com</a></p></li></ol></section>
-<section id="ski"><h2>Breckenridge ski town dining</h2><p class="sub">Hand-checked restaurants in and around Breckenridge. Seasonal places are marked. <a href="/colorado-eats/colorado-ski-town-restaurants.html">All 45 ski town restaurants</a>.</p><ol class="places"><li><h3>Briar Rose Chophouse and Saloon</h3><p class="where">109 Lincoln Ave, Breckenridge</p><p class="facts"><span class="tag">Game &amp; steak</span> <b>On the menu:</b> Cervena elk medallions, buffalo cowboy ribeye, Colorado double-cut lamb chops, wild game sausage trio, filet, New York strip</p><p class="note">Downtown Breckenridge chophouse and saloon pairing aged steaks with elk, buffalo and Colorado lamb.</p><p class="link"><a href="https://www.briarrosechophouse.com/" rel="noopener nofollow">briarrosechophouse.com</a></p></li><li><h3>Radicato</h3><p class="where">137 South Main St, Breckenridge</p><p class="facts"><span class="tag tag-mi">MICHELIN Recommended</span></p><p class="link"><a href="http://radicatobreck.com" rel="noopener nofollow">radicatobreck.com</a></p></li><li><h3>Rootstalk Breckenridge</h3><p class="where">207 N Main St, Breckenridge</p><p class="facts"><span class="tag tag-mi">MICHELIN Recommended</span><span class="tag tag-jb">James Beard winner</span></p><p class="link"><a href="http://www.rootstalkbreck.com/" rel="noopener nofollow">rootstalkbreck.com</a></p></li><li><h3>The Gold Pan Saloon</h3><p class="where">103 N Main St, Breckenridge</p><p class="facts"> <b>On the menu:</b> Breckie burger, lamb French dip with goat cheese · <b>Since</b> 1879</p><p class="note">Breckenridge&#x27;s longest-running saloon, in its 1879 building on Main Street, now pouring drinks and serving burgers and lamb French dips.</p><p class="link"><a href="https://thegoldpansaloon.com/" rel="noopener nofollow">thegoldpansaloon.com</a></p></li><li><h3>Butterhorn Bakery &amp; Cafe</h3><p class="where">408 E Main St, Fris · 7 mi from Breckenridge</p><p class="facts"> <b>On the menu:</b> Burrito Grande, breakfast burritos, scratch-baked pastries</p><p class="note">Frisco Main Street bakery and breakfast cafe, a locals&#x27; stop for pastries and big breakfast burritos before the lifts.</p></li></ol></section>
-<section id="honors"><h2>MICHELIN &amp; James Beard in Breckenridge</h2><p class="sub">MICHELIN Guide Colorado 2026 and James Beard Foundation honorees, 2023–26. Honors are facts, not ratings. <a href="/colorado-eats/colorado-michelin-james-beard.html">All 85 in Colorado</a>.</p><ol class="places"><li><h3>Rootstalk Breckenridge</h3><p class="where">207 N Main St, Breckenridge</p><p class="facts"><span class="tag tag-mi">MICHELIN Recommended</span><span class="tag tag-jb">James Beard winner</span></p><p class="link"><a href="http://www.rootstalkbreck.com/" rel="noopener nofollow">rootstalkbreck.com</a></p></li><li><h3>Radicato</h3><p class="where">137 South Main St, Breckenridge</p><p class="facts"><span class="tag tag-mi">MICHELIN Recommended</span></p><p class="link"><a href="http://radicatobreck.com" rel="noopener nofollow">radicatobreck.com</a></p></li></ol></section>
-<section id="game"><h2>Game &amp; steakhouses near Breckenridge</h2><p class="sub">Bison, elk, trout and steak, hand-checked, within 12 miles. <a href="/colorado-eats/colorado-game-steakhouses.html">All 39 in Colorado</a>.</p><ol class="places"><li><h3>Briar Rose Chophouse and Saloon</h3><p class="where">109 Lincoln Ave, Breckenridge</p><p class="facts"><span class="tag">Game &amp; steak</span> <b>On the menu:</b> Cervena elk medallions, buffalo cowboy ribeye, Colorado double-cut lamb chops, wild game sausage trio, filet, New York strip</p><p class="note">Downtown Breckenridge chophouse and saloon pairing aged steaks with elk, buffalo and Colorado lamb.</p><p class="link"><a href="https://www.briarrosechophouse.com/" rel="noopener nofollow">briarrosechophouse.com</a></p></li><li><h3>ODI Old Dillon Inn</h3><p class="where">325 Blue River Pkwy, Silverthorne · 11 mi from Breckenridge</p><p class="facts"><span class="tag">Green chile</span><span class="tag">Game &amp; steak</span> <b>On the menu:</b> pork poblano green chile, breakfast burrito smothered in green chile, huevos rancheros, Prospector elk stew, tacos and enchiladas</p><p class="note">Revived Summit County saloon, reopened in 2026 after nearly 20 years dark, serving poblano green chile, smothered burritos and elk stew.</p><p class="link"><a href="https://theolddilloninn.com/" rel="noopener nofollow">theolddilloninn.com</a></p></li><li><h3>The Mint - Silverthor</h3><p class="where">347 Blue River Pkwy, Silverthorne · 11 mi from Breckenridge</p><p class="facts"><span class="tag">Game &amp; steak</span> <b>On the menu:</b> grill-your-own steaks, seafood, salad bar</p><p class="note">Steakhouse in a relocated mining-era saloon building where diners grill their own steaks over a lava-rock grill.</p><p class="link"><a href="https://mintsteakhouse.com/" rel="noopener nofollow">mintsteakhouse.com</a></p></li></ol></section>
-<section id="oldest"><h2>Oldest restaurants in Breckenridge</h2><p class="sub">Founding years at the current address, checked against the restaurant's own history page or local news, oldest first.</p><ol class="places"><li><h3>The Gold Pan Saloon</h3><p class="where">103 N Main St, Breckenridge</p><p class="facts"> <b>On the menu:</b> Breckie burger, lamb French dip with goat cheese · <b>Since</b> 1879</p><p class="note">Breckenridge&#x27;s longest-running saloon, in its 1879 building on Main Street, now pouring drinks and serving burgers and lamb French dips.</p><p class="link"><a href="https://thegoldpansaloon.com/" rel="noopener nofollow">thegoldpansaloon.com</a></p></li></ol></section>
-<section id="cuisines"><h2>What Breckenridge eats</h2><p class="sub">The most common kinds of restaurant among the 133 in Breckenridge, from open map data and the state and city license lists.</p><table><thead><tr><th scope="col">Kind of place</th><th scope="col" class="n">Places</th></tr></thead><tbody><tr><td>Bar &amp; Pub</td><td class="n">39</td></tr><tr><td>Coffee &amp; Café</td><td class="n">13</td></tr><tr><td>Bakery &amp; Sweets</td><td class="n">9</td></tr><tr><td>Pizza</td><td class="n">8</td></tr><tr><td>Mexican</td><td class="n">7</td></tr><tr><td>German &amp; European</td><td class="n">5</td></tr><tr><td>Seafood</td><td class="n">4</td></tr><tr><td>Italian</td><td class="n">4</td></tr><tr><td>Vietnamese</td><td class="n">3</td></tr><tr><td>Steakhouse</td><td class="n">3</td></tr></tbody></table></section>
-<section id="more"><h2>More Colorado cities and towns</h2><ul class="cities"><li><a href="/colorado-eats/cities/denver.html">Denver</a></li><li><a href="/colorado-eats/cities/colorado-springs.html">Colorado Springs</a></li><li><a href="/colorado-eats/cities/aurora.html">Aurora</a></li><li><a href="/colorado-eats/cities/fort-collins.html">Fort Collins</a></li><li><a href="/colorado-eats/cities/boulder.html">Boulder</a></li><li><a href="/colorado-eats/cities/pueblo.html">Pueblo</a></li><li><a href="/colorado-eats/cities/lakewood.html">Lakewood</a></li><li><a href="/colorado-eats/cities/longmont.html">Longmont</a></li><li><a href="/colorado-eats/cities/greeley.html">Greeley</a></li><li><a href="/colorado-eats/cities/golden.html">Golden</a></li><li><a href="/colorado-eats/cities/grand-junction.html">Grand Junction</a></li><li><a href="/colorado-eats/cities/durango.html">Durango</a></li><li><a href="/colorado-eats/cities/aspen.html">Aspen</a></li><li><a href="/colorado-eats/cities/breckenridge.html">Breckenridge</a></li><li><a href="/colorado-eats/cities/steamboat-springs.html">Steamboat Springs</a></li><li><a href="/colorado-eats/cities/vail.html">Vail</a></li></ul></section>
+<section id="green-chile"><h2>Green chile in and near Breckenridge</h2><p class="sub">Places in Breckenridge first, then others within 12 miles, closest first, hand-checked in fall 2026 against a 2025–26 source. Statewide: <a href="/colorado-eats/colorado-green-chile.html">47 Colorado green chile spots</a>.</p><ol class="places"><li id="old-dillon-inn-80498"><h3>Old Dillon Inn</h3><p class="where">325 Blue River Pkwy, Silverthorne · 11 mi from Breckenridge</p><p class="facts"><span class="tag">Green chile</span><span class="tag">Game &amp; steak</span> <b>On the menu:</b> pork poblano green chile, breakfast burrito smothered in green chile, huevos rancheros, Prospector elk stew, tacos and enchiladas</p><p class="note">Revived Summit County saloon, reopened in 2026 after nearly 20 years dark, serving poblano green chile, smothered burritos and elk stew.</p><p class="link"><a href="https://theolddilloninn.com/" rel="noopener nofollow">theolddilloninn.com</a></p></li></ol></section>
+<section id="ski"><h2>Breckenridge ski town dining</h2><p class="sub">Places in Breckenridge first, then others within 8 miles, closest first, hand-checked in fall 2026 against a 2025–26 source. Seasonal places are marked. Statewide: <a href="/colorado-eats/colorado-ski-town-restaurants.html">46 Colorado ski town restaurants</a>.</p><ol class="places"><li id="briar-rose-chophouse-saloon-80424"><h3>Briar Rose Chophouse &amp; Saloon</h3><p class="where">109 Lincoln Ave, Breckenridge</p><p class="facts"><span class="tag">Game &amp; steak</span> <b>On the menu:</b> Cervena elk medallions, buffalo cowboy ribeye, Colorado double-cut lamb chops, wild game sausage trio, filet, New York strip</p><p class="note">Downtown Breckenridge chophouse and saloon pairing aged steaks with elk, buffalo and Colorado lamb.</p><p class="link"><a href="https://www.briarrosechophouse.com/" rel="noopener nofollow">briarrosechophouse.com</a></p></li><li id="gold-pan-saloon-80424"><h3>Gold Pan Saloon</h3><p class="where">103 N Main St, Breckenridge</p><p class="facts"> <b>On the menu:</b> Breckie burger, lamb French dip with goat cheese · <b>Since</b> 1879</p><p class="note">Breckenridge&#x27;s longest-running saloon, in its 1879 building on Main Street, now pouring drinks and serving burgers and lamb French dips.</p><p class="link"><a href="https://thegoldpansaloon.com/" rel="noopener nofollow">thegoldpansaloon.com</a></p></li><li id="radicato-80424"><h3>Radicato</h3><p class="where">137 South Main St, Breckenridge</p><p class="facts"><span class="tag tag-mi">MICHELIN Recommended</span></p></li><li id="rootstalk-80424"><h3>Rootstalk</h3><p class="where">207 N Main St, Breckenridge</p><p class="facts"><span class="tag tag-mi">MICHELIN Recommended</span><span class="tag tag-jb">James Beard winner</span></p></li><li id="butterhorn-bakery-cafe-80443"><h3>Butterhorn Bakery &amp; Cafe</h3><p class="where">408 E Main St, Frisco · 7 mi from Breckenridge</p><p class="facts"> <b>On the menu:</b> Burrito Grande, breakfast burritos, scratch-baked pastries</p><p class="note">Frisco Main Street bakery and breakfast cafe, a locals&#x27; stop for pastries and big breakfast burritos before the lifts.</p></li></ol></section>
+<section id="honors"><h2>MICHELIN &amp; James Beard in Breckenridge</h2><p class="sub">MICHELIN Guide Colorado 2026 and James Beard Foundation honorees, 2023–26. Honors are facts, not ratings. Statewide: <a href="/colorado-eats/colorado-michelin-james-beard.html">85 Colorado MICHELIN and James Beard restaurants</a>.</p><ol class="places"><li><h3>Rootstalk</h3><p class="where">207 N Main St, Breckenridge</p><p class="facts"><span class="tag tag-mi">MICHELIN Recommended</span><span class="tag tag-jb">James Beard winner</span></p><p class="fine">James Beard: Best Chef: Mountain winner 2024 (Matt Vawter)</p></li><li><h3>Radicato</h3><p class="where">137 South Main St, Breckenridge</p><p class="facts"><span class="tag tag-mi">MICHELIN Recommended</span></p></li></ol></section>
+<section id="game"><h2>Game &amp; steakhouses near Breckenridge</h2><p class="sub">Places in Breckenridge first, then others within 12 miles, closest first: bison, elk, trout and steak, hand-checked in fall 2026 against a 2025–26 source. Statewide: <a href="/colorado-eats/colorado-game-steakhouses.html">39 Colorado game and steak places</a>.</p><ol class="places"><li><h3>Briar Rose Chophouse &amp; Saloon</h3><p class="where">109 Lincoln Ave, Breckenridge</p><p class="facts"><span class="tag">Game &amp; steak</span> <b>On the menu:</b> Cervena elk medallions, buffalo cowboy ribeye, Colorado double-cut lamb chops, wild game sausage trio, filet, New York strip</p><p class="note">Downtown Breckenridge chophouse and saloon pairing aged steaks with elk, buffalo and Colorado lamb.</p><p class="link"><a href="https://www.briarrosechophouse.com/" rel="noopener nofollow">briarrosechophouse.com</a></p></li><li><h3>Old Dillon Inn</h3><p class="where">325 Blue River Pkwy, Silverthorne · 11 mi from Breckenridge</p><p class="facts"><span class="tag">Green chile</span><span class="tag">Game &amp; steak</span> <b>On the menu:</b> pork poblano green chile, breakfast burrito smothered in green chile, huevos rancheros, Prospector elk stew, tacos and enchiladas</p><p class="note">Revived Summit County saloon, reopened in 2026 after nearly 20 years dark, serving poblano green chile, smothered burritos and elk stew.</p><p class="link"><a href="https://theolddilloninn.com/" rel="noopener nofollow">theolddilloninn.com</a></p></li><li id="the-historic-mint-80498"><h3>The Historic Mint</h3><p class="where">347 Blue River Pkwy, Silverthorne · 11 mi from Breckenridge</p><p class="facts"><span class="tag">Game &amp; steak</span> <b>On the menu:</b> grill-your-own steaks, seafood, salad bar</p><p class="note">Steakhouse in a relocated mining-era saloon building where diners grill their own steaks over a lava-rock grill.</p><p class="link"><a href="https://mintsteakhouse.com/" rel="noopener nofollow">mintsteakhouse.com</a></p></li></ol></section>
+<section id="oldest"><h2>Oldest restaurants in Breckenridge</h2><p class="sub">Founding years at the current address, as each place or a published history documents them, oldest first. The note under each says what the year rests on. Statewide: <a href="/colorado-eats/colorado-oldest-restaurants.html">Colorado's oldest restaurants</a>.</p><ol class="places"><li><h3>Gold Pan Saloon</h3><p class="where">103 N Main St, Breckenridge</p><p class="facts"> <b>On the menu:</b> Breckie burger, lamb French dip with goat cheese · <b>Since</b> 1879</p><p class="note">Breckenridge&#x27;s longest-running saloon, in its 1879 building on Main Street, now pouring drinks and serving burgers and lamb French dips.</p><p class="fine">A tent saloon (Long&#x27;s Saloon) operated here from 1861; the permanent building went up in 1879, and the Gold Pan name dates to 1953.</p><p class="link"><a href="https://thegoldpansaloon.com/" rel="noopener nofollow">thegoldpansaloon.com</a></p></li></ol></section>
+<section id="cuisines"><h2>What Breckenridge eats</h2><p class="sub">The most common kinds of restaurant among the 120 in Breckenridge, from open map data and the state and city license lists.</p><table><thead><tr><th scope="col">Kind of place</th><th scope="col" class="n">Places</th></tr></thead><tbody><tr><td>Bar &amp; Pub</td><td class="n">36</td></tr><tr><td>Coffee &amp; Café</td><td class="n">13</td></tr><tr><td>Bakery &amp; Sweets</td><td class="n">9</td></tr><tr><td>Pizza</td><td class="n">8</td></tr><tr><td>Mexican</td><td class="n">7</td></tr><tr><td>Seafood</td><td class="n">4</td></tr><tr><td>Italian</td><td class="n">4</td></tr><tr><td>German &amp; European</td><td class="n">4</td></tr><tr><td>Breakfast &amp; Diner</td><td class="n">3</td></tr><tr><td>Steakhouse</td><td class="n">3</td></tr></tbody></table></section>
+<section id="more"><h2>More Colorado cities and towns</h2><ul class="cities"><li><a href="/colorado-eats/cities/denver.html">Denver</a></li><li><a href="/colorado-eats/cities/colorado-springs.html">Colorado Springs</a></li><li><a href="/colorado-eats/cities/aurora.html">Aurora</a></li><li><a href="/colorado-eats/cities/fort-collins.html">Fort Collins</a></li><li><a href="/colorado-eats/cities/boulder.html">Boulder</a></li><li><a href="/colorado-eats/cities/pueblo.html">Pueblo</a></li><li><a href="/colorado-eats/cities/lakewood.html">Lakewood</a></li><li><a href="/colorado-eats/cities/longmont.html">Longmont</a></li><li><a href="/colorado-eats/cities/greeley.html">Greeley</a></li><li><a href="/colorado-eats/cities/golden.html">Golden</a></li><li><a href="/colorado-eats/cities/grand-junction.html">Grand Junction</a></li><li><a href="/colorado-eats/cities/durango.html">Durango</a></li><li><a href="/colorado-eats/cities/aspen.html">Aspen</a></li><li><a href="/colorado-eats/cities/breckenridge.html" aria-current="page">Breckenridge</a></li><li><a href="/colorado-eats/cities/steamboat-springs.html">Steamboat Springs</a></li><li><a href="/colorado-eats/cities/vail.html">Vail</a></li></ul><p class="fine"><a href="/colorado-eats/cities/">All city pages</a></p></section>
   </main>
   <footer>
     <nav aria-label="Footer">
@@ -223,20 +241,24 @@
       <a href="/colorado-eats/colorado-green-chile.html">Colorado green chile</a>
       <a href="/colorado-eats/colorado-brewpubs.html">Colorado brewpubs</a>
       <a href="/colorado-eats/colorado-ski-town-restaurants.html">Ski town dining</a>
+      <a href="/colorado-eats/colorado-game-steakhouses.html">Game &amp; steakhouses</a>
       <a href="/colorado-eats/colorado-michelin-james-beard.html">MICHELIN &amp; James Beard</a>
       <a href="/colorado-eats/colorado-oldest-restaurants.html">Oldest restaurants</a>
+      <a href="/colorado-eats/boulder-county-restaurant-inspections.html">Boulder County inspections</a>
+      <a href="/colorado-eats/cities/">Cities and towns</a>
       <a href="/colorado-eats/privacy.html">Privacy policy</a>
       <a href="/colorado-eats/terms.html">Terms of use</a>
       <a href="mailto:work-with-nick@gmail.com">Email us</a>
     </nav>
-    <p>Place data: hand-checked research by Colorado Eats (fall 2026); Overture Maps Foundation (CDLA Permissive 2.0); © OpenStreetMap contributors (ODbL); Colorado Department of Revenue liquor licenses and Boulder County Public Health inspections (data.colorado.gov, public domain); City and County of Denver Open Data. Not affiliated with or endorsed by any restaurant, team, chain or government agency, the MICHELIN Guide or the James Beard Foundation. MICHELIN and the MICHELIN Guide are trademarks of Michelin; James Beard Foundation and James Beard Award are trademarks of the James Beard Foundation. Places open and close, so check before you go.</p>
+    <p>Place data: hand-checked research by Colorado Eats (fall 2026); Overture Maps Foundation places (CDLA Permissive 2.0) and addresses (open address sources under permissive licenses, docs.overturemaps.org/attribution); © OpenStreetMap contributors (ODbL); U.S. Census Bureau Geocoder (public domain); Colorado Department of Revenue liquor licenses and Boulder County Public Health inspections (data.colorado.gov, public domain); City and County of Denver Open Data. Not affiliated with or endorsed by any restaurant, team, chain or government agency, the MICHELIN Guide or the James Beard Foundation. MICHELIN and the MICHELIN Guide are trademarks of Michelin; James Beard Foundation and James Beard Award are trademarks of the James Beard Foundation. Places open and close, so check before you go.</p>
     <p>© 2026 Colorado Eats.</p>
   </footer>
 </div>
 <script>
   // Once the App Store listing exists, paste its URL here (looks like https://apps.apple.com/app/id123456789).
-  // Every button switches from "Get early access" to "Download on the App Store" automatically.
-  // Also fill in the apple-itunes-app meta tag in <head> on every page (re-run scripts/make-site.py after editing it there).
+  // Every button switches from "Get early access" to "Download on the App Store" automatically (then use Apple's badge artwork,
+  // see store_button() in scripts/make-site.py). Also fill in the apple-itunes-app meta tag in <head> on every page, and put the
+  // MobileApplication "offers" back in the landing page's JSON-LD (re-run scripts/make-site.py after editing it there).
   var APP_STORE_URL = "";
   if (APP_STORE_URL) {
     document.querySelectorAll(".store-btn").forEach(function (b) { b.href = APP_STORE_URL; b.rel = "noopener"; });

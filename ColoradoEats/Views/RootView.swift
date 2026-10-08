@@ -45,6 +45,21 @@ struct TabRoot: View {
             NavigationStack { AboutView() }
                 .tabItem { Label("About", systemImage: "info.circle") }.tag(AppModel.Tab.about)
         }
+        .onAppear(perform: restore)
+        .onChange(of: model.guidesPath) { model.followPath() }
+    }
+
+    /// Coming from the iPad layout (Split View, Stage Manager): reopen the list and place that were open there.
+    private func restore() {
+        switch model.tab {
+        case .guides:
+            let path = model.compactPath
+            if model.guidesPath != path { model.guidesPath = path }
+        case .map, .saved:
+            model.handoffPlace = model.selectedPlace
+        case .about:
+            break
+        }
     }
 }
 
@@ -77,14 +92,17 @@ struct SplitRoot: View {
             .navigationTitle("Colorado Eats")
         } content: {
             switch sidebar {
-            case .guide(let g): GuideListView(guide: g, selection: $model.selectedPlace)
+            // .id: each guide starts fresh (its own sort, search and location request), not with the last guide's state
+            case .guide(let g): GuideListView(guide: g, selection: $model.selectedPlace).id(g)
             case .map: MapScreen(selection: $model.selectedPlace)
             case .saved: SavedView(selection: $model.selectedPlace)
-            case .about: AboutView()
-            case .home, nil: HomeView()
+            // About is a page to read, so it gets the wide column; Home stays beside it
+            case .home, .about, nil: HomeView()
             }
         } detail: {
-            if let p = model.selectedPlace {
+            if sidebar == .about {
+                NavigationStack { AboutView() }
+            } else if let p = model.selectedPlace {
                 NavigationStack { PlaceDetailView(place: p) }.id(p.id)
             } else {
                 ContentUnavailableView("Pick a place", systemImage: "fork.knife", description: Text("Choose a green chile spot, brewpub or restaurant to see its details."))
@@ -96,6 +114,10 @@ struct SplitRoot: View {
         .onChange(of: model.tab) { _, t in show(t) }
         .onChange(of: model.selectedGuide) { _, g in if let g { sidebar = .guide(g) } }
         .onChange(of: model.guideRequest) { _, _ in if let g = model.selectedGuide { sidebar = .guide(g) } }
+        // the sidebar choice is the model's too, so an iPhone-size layout (Split View, Stage Manager) opens on the same list
+        .onChange(of: sidebar) { _, item in remember(item) }
+        // "Surprise me" on Home beside About: show the place, not About
+        .onChange(of: model.selectedPlace) { _, p in if p != nil && sidebar == .about { sidebar = .home } }
     }
 
     private func show(_ tab: AppModel.Tab) {
@@ -103,7 +125,21 @@ struct SplitRoot: View {
         case .map: sidebar = .map
         case .saved: sidebar = .saved
         case .about: sidebar = .about
-        case .guides: if let g = model.selectedGuide { sidebar = .guide(g) }
+        case .guides: sidebar = model.selectedGuide.map { .guide($0) } ?? .home
+        }
+    }
+
+    private func remember(_ item: SidebarItem?) {
+        switch item {
+        case .guide(let g):
+            if model.tab != .guides { model.tab = .guides }
+            if model.selectedGuide != g { model.selectedGuide = g }
+        case .home, nil:
+            if model.tab != .guides { model.tab = .guides }
+            if model.selectedGuide != nil { model.selectedGuide = nil }
+        case .map: if model.tab != .map { model.tab = .map }
+        case .saved: if model.tab != .saved { model.tab = .saved }
+        case .about: if model.tab != .about { model.tab = .about }
         }
     }
 }

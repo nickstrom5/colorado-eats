@@ -38,6 +38,18 @@ final class SmokeUITests: XCTestCase {
         XCTAssertTrue(e.waitForExistence(timeout: seconds), "missing: \(what)")
     }
 
+    /// Waits until an element stops moving: a tap on a sheet that's still sliding up can land on the animation (QA DEV-T1).
+    private func waitUntilSettled(_ e: XCUIElement, timeout: TimeInterval = 5) {
+        var last = CGRect.null
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            let f = e.frame
+            if f == last && e.isHittable { return }
+            last = f
+            Thread.sleep(forTimeInterval: 0.3)
+        }
+    }
+
     private func scrollTo(_ e: XCUIElement, max: Int = 8) {
         var n = 0
         while !e.isHittable && n < max { app.swipeUp(); n += 1 }
@@ -51,12 +63,14 @@ final class SmokeUITests: XCTestCase {
         let card = button(containing: "Ratings, hours")
         waitFor(card, 5, "Apple Maps button")
         card.tap()
-        // either Apple's place card sheet or our fallback alert
+        // Apple's place card sheet, our "no listing" alert, or (offline, throttled) our "couldn't reach" alert
         let fallback = app.alerts["Not on Apple Maps"]
+        let failed = app.alerts["Couldn't reach Apple Maps"]
         let deadline = Date().addingTimeInterval(15)
         var opened = false
         while Date() < deadline && !opened {
             if fallback.exists { fallback.buttons["OK"].tap(); opened = true; break }
+            if failed.exists { failed.buttons["Cancel"].tap(); opened = true; break }
             let close = app.buttons.matching(NSPredicate(format: "label ==[c] 'Close' OR identifier ==[c] 'Close'")).firstMatch
             if close.exists && close.isHittable { close.tap(); opened = true; break }
             Thread.sleep(forTimeInterval: 0.5)
@@ -103,8 +117,10 @@ final class SmokeUITests: XCTestCase {
         // tap the switch itself (its right edge); a tap on the middle of a Toggle row lands on the label
         let hide = app.switches.matching(NSPredicate(format: "label CONTAINS 'Hide chains'")).firstMatch
         waitFor(hide, 3, "hide-chains toggle")
+        waitUntilSettled(hide)
         hide.coordinate(withNormalizedOffset: CGVector(dx: 0.93, dy: 0.5)).tap()
-        XCTAssertEqual(hide.value as? String, "1", "toggle switched on")
+        let on = expectation(for: NSPredicate(format: "value == '1'"), evaluatedWith: hide)
+        wait(for: [on], timeout: 3)
         app.buttons["Done"].tap()
         waitFor(text(containing: "1 filter on"), 3, "active-filter row")
         button(containing: "Clear").tap()

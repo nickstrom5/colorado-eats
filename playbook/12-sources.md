@@ -69,7 +69,7 @@ The per-county list for all 64 counties is in `county_agencies.json`.
 **No new current bulk source was found. Boulder is still the only one.**
 
 - **data.colorado.gov:** I searched the catalog limited to that domain for "inspection", "restaurant", "food", "retail food", "health department" and "environmental health". The only inspection datasets are:
-  - Boulder `6ytb-f2cq` (2025–present, BOCO). Rows updated 2026-08-06; latest inspection 2026-06-18, so about 3.5 months behind today. 2,285 rows. The `result` column holds Pass (1,734), Reinspection Required (501) and Closure (50).
+  - Boulder `6ytb-f2cq` (2025–present, BOCO). Rows updated 2026-08-06; latest inspection 2026-07-21 (checked against the live API 2026-10-07). 2,285 rows, 633 inspections at 559 facilities. **257 inspections (853 rows) carry rec_date_1 2025-09-03 15:03–15:17: that is the September 2025 import into the new system, not an inspection date** (inspectors' notes on those rows cite dates as late as March 2026), so the app and site show them as "date not published". The `result` column holds Pass (1,734), Reinspection Required (501) and Closure (50).
   - Boulder `tuvj-xz3m` (2013–2025-08-29).
   - Boulder map view `8f7p-zcww`.
   - TCHD `869n-zj3f` (2019–2022-10-31) and `cx7q-izrb` (2018). Both are historic.
@@ -88,7 +88,7 @@ Data form: bulk / search (look up one record) / unknown. "Shows result?" means t
 
 | County | Inspecting agency | Data | Public lookup URL | Shows result? | Notes | Sources |
 |---|---|---|---|---|---|---|
-| Boulder | Boulder County Public Health | **bulk** | https://bouldercounty.gov/families/food/restaurant-inspection-data/ (search tool URL unconfirmed) | Yes, in the dataset | 6ytb-f2cq current to 2026-06-18; tuvj-xz3m archive | https://data.colorado.gov/d/6ytb-f2cq · https://data.colorado.gov/d/tuvj-xz3m |
+| Boulder | Boulder County Public Health | **bulk** | https://bouldercounty.gov/families/food/restaurant-inspection-data/ (search tool URL unconfirmed) | Yes, in the dataset | 6ytb-f2cq current to 2026-07-21; tuvj-xz3m archive | https://data.colorado.gov/d/6ytb-f2cq · https://data.colorado.gov/d/tuvj-xz3m |
 | Denver | DDPHE | search | https://denvergov.org/restaurantinspections (before 2024-09-06); new platform URL unconfirmed (earlier research: Accela) | Unconfirmed; tool shows violations and enforcement | No inspection dataset on any portal | search result for denvergov.org/restaurantinspections |
 | Jefferson | Jefferson County Public Health | search | https://citizenportal.jeffco.us/citizenportal/app/landing | Unconfirmed | | https://www.jeffco.us/2408/Food-Safety |
 | El Paso | El Paso County Public Health | search | https://inspections.myhealthdepartment.com/epcph | Unconfirmed | Slug from search results | search results |

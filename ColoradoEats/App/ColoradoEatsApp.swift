@@ -7,13 +7,18 @@ struct ColoradoEatsApp: App {
     @State private var location = LocationService()
 
     init() {
-        // Large titles in the same compressed black type as the home header.
+        // Large titles in the same compressed black type as the home header, scaled with the reader's text size (capped like
+        // DisplayFont, so a title can't swallow the bar). Inline titles are drawn by View.inlineTitle (Design/Theme.swift).
         let green = UIColor(Theme.green)
         UINavigationBar.appearance().largeTitleTextAttributes = [
-            .font: UIFont.systemFont(ofSize: 36, weight: .black, width: .compressed), .foregroundColor: green,
+            .font: UIFontMetrics(forTextStyle: .largeTitle).scaledFont(for: UIFont.systemFont(ofSize: 36, weight: .black, width: .compressed),
+                                                                      maximumPointSize: 36 * 1.6),
+            .foregroundColor: green,
         ]
         UINavigationBar.appearance().titleTextAttributes = [
-            .font: UIFont.systemFont(ofSize: 19, weight: .heavy, width: .compressed), .foregroundColor: green,
+            .font: UIFontMetrics(forTextStyle: .headline).scaledFont(for: UIFont.systemFont(ofSize: 19, weight: .heavy, width: .compressed),
+                                                                    maximumPointSize: 19 * 1.6),
+            .foregroundColor: green,
         ]
     }
 

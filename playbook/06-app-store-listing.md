@@ -1,8 +1,9 @@
 # App Store listing (ASO)
 
-Numbers here must match `site-numbers.json`, which `scripts/make-site.py` rewrites from the data on every run. Current (2026-10-05 build):
-47 green chile spots, 256 brewpubs, 45 ski-town restaurants, 39 game & steakhouses, 85 MICHELIN & James Beard honorees
-(all 63 MICHELIN Guide Colorado 2026 restaurants), 30 verified founding years, 16,564 restaurants in 314 towns. Update this file after a data refresh.
+Numbers here must match `site-numbers.json`, which `scripts/make-site.py` rewrites from the data on every run. Current (2026-10-07 build, after the first QA round):
+47 green chile spots, 234 brewpubs (of the state's 252 Brew Pub and Distillery Pub licenses), 46 ski-town restaurants, 39 game & steakhouses,
+85 MICHELIN & James Beard honorees (all 63 MICHELIN Guide Colorado 2026 restaurants), 30 founding years, 340 Boulder County inspection
+results, 15,716 restaurants in 308 towns. Update this file after a data refresh.
 
 ## Name (30 max)
 `Colorado Eats: Restaurants` (26). Nick's pick, 2026-10-05.
@@ -21,7 +22,7 @@ keyword field, so "springs" in keywords plus "colorado" in the name matches "col
 - No "michelin", "james beard", "best", "top" or "#1" (Guideline 2.3.7). Plurals are unnecessary.
 
 ## Promotional text (170 max, editable any time without review)
-`47 green chile spots, 45 ski-town restaurants and the oldest places, checked by hand, plus every licensed brewpub and 16,500+ Colorado restaurants.` (146)
+`47 green chile spots, 46 ski-town restaurants and the oldest places, checked by hand, plus 234 licensed brewpubs and 15,000+ Colorado restaurants.` (146)
 
 Chile season (switch in mid-August, when the roasters come out):
 `Chile roasting season: 47 Colorado green chile spots checked by hand, from smothered burritos to Pueblo sloppers, sorted by how close they are to you.` (150)
@@ -32,15 +33,15 @@ The first three lines show before "more", so they carry the pitch.
 ```
 Colorado's restaurants, and the green chile worth the drive.
 
-Colorado Eats is a free guide to eating in Colorado: 47 green chile spots, 45 ski-town restaurants and the state's oldest places we checked by hand, every brewpub with a state license, and 16,564 restaurants, cafés, bars and bakeries in 314 towns. No account, no ads.
+Colorado Eats is a free guide to eating in Colorado: 47 green chile spots, 46 ski-town restaurants and the state's oldest places we checked by hand, 234 brewpubs from the state's license list, and 15,716 restaurants, cafés, bars and bakeries in 308 towns. No account, no ads.
 
 COLORADO GUIDES
 • Green Chile: smothered burritos, breakfast burritos, Pueblo sloppers and chile by the bowl, with what's on each menu.
-• Brewpubs: all 256 restaurants holding a Colorado Brew Pub or Distillery Pub license.
-• Ski Town Dining: Aspen, Vail, Breckenridge, Telluride, Steamboat, Crested Butte and more, with seasonal places marked.
+• Brewpubs: places holding a Colorado Brew Pub or Distillery Pub license, from the state's license list.
+• Ski Town Dining: Aspen, Vail, Breckenridge, Telluride, Steamboat, Crested Butte and more.
 • Game & Steakhouses: bison, elk, trout and steak.
 • MICHELIN & James Beard: the MICHELIN Guide Colorado 2026 selection and James Beard honorees, as facts.
-• Oldest Places: founding years verified at the same address, oldest first.
+• Oldest Places: founding years checked at the same address, oldest first.
 • Inspections: Boulder County's official inspection results, as recorded.
 
 FIND IT FAST
@@ -54,7 +55,7 @@ LIVE DETAILS FROM APPLE MAPS
 Tap "Ratings, hours & photos" on any place to open Apple Maps' own place card, with current hours, photos, ratings and directions.
 
 HOW THE LISTS ARE BUILT
-Every green chile spot, ski-town restaurant, game and steakhouse, and founding year was checked by hand in fall 2026 against a 2025 or 2026 source: the place's own website or menu, or local news. Brewpubs come from the State of Colorado's liquor licenses. The rest of the restaurants come from Overture Maps open data, Denver's business licenses and the state's liquor licenses, checked for reliability against Denver's and Boulder County's records. Website links are checked too. Nothing is ranked by star ratings.
+Every green chile spot, ski-town restaurant, game and steakhouse, and founding year was checked by hand in fall 2026 against a 2025 or 2026 source: the place's own website or menu, or local news. Brewpubs come from the State of Colorado's liquor licenses. The rest of the restaurants come from Overture Maps open data, Denver's business licenses and the state's liquor licenses, checked for reliability against Denver's and Boulder County's records. Website links are checked too: each must be the restaurant's own page. Nothing is ranked by star ratings.
 
 PRIVATE BY DESIGN
 No account, no tracking, no ads. Your location, if you share it, only sorts lists on your device. Saved places stay on your device.
@@ -65,7 +66,7 @@ An independent app, not affiliated with any restaurant, team, chain or governmen
 ```
 
 ## What's New (1.0)
-`First release. Green chile, brewpubs, ski-town dining, MICHELIN and James Beard honorees, and 16,500+ Colorado restaurants.`
+`First release. Green chile, brewpubs, ski-town dining, MICHELIN and James Beard honorees, and 15,000+ Colorado restaurants.`
 
 ## Screenshots
 Upload in this order, one file at a time (a multi-file upload lands in random order); the first three show in search results.
@@ -73,14 +74,14 @@ No negative boards and no Re-Inspection Required or Closure place in any App Sto
 
 | # | File (iPhone 6.9" / iPad 13") | Caption to overlay (optional) |
 |---|---|---|
-| 1 | `home.png` / `ipad-home.png` | 16,500+ Colorado restaurants |
+| 1 | `home.png` / `ipad-home.png` | 15,000+ Colorado restaurants |
 | 2 | `greenchile.png` / `ipad-greenchile.png` | Green chile, nearest first |
 | 3 | `detail.png` / `ipad-detail.png` | Live hours & photos from Apple Maps |
 | 4 | `map.png` / `ipad-map.png` | The map, by guide |
 | 5 | `honors.png` / `ipad-honors.png` | MICHELIN & James Beard honorees |
 | 6 | `ski.png` / `ipad-ski.png` | Ski town dining, checked by hand |
-| 7 | `brewpubs.png` / `ipad-brewpubs.png` | Every licensed brewpub |
-| 8 | `oldest.png` / `ipad-oldest.png` | The oldest places, verified |
+| 7 | `brewpubs.png` / `ipad-brewpubs.png` | Licensed brewpubs |
+| 8 | `oldest.png` / `ipad-oldest.png` | The oldest places |
 
 ## Category
 Primary Food & Drink, secondary Travel.

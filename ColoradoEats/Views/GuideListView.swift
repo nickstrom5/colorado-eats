@@ -13,14 +13,21 @@ struct GuideListView: View {
     @State private var showFilters = false
     @State private var shown = 100
 
-    private var order: SortOrder { sort ?? ([.greenChile, .game, .skiTowns].contains(guide) ? (here != nil ? .nearest : .featured) : guide.defaultSort) }
+    /// Nearest first for the hand-checked guides when we know where you are in Colorado; from out of state every row is hundreds of
+    /// miles away, so the featured order reads better (Nearest is still in the sort menu). A sort that isn't one of this guide's
+    /// options (left over from another guide) is ignored.
+    private var order: SortOrder {
+        if let sort, guide.sortOptions.contains(sort) { return sort }
+        return [.greenChile, .game, .skiTowns].contains(guide) ? (here != nil && !outOfState ? .nearest : .featured) : guide.defaultSort
+    }
+    private var outOfState: Bool { model.screenshotLocation == nil && location.isOutsideColorado }
     private var here: CLLocation? { model.screenshotLocation ?? location.location }
 
     var body: some View {
         let places = model.list(guide, sort: order, search: search, here: here)
         List {
             Section {
-                Text(guide.subtitle + (guide == .inspections ? ": each place's result at its latest inspection, as recorded. Colorado rates inspections Pass (0–49 risk points), Re-Inspection Required (50–109) or Closure (110+, or an imminent health hazard); fewer points is better. Inspections from Sep 2025 through \(model.inspectionsThrough). Boulder County is the only county that publishes results in bulk." : ""))
+                Text(guide.subtitle + (guide == .inspections ? inspectionsNote : ""))
                     .font(.subheadline).foregroundStyle(Theme.muted)
                     .listRowSeparator(.hidden)
                 if (order == .nearest || guide == .nearMe) && here == nil { locationPrompt }
@@ -73,27 +80,52 @@ struct GuideListView: View {
             }
         }
         .sheet(isPresented: $showFilters) { FiltersSheet() }
-        .task { if !ScreenshotMode.isActive && (guide == .nearMe || order == .nearest) { location.request() } }
+        .task(id: guide) { if !ScreenshotMode.isActive && (guide == .nearMe || order == .nearest) { location.request() } }
+    }
+
+    /// The Inspections guide's explainer. The tiers are Colorado's (CDPHE Interpretive Memo 19-09); the dates come from the data.
+    private var inspectionsNote: String {
+        let since = DayFormat.monthYear(model.inspectionsSince).map { " from \($0)" } ?? ""
+        let through = DayFormat.text(model.inspectionsThrough).map { " through \($0)" } ?? ""
+        return ": each place's result at its latest inspection, as recorded. Colorado rates inspections Pass (0–49 risk points), Re-Inspection Required (50–109) or Closure (110+ points). Boulder County also records a Closure when it closes a place for an imminent health hazard, such as a sewage backup, whatever the points. Fewer points is better. Inspections\(since)\(through). Boulder County is the only county that publishes results in bulk."
     }
 
     @ViewBuilder
     private func row(_ p: Place, rank: Int?) -> some View {
         let metric = metricText(p)
+        let label = PlaceRow(place: p, rank: rank, rankLabel: rank.map(rankLabel), metric: metric, detail: detailLine(p), highlightTop: order != .mostPoints)
         if let selection {
-            Button { selection.wrappedValue = p } label: { PlaceRow(place: p, rank: rank, metric: metric, detail: detailLine(p), highlightTop: order != .mostPoints) }
+            Button {
+                selection.wrappedValue = p
+                // iPad: the place opens beside the list, so put the search keyboard away (it covered half the place)
+                UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+            } label: { label }
                 .listRowBackground(selection.wrappedValue?.id == p.id ? Theme.surface2 : Theme.surface)
+                .accessibilityAddTraits(selection.wrappedValue?.id == p.id ? .isSelected : [])
         } else {
-            NavigationLink(value: AppModel.Route.place(p)) { PlaceRow(place: p, rank: rank, metric: metric, detail: detailLine(p), highlightTop: order != .mostPoints) }
+            NavigationLink(value: AppModel.Route.place(p)) { label }
         }
+    }
+
+    /// "1st oldest": a place in a ranking, read as what the ranking is, not as a score
+    private func rankLabel(_ rank: Int) -> String {
+        let f = NumberFormatter()
+        f.numberStyle = .ordinal
+        let n = f.string(from: NSNumber(value: rank)) ?? "\(rank)"
+        return guide == .oldest ? "\(n) oldest" : n
     }
 
     /// Inspection rows name the exact place and when it was inspected, so a result is never read without context.
     private func detailLine(_ p: Place) -> String? {
         guard guide == .inspections, let i = p.inspection else { return nil }
-        return [p.address, "inspected \(i.d)"].compactMap { $0 }.joined(separator: " · ")
+        let when = DayFormat.text(i.d).map { "inspected \($0)" } ?? "inspection date not published"
+        let away = order == .nearest ? here.flatMap { h in p.location.map { h.milesText(to: $0) + " away" } } : nil
+        return [p.address, when, away].compactMap { $0 }.joined(separator: " · ")
     }
 
     private func metricText(_ p: Place) -> PlaceRow.Metric? {
+        // an inspection row always shows its result, whatever the order (the distance goes in the detail line)
+        if guide == .inspections, let i = p.inspection { return .result(i.r, i.p) }
         switch order {
         case .nearest: if let here, let l = p.location { return .text(here.milesText(to: l), "away") }
         case .oldest: if let f = p.founded { return .text("\(f)", "since") }
@@ -101,7 +133,6 @@ struct GuideListView: View {
         case .recent, .fewestPoints, .mostPoints: if let i = p.inspection { return .result(i.r, i.p) }
         default: break
         }
-        if guide == .inspections, let i = p.inspection { return .result(i.r, i.p) }
         if let f = p.founded, guide != .all { return .text("\(f)", "since") }
         return nil
     }
@@ -136,6 +167,8 @@ struct PlaceRow: View {
     enum Metric { case text(String, String), result(InspectionResult, Int) }
     let place: Place
     var rank: Int?
+    /// what VoiceOver says for the rank ("1st oldest")
+    var rankLabel: String? = nil
     var metric: Metric?
     /// a second line under the town (inspections: street address and inspection date)
     var detail: String? = nil
@@ -150,7 +183,7 @@ struct PlaceRow: View {
                     .foregroundStyle(Theme.green)
                     .frame(minWidth: 38, minHeight: 38)
                     .background(RoundedRectangle(cornerRadius: 8).fill(rank <= 3 && highlightTop ? Theme.gold : .clear))
-                    .accessibilityLabel("Rank \(rank)")
+                    .accessibilityLabel(rankLabel ?? "Number \(rank)")
             }
             VStack(alignment: .leading, spacing: 4) {
                 Text(place.name).font(.body.weight(.semibold)).foregroundStyle(Theme.ink).multilineTextAlignment(.leading)
@@ -195,7 +228,7 @@ struct PlaceChips: View {
     private var items: [(String, Chip.Style)] {
         var out: [(String, Chip.Style)] = []
         if let m = place.michelin.label { out.append((m, .red)) }
-        if let jb = place.jamesBeardLabel { out.append((jb, .green)) }
+        if let jb = place.jamesBeardChip { out.append((jb, .green)) }
         if place.handChecked && place.tags.contains(.greenChile) { out.append(("Green chile", .gold)) }
         if place.tags.contains(.brewpub) { out.append(("Brewpub", .gold)) }
         if place.handChecked && place.tags.contains(.game) { out.append(("Game & steak", .gold)) }
@@ -206,28 +239,33 @@ struct PlaceChips: View {
     }
 }
 
-/// Wraps chips onto new lines.
+/// Wraps chips onto new lines. Each chip is offered the row's width, so one wider than the row (a long label at a large text
+/// size on a small phone) wraps inside itself instead of being clipped. Measuring and placing share one arrangement, worked out
+/// from the same proposal: placing by the (pixel-rounded) bounds once broke a row the measurement hadn't, and the row was cut off.
 struct FlowLayout: Layout {
     var spacing: CGFloat = 6
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        let maxW = proposal.width ?? .infinity
-        var x: CGFloat = 0, y: CGFloat = 0, rowH: CGFloat = 0, widest: CGFloat = 0
-        for v in subviews {
-            let s = v.sizeThatFits(.unspecified)
-            if x > 0 && x + s.width > maxW { y += rowH + spacing; x = 0; rowH = 0 }
-            x += s.width + spacing; rowH = max(rowH, s.height); widest = max(widest, x - spacing)
-        }
-        return CGSize(width: min(widest, maxW), height: y + rowH)
+        arrange(proposal.width, subviews).size
     }
 
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        var x = bounds.minX, y = bounds.minY, rowH: CGFloat = 0
-        for v in subviews {
-            let s = v.sizeThatFits(.unspecified)
-            if x > bounds.minX && x + s.width > bounds.maxX { y += rowH + spacing; x = bounds.minX; rowH = 0 }
-            v.place(at: CGPoint(x: x, y: y), proposal: ProposedViewSize(s))
-            x += s.width + spacing; rowH = max(rowH, s.height)
+        let frames = arrange(proposal.width ?? bounds.width, subviews).frames
+        for (v, f) in zip(subviews, frames) {
+            v.place(at: CGPoint(x: bounds.minX + f.minX, y: bounds.minY + f.minY), proposal: ProposedViewSize(f.size))
         }
+    }
+
+    private func arrange(_ width: CGFloat?, _ subviews: Subviews) -> (frames: [CGRect], size: CGSize) {
+        let maxW = width ?? .infinity
+        var frames: [CGRect] = []
+        var x: CGFloat = 0, y: CGFloat = 0, rowH: CGFloat = 0, widest: CGFloat = 0
+        for v in subviews {
+            let s = v.sizeThatFits(ProposedViewSize(width: width, height: nil))
+            if x > 0 && x + s.width > maxW { y += rowH + spacing; x = 0; rowH = 0 }
+            frames.append(CGRect(origin: CGPoint(x: x, y: y), size: s))
+            x += s.width + spacing; rowH = max(rowH, s.height); widest = max(widest, x - spacing)
+        }
+        return (frames, CGSize(width: min(widest, maxW), height: y + rowH))
     }
 }

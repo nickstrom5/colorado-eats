@@ -119,6 +119,7 @@ def load_liquor():
         num, st = street_key(r.street_address)
         z = str(r.zip or "")[:5]
         rows.append({"jur": "liq", "lic": "LIQ-" + r.license_number, "name": r.doing_business_as or r.licensee_name,
+                     "dba": r.doing_business_as or None, "holder": r.licensee_name or None,
                      "keys": _names(r.doing_business_as, r.licensee_name), "addr": r.street_address, "city": r.city, "zip": z,
                      "num": num, "street": st, "lat": np.nan, "lon": np.nan, "kind": r.kind, "active": True,
                      "ltype": re.sub(r"\s*\((?:city|county|City|County|State)\)\s*$", "", r.license_type).replace("Fermented Malt Beverage and Wine(county)", "Fermented Malt Beverage and Wine"),
@@ -138,6 +139,7 @@ def load_denver():
             lon, lat = tr.transform(r.X_COORD, r.Y_COORD)
         kind = {"Retail Food": "restaurant", "Combined License": "restaurant", "Liquor": "bar", "Retail Food - Commissary": "other"}[r.LICENSE_TYPE]
         rows.append({"jur": "den", "lic": "DEN-" + r.BFN, "name": r.TRADE_NAME or r.ENTITY_NAME, "keys": _names(r.TRADE_NAME, r.ENTITY_NAME),
+                     "dba": r.TRADE_NAME or None, "holder": r.ENTITY_NAME or None,
                      "addr": r.AddressNoUnit or r.ADDRESS, "city": "Denver", "zip": str(r.ZIP or "")[:5], "num": num, "street": st,
                      "lat": lat, "lon": lon, "kind": kind, "active": True, "ltype": r.LICENSE_TYPE})
     return pd.DataFrame(rows)
@@ -219,7 +221,13 @@ def boulder_inspections():
     never derived from the points."""
     n = pd.DataFrame(json.load(open(f"{OFF}/boulder_2025.json")))
     n["score"] = pd.to_numeric(n.score, errors="coerce")
-    n["d"] = pd.to_datetime(n.rec_date_1).dt.strftime("%Y-%m-%d")
+    ts = pd.to_datetime(n.rec_date_1)
+    n["d"] = ts.dt.strftime("%Y-%m-%d")
+    n["ts"] = n.rec_date_1.astype(str)
+    # The county's move to its new system stamped 853 violation rows of 257 businesses 2025-09-03 15:03-15:17: that is the import, not
+    # an inspection date (inspectors' notes on those rows cite dates as late as March 2026). Those records keep their result and
+    # points but have no date ("nd"); they count as older than any dated inspection.
+    n["nd"] = n.d.eq("2025-09-03") & ts.dt.hour.eq(15) & ts.dt.minute.le(30)
     n["code"] = n.comment.fillna("").str.extract(r"^\s*(\d-\d{3}\.\d+)")[0]
     # the section title only (e.g. "4-203.12 Temperature Measuring Devices, Ambient Air"), never the inspector's notes: titles come from the
     # comments whose first line is just the code and title, and a code without one shows as the bare code
@@ -227,8 +235,11 @@ def boulder_inspections():
     clean = first[n.comment.fillna("").str.contains("\n") & first.str.len().le(90) & n.code.notna()]
     code_title = {c: t.mode().iat[0] for c, t in clean.groupby(n.code[clean.index])}
     n["title"] = [code_title.get(c, c) if isinstance(c, str) else "" for c in n.code]
-    g = n.groupby(["business_id", "d"])
-    ins = g.agg(score=("score", "first"), result=("result", "first"), typ=("g6_act_typ", "first"),
+    # one row per inspection: two on one day (a routine inspection and its re-inspection) stay two, the re-inspection second
+    g = n.groupby(["business_id", "ts"])
+    ins = g.agg(d=("d", "first"), nd=("nd", "first"), score=("score", "first"), result=("result", "first"), typ=("g6_act_typ", "first"),
                 n_items=("code", lambda s: int(s.notna().sum())), titles=("title", lambda s: list(dict.fromkeys(t for t in s if re.match(r"^\d-\d{3}", t))))).reset_index()
     ins["result"] = ins.result.replace({"Reinspection Required": "Re-Inspection Required"})
-    return ins
+    ins["re"] = ins.typ.eq("Re-Inspection")
+    # oldest first: undated import records, then by day, a routine inspection before that day's re-inspection, then by time
+    return ins.sort_values(["business_id", "nd", "d", "re", "ts"], ascending=[True, False, True, True, True]).reset_index(drop=True)

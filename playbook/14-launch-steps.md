@@ -5,7 +5,7 @@ Only `docs/`, the app source, scripts and playbook go public; `.gitignore` keeps
 snapshot), `site/` (the Google-derived leaderboard), build output and the generated Xcode project out. Check with `git status` before the
 first commit.
 ```bash
-cd /Users/nicksoderstrom/Developer/claudecode/co-eats
+cd co-eats   # from the claudecode folder
 git init -b main
 git config user.name "Nick Soderstrom" && git config user.email "329204362+nickstrom5@users.noreply.github.com"
 git add -A && git status --short | head -50          # confirm: no data/, site/, .venv/, DerivedData/
@@ -41,7 +41,7 @@ The app's links (`ColoradoEats/App/Links.swift`) stay github.io for build 1 (Git
 
 ## 5. Archive and upload (public Xcode only)
 ```bash
-cd /Users/nicksoderstrom/Developer/claudecode/co-eats && xcodegen generate
+cd co-eats   # from the claudecode folder && xcodegen generate
 DEVELOPER_DIR="/Applications/Xcode 1.app/Contents/Developer" xcodebuild archive -project ColoradoEats.xcodeproj -scheme ColoradoEats \
   -destination 'generic/platform=iOS' -derivedDataPath ./DerivedData-xc27.0 -archivePath build/ColoradoEats.xcarchive -allowProvisioningUpdates
 /usr/libexec/PlistBuddy -c "Print :DTXcodeBuild" build/ColoradoEats.xcarchive/Products/Applications/ColoradoEats.app/Info.plist   # 27A266a, not 27A9xxx

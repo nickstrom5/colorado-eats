@@ -6,6 +6,10 @@ import SwiftUI
 
 struct DataFile: Decodable {
     let generated: String
+    /// the Overture Maps release the listings come from ("2026-09-23.1"); optional so an older file still opens
+    let overture_release: String?
+    /// when the Denver business licenses were downloaded
+    let denver_updated: String?
     let inspections_through: String
     let inspections_published: String
     let liquor_updated: String
@@ -59,7 +63,8 @@ enum InspectionResult: Int, Decodable, Hashable {
 }
 
 struct InspectionVisit: Decodable, Hashable {
-    let d: String           // date
+    /// null when the county's September 2025 system move stamped the record without its inspection date
+    let d: String?
     let r: InspectionResult // official result
     let p: Int              // risk points (lower is better)
     let t: String           // Routine or Re-Inspection
@@ -69,7 +74,7 @@ struct InspectionVisit: Decodable, Hashable {
 struct InspectionRecord: Decodable, Hashable {
     let r: InspectionResult // result at the latest inspection
     let p: Int              // risk points at the latest inspection
-    let d: String           // latest inspection date
+    let d: String?          // latest inspection date; null when the county didn't publish it (see InspectionVisit.d)
     let n: Int              // inspections since Sep 2025
     let rr: Int             // of those, Re-Inspection Required
     let cl: Int             // of those, Closure
@@ -217,11 +222,19 @@ struct Place: Identifiable, Hashable {
     /// normalized text for search: name, town, county, zip, cuisine, brand, dishes, then the address with street words abbreviated
     let searchText: String
     let nameText: String
+    /// the A-to-Z key, worked out once at load: the normalized name ("por wine house" for "/pôr/ Wine House"), so case, accents
+    /// and leading punctuation don't change the order, and a sort never runs a localized compare per comparison
+    let sortKey: String
+    /// made once at load: a new CLLocation per comparison made a Nearest sort of 16,000 places take seconds
+    let location: CLLocation?
 
     static func == (a: Place, b: Place) -> Bool { a.id == b.id }
     func hash(into h: inout Hasher) { h.combine(id) }
 
+    /// MICHELIN, James Beard or a verified founding year: what the map and Spotlight put first
     var isHonored: Bool { honorFlags != 0 || michelin != .none }
+    /// what the Honors section lists: a MICHELIN distinction or a James Beard honor ("oldest" alone isn't an honor)
+    var hasHonors: Bool { michelin != .none || jamesBeard != nil }
     var isChain: Bool { chainCount >= 5 }
     var jamesBeardLabel: String? {
         if honorFlags & 1 != 0 { return "America's Classic" }
@@ -230,11 +243,30 @@ struct Place: Identifiable, Hashable {
         if honorFlags & 8 != 0 { return "James Beard semifinalist" }
         return nil
     }
+    /// The chip for a James Beard line: the place's own honor, or a restaurateur (group) honor when that's the only one.
+    var jamesBeardChip: String? { jamesBeardLabel ?? (jamesBeard != nil ? "James Beard (restaurateur)" : nil) }
+    /// a hand-checked Colorado pick or a brewpub: the gold pins
+    var isClassic: Bool {
+        (handChecked && (tags.contains(.greenChile) || tags.contains(.skiDining) || tags.contains(.game))) || tags.contains(.brewpub)
+    }
     var townLine: String { [city, cuisine].compactMap { $0 }.joined(separator: " · ") }
     var fullAddress: String {
         [address, [city, zip].compactMap { $0 }.joined(separator: " ")].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: ", ")
     }
-    var location: CLLocation? { coordinate.map { CLLocation(latitude: $0.latitude, longitude: $0.longitude) } }
+
+    /// State liquor license types that only sell for drinking elsewhere (liquor stores, drug stores, grocers).
+    static let storeLicensePrefixes = ["Retail Liquor Store", "Liquor Licensed Drug Store", "Fermented Malt Beverage and Wine"]
+    static func isStoreLicense(_ type: String?) -> Bool { storeLicensePrefixes.contains { type?.hasPrefix($0) == true } }
+
+    /// "Serves alcohol", from the state's liquor licenses: never a bare dash that reads as "no".
+    /// A brewery, winery or distillery license counts (tasting rooms serve on site); an older data file left those out of `liq`.
+    var servesAlcohol: String {
+        if let liquor { return "Yes · \(liquor) license" }
+        let state = licenses.filter { $0.src == "Colorado liquor license" }
+        if let t = state.first(where: { $0.type != nil && !Place.isStoreLicense($0.type) })?.type { return "Yes · \(t) license" }
+        if !state.isEmpty && state.allSatisfy({ Place.isStoreLicense($0.type) }) { return "Store license only" }
+        return "Unknown (no state liquor license matched)"
+    }
 
     init(_ r: PlaceRecord, file: DataFile) {
         let city = r.c.flatMap { $0 < file.cities.count ? file.cities[$0] : nil }
@@ -268,7 +300,9 @@ struct Place: Identifiable, Hashable {
         dishes = r.dish
         seasonal = r.seas
         liquor = r.liq
-        website = r.w.flatMap { URL(string: $0.hasPrefix("http") ? $0 : "https://" + $0) }
+        // web links only: a bare host gets https://, and any other scheme (javascript:, tel:, a custom app URL) is dropped
+        website = r.w.flatMap { URL(string: $0.contains("://") ? $0 : "https://" + $0) }
+            .flatMap { ["http", "https"].contains($0.scheme?.lowercased() ?? "") && $0.host != nil ? $0 : nil }
         phone = r.ph
         licenses = r.lic ?? []
         inspection = r.inspection
@@ -276,5 +310,35 @@ struct Place: Identifiable, Hashable {
         searchText = " " + Search.normalize([r.n, city, county, r.z, cuisine, brand, r.dish].compactMap { $0 }.joined(separator: " ")) + " "
             + Search.normalizeAddress(r.a ?? "") + " "
         nameText = " " + Search.normalize([r.n, brand].compactMap { $0 }.joined(separator: " ")) + " "
+        sortKey = Search.normalize(r.n)
+        location = coordinate.map { CLLocation(latitude: $0.latitude, longitude: $0.longitude) }
+    }
+}
+
+/// The data's dates are calendar days ("2026-06-16"), not moments: read and shown in UTC, so no time zone can move one a day.
+enum DayFormat {
+    private static let utc = TimeZone(identifier: "UTC")!
+
+    static func date(_ s: String?) -> Date? {
+        guard let s, s.count >= 10 else { return nil }
+        let parts = s.prefix(10).split(separator: "-").compactMap { Int($0) }
+        guard parts.count == 3, (1...12).contains(parts[1]), (1...31).contains(parts[2]) else { return nil }
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = utc
+        return cal.date(from: DateComponents(year: parts[0], month: parts[1], day: parts[2]))
+    }
+
+    /// "Jun 16, 2026" (in the reader's language); anything that isn't a date is shown as it is
+    static func text(_ s: String?) -> String? {
+        guard let s else { return nil }
+        guard let d = date(s) else { return s }
+        return d.formatted(Date.FormatStyle(date: .abbreviated, time: .omitted, timeZone: utc))
+    }
+
+    /// "Sep 2025"
+    static func monthYear(_ s: String?) -> String? {
+        guard let s else { return nil }
+        guard let d = date(s) else { return s }
+        return d.formatted(Date.FormatStyle(timeZone: utc).month(.abbreviated).year())
     }
 }

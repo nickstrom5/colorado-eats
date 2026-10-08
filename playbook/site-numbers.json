@@ -1,12 +1,13 @@
 {
- "generated": "2026-10-05",
+ "generated": "2026-10-07",
  "domain": "https://nickstrom5.github.io/colorado-eats",
- "restaurants": 16564,
- "towns": 314,
+ "restaurants": 15716,
+ "towns": 308,
  "counties": 64,
  "green_chile": 47,
- "brewpubs": 256,
- "ski_town": 45,
+ "brewpubs": 234,
+ "brewpub_duplicates_hidden": 0,
+ "ski_town": 46,
  "game": 39,
  "honors": 85,
  "michelin": {
@@ -19,118 +20,205 @@
  "oldest": 30,
  "pueblo_green_chile": 10,
  "sloppers": 6,
+ "boulder_county_inspections": 340,
+ "inspections_through": "2026-07-21",
  "cities": {
   "Denver": {
-   "restaurants": 3125,
+   "restaurants": 2900,
    "green_chile_near": 21,
-   "brewpubs_near": 48,
+   "brewpubs_near": 44,
    "ski_near": 0,
-   "honors": 50
+   "honors": 50,
+   "game_near": 11,
+   "oldest": 10,
+   "inspections": 0,
+   "listed": 126,
+   "indexed": true
   },
   "Colorado Springs": {
-   "restaurants": 1542,
+   "restaurants": 1474,
    "green_chile_near": 5,
-   "brewpubs_near": 21,
+   "brewpubs_near": 20,
    "ski_near": 0,
-   "honors": 2
+   "honors": 2,
+   "game_near": 4,
+   "oldest": 1,
+   "inspections": 0,
+   "listed": 32,
+   "indexed": true
   },
   "Aurora": {
-   "restaurants": 834,
-   "green_chile_near": 15,
-   "brewpubs_near": 11,
+   "restaurants": 811,
+   "green_chile_near": 1,
+   "brewpubs_near": 3,
    "ski_near": 0,
-   "honors": 4
+   "honors": 4,
+   "game_near": 0,
+   "oldest": 0,
+   "inspections": 0,
+   "listed": 8,
+   "indexed": true
   },
   "Fort Collins": {
-   "restaurants": 575,
+   "restaurants": 526,
    "green_chile_near": 1,
-   "brewpubs_near": 11,
+   "brewpubs_near": 9,
    "ski_near": 0,
-   "honors": 0
+   "honors": 0,
+   "game_near": 3,
+   "oldest": 2,
+   "inspections": 0,
+   "listed": 13,
+   "indexed": true
   },
   "Boulder": {
-   "restaurants": 507,
+   "restaurants": 462,
    "green_chile_near": 0,
-   "brewpubs_near": 11,
-   "ski_near": 0,
-   "honors": 11
-  },
-  "Pueblo": {
-   "restaurants": 361,
-   "green_chile_near": 9,
-   "brewpubs_near": 5,
-   "ski_near": 0,
-   "honors": 0
-  },
-  "Lakewood": {
-   "restaurants": 419,
-   "green_chile_near": 22,
-   "brewpubs_near": 43,
-   "ski_near": 0,
-   "honors": 0
-  },
-  "Longmont": {
-   "restaurants": 350,
-   "green_chile_near": 0,
-   "brewpubs_near": 11,
-   "ski_near": 0,
-   "honors": 0
-  },
-  "Greeley": {
-   "restaurants": 264,
-   "green_chile_near": 0,
-   "brewpubs_near": 1,
-   "ski_near": 0,
-   "honors": 0
-  },
-  "Golden": {
-   "restaurants": 168,
-   "green_chile_near": 15,
    "brewpubs_near": 10,
    "ski_near": 0,
-   "honors": 0
+   "honors": 11,
+   "game_near": 2,
+   "oldest": 2,
+   "inspections": 188,
+   "listed": 207,
+   "indexed": true
+  },
+  "Pueblo": {
+   "restaurants": 352,
+   "green_chile_near": 9,
+   "brewpubs_near": 4,
+   "ski_near": 0,
+   "honors": 0,
+   "game_near": 0,
+   "oldest": 1,
+   "inspections": 0,
+   "listed": 13,
+   "indexed": true
+  },
+  "Lakewood": {
+   "restaurants": 402,
+   "green_chile_near": 1,
+   "brewpubs_near": 0,
+   "ski_near": 0,
+   "honors": 0,
+   "game_near": 0,
+   "oldest": 1,
+   "inspections": 0,
+   "listed": 1,
+   "indexed": false
+  },
+  "Longmont": {
+   "restaurants": 328,
+   "green_chile_near": 0,
+   "brewpubs_near": 8,
+   "ski_near": 0,
+   "honors": 0,
+   "game_near": 0,
+   "oldest": 0,
+   "inspections": 102,
+   "listed": 108,
+   "indexed": true
+  },
+  "Greeley": {
+   "restaurants": 256,
+   "green_chile_near": 0,
+   "brewpubs_near": 0,
+   "ski_near": 0,
+   "honors": 0,
+   "game_near": 0,
+   "oldest": 0,
+   "inspections": 0,
+   "listed": 0,
+   "indexed": false
+  },
+  "Golden": {
+   "restaurants": 161,
+   "green_chile_near": 2,
+   "brewpubs_near": 2,
+   "ski_near": 0,
+   "honors": 0,
+   "game_near": 1,
+   "oldest": 0,
+   "inspections": 0,
+   "listed": 4,
+   "indexed": false
   },
   "Grand Junction": {
-   "restaurants": 276,
+   "restaurants": 262,
    "green_chile_near": 0,
    "brewpubs_near": 7,
    "ski_near": 0,
-   "honors": 1
+   "honors": 1,
+   "game_near": 0,
+   "oldest": 0,
+   "inspections": 0,
+   "listed": 8,
+   "indexed": true
   },
   "Durango": {
-   "restaurants": 183,
+   "restaurants": 168,
    "green_chile_near": 3,
-   "brewpubs_near": 6,
+   "brewpubs_near": 4,
    "ski_near": 5,
-   "honors": 0
+   "honors": 0,
+   "game_near": 1,
+   "oldest": 1,
+   "inspections": 0,
+   "listed": 9,
+   "indexed": true
   },
   "Aspen": {
-   "restaurants": 131,
+   "restaurants": 109,
    "green_chile_near": 0,
-   "brewpubs_near": 2,
+   "brewpubs_near": 0,
    "ski_near": 7,
-   "honors": 4
+   "honors": 4,
+   "game_near": 1,
+   "oldest": 1,
+   "inspections": 0,
+   "listed": 7,
+   "indexed": true
   },
   "Breckenridge": {
-   "restaurants": 133,
+   "restaurants": 120,
    "green_chile_near": 1,
    "brewpubs_near": 0,
    "ski_near": 5,
-   "honors": 2
+   "honors": 2,
+   "game_near": 3,
+   "oldest": 1,
+   "inspections": 0,
+   "listed": 7,
+   "indexed": true
   },
   "Steamboat Springs": {
-   "restaurants": 137,
+   "restaurants": 131,
    "green_chile_near": 1,
    "brewpubs_near": 3,
    "ski_near": 3,
-   "honors": 0
+   "honors": 0,
+   "game_near": 1,
+   "oldest": 1,
+   "inspections": 0,
+   "listed": 6,
+   "indexed": true
   },
   "Vail": {
-   "restaurants": 108,
+   "restaurants": 93,
    "green_chile_near": 1,
    "brewpubs_near": 1,
    "ski_near": 8,
-   "honors": 2
+   "honors": 2,
+   "game_near": 3,
+   "oldest": 1,
+   "inspections": 0,
+   "listed": 10,
+   "indexed": true
   }
- }
+ },
+ "noindex_pages": [
+  "cities/lakewood.html",
+  "cities/greeley.html",
+  "cities/golden.html"
+ ]
 }

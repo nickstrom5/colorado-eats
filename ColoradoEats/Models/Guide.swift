@@ -28,7 +28,7 @@ enum Guide: String, CaseIterable, Identifiable, Hashable {
         case .skiTowns: "Hand-checked dining in Aspen, Vail, Breckenridge, Telluride and more"
         case .game: "Bison, elk, trout and steak, hand-checked"
         case .honors: "MICHELIN Guide Colorado 2026 and James Beard honorees"
-        case .oldest: "Verified founding years at the same address, oldest first"
+        case .oldest: "Founding years checked at the same address, oldest first"
         case .inspections: "Boulder County's official inspection results"
         case .nearMe: "Everything around you, closest first"
         case .all: "Restaurants, cafés, bars and bakeries statewide"
@@ -126,11 +126,16 @@ struct Filters: Equatable, Codable {
 
 enum Ranking {
     static func sort(_ places: [Place], by order: SortOrder, from here: CLLocation?) -> [Place] {
-        func name(_ a: Place, _ b: Place) -> Bool { a.name.localizedCaseInsensitiveCompare(b.name) == .orderedAscending }
-        func dist(_ p: Place) -> Double { (here != nil ? p.location?.distance(from: here!) : nil) ?? .greatestFiniteMagnitude }
+        // Keys come from fields made once at load: a localized compare, or a new CLLocation per comparison, made a 16,000-place
+        // sort take most of a second (AR-13). sortKey is the normalized name, so case, accents and punctuation don't change the order.
+        func name(_ a: Place, _ b: Place) -> Bool { a.sortKey != b.sortKey ? a.sortKey < b.sortKey : a.id < b.id }
         switch order {
         case .nearest where here != nil:
-            return places.sorted { dist($0) != dist($1) ? dist($0) < dist($1) : name($0, $1) }
+            // each distance once, not four times per comparison
+            let from = here!
+            return places.map { p in (p, p.location.map { $0.distance(from: from) } ?? .greatestFiniteMagnitude) }
+                .sorted { $0.1 != $1.1 ? $0.1 < $1.1 : name($0.0, $1.0) }
+                .map(\.0)
         case .featured, .nearest:
             // honored places first, then verified founding year, then name
             return places.sorted {
@@ -140,7 +145,7 @@ enum Ranking {
                 return fa != fb ? fa < fb : name($0, $1)
             }
         case .oldest:
-            return places.sorted { ($0.founded ?? 9999, $0.name) < ($1.founded ?? 9999, $1.name) }
+            return places.sorted { ($0.founded ?? 9999) != ($1.founded ?? 9999) ? ($0.founded ?? 9999) < ($1.founded ?? 9999) : name($0, $1) }
         case .name:
             return places.sorted(by: name)
         case .iconic:
@@ -152,7 +157,11 @@ enum Ranking {
                 return name($0, $1)
             }
         case .recent:
-            return places.sorted { ($0.inspection?.d ?? "") != ($1.inspection?.d ?? "") ? ($0.inspection?.d ?? "") > ($1.inspection?.d ?? "") : name($0, $1) }
+            // an inspection without a published date (the county's Sept 2025 system move) goes after every dated one
+            return places.sorted {
+                let a = $0.inspection?.d ?? "", b = $1.inspection?.d ?? ""
+                return a != b ? a > b : name($0, $1)
+            }
         case .fewestPoints, .mostPoints:
             let few = order == .fewestPoints
             return places.sorted {

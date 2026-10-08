@@ -53,6 +53,44 @@ cp data/app/places.json ColoradoEats/Resources/ && .venv/bin/python scripts/make
   - UI tests match Home cards with `guideCard(_:)`: "Surprise me with a green chile spot" also contains "green chile".
   - Never dump `app.staticTexts.allElementsBoundByIndex` with the map filled in: hundreds of pins make the query time out.
   - The Honors list is ordered by MICHELIN distinction, then James Beard honor, then name, with no points shown (they read like a rating).
+- Lessons from the first QA round (2026-10-07; reports were in the session scratchpad, fixes are in the pipeline and generators):
+  - **Strip clubs hide behind plain trade names** on ordinary Tavern licenses ("PT's After Dark", "Glendale Restaurants", "511 West"):
+    `data/research/adult_venues.json` (checked addresses) plus Overture's `adult_entertainment_venue` category drop them; a name regex
+    alone missed 12 of them. Town words never count as a shared name word.
+  - **`canon_city` once stripped a bare trailing "co"**: Frisco became "Fris" and Rico "Ri". A state suffix needs a comma or a space.
+  - **Licenses belong to the place whose name is on them**, not to every business at the address (`place_lics`): a neighbor's license
+    gave Crumbl "Serves alcohol" and a bakery a Brew Pub tag. One Brew Pub / Distillery Pub license tags one place, at its house number.
+    A license the geocoders couldn't place still matches by street address in its town's county (most missing brewpubs).
+    A listing "official" only by address to a differently named business loses that status (and goes if its own source fails the keep
+    rule). Company-register names ("Irish Investments And Securities") show the license's trade name or go.
+  - **Boulder County's 2025-09-03 15:03–15:17 stamp is the system import, not an inspection date** (257 records): those show
+    "date not published" (`in.d` null). Same-day routine + re-inspection are two records. A food truck's, caterer's or event's
+    inspection never attaches to a restaurant, and only Boulder County places get results.
+  - Hand-checked places show the research name (`display` when the research name needs one) and link only to the research website.
+  - The link checker requires the page to show the place's town, zip, phone or house number + street (a chain's own brand domain is
+    exempt), rejects news stories and directories, dates every verdict (`at`, re-checked after 45 days or when `RULES` changes) and
+    ships the https URL when the site answers on https. Re-run it before every submission.
+  - Liquor license expirations before the list date are renewals pending (not shown); one expired a year or more before is stale and
+    ignored. Package-store-only places are stores (hidden by default) only when their own name is on the store license.
+  - pandas `str.contains` here runs on the pyarrow engine: `\b` is ASCII-only, so a pattern ending in "Café" never matches. Use Python's
+    `re` for patterns with accented letters.
+  - `colorado.py` writes `data/co/qa_debug_app.json` (entity rows dropped, near-duplicate merges, stores, venues, adult clubs): read it
+    after every rebuild; the first version of the merge rule wrongly joined Telluride Brewing with Telluride Coffee Roasters.
+- Lessons from the QA gap round (same day; it found the worst remaining bugs, as in Chicago):
+  - `norm_name` must transliterate accents: deleting them turned "Méxican" into "M XICAN", and the fragment "M" matched Pony M Cake's
+    100-point inspection to Coma Méxican Grill. `_stems` ignores one- and two-letter fragments.
+  - Names are compared with `agree()` on their `core()` (town, neighborhood and company words removed): "7908 ASPEN LLC" (Madame Ushi)
+    isn't Jus Aspen. A shared word counts only at the same house number and never a host store's or a generic food word
+    (`SHARED_JUNK`: "Whole Foods", "Yogurt"). Inspections need a strong name match. `name_sim` returns a floor of 60 for "nothing in
+    common", so test `<= 60`, not `< 60`.
+  - The license loader keeps the trade name (`dba`) and the holder apart: a listing named for the holder (an LLC or a person) takes the
+    trade name, or goes when the trade-name place is within 100 m (PDub Brewing → Reservoir Brewing). Person names are recognized only
+    with a first-name list; hand-checked and honored places are never dropped by these rules. Two overreaching versions of this rule
+    dropped Little Caesars and 440 real places before they were narrowed: compare the counts (`hand-checked`, `honored`, guides) with the
+    previous build after every change.
+  - Rows added from a license alone need a food word unless a license is a restaurant, bar or maker's type; nail bars, senior homes,
+    hotels, gas stations and the like are hidden by name and by Overture's own category for the same business.
+  - The link checker matches blocked domains whole: "restaurant.com" as a substring rejected 235 real sites.
 
 ## Outward actions need Nick's explicit yes, every time
 Creating the public repo `nickstrom5/colorado-eats`, pushing, Pages, anything in App Store Connect, uploads, emails, Open Records requests.

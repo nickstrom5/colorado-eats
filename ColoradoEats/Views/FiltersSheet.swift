@@ -36,8 +36,7 @@ struct FiltersSheet: View {
                     Section { Button("Clear all filters", role: .destructive) { model.filters = Filters() } }
                 }
             }
-            .navigationTitle("Filters")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineTitle("Filters")
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { dismiss() } } }
         }
         .presentationDetents([.medium, .large])

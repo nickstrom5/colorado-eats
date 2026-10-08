@@ -109,3 +109,20 @@ extension View {
         modifier(DisplayFont(size: size, weight: weight))
     }
 }
+
+extension View {
+    /// An inline navigation title in the display type. UINavigationBar.appearance() didn't reach every SwiftUI bar on iOS 27
+    /// (the Map title went from compressed blue to plain black after a push and pop; place titles were always plain), so the
+    /// title is our own view in the bar. The navigation title is still set, for the back button and VoiceOver.
+    func inlineTitle(_ title: String) -> some View {
+        navigationTitle(title)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text(title).displayFont(19, weight: .heavy).foregroundStyle(Theme.green)
+                        .lineLimit(1).minimumScaleFactor(0.7)
+                        .accessibilityAddTraits(.isHeader)
+                }
+            }
+    }
+}
