@@ -51,9 +51,30 @@ Thank you. Here is the information requested.
 
 6. Regulated or protected material: the app is not in a regulated industry and includes no protected third-party material. The data is open-licensed or public record, credited on the About tab. Ratings, hours and photos are shown only inside Apple's own place card through MapKit, under Apple's terms; the app stores no ratings or reviews. Boulder County inspection results are shown exactly as the county recorded them (Pass, Re-Inspection Required or Closure), with no grade of our own. Honors are stated as facts, with trademark notices. Website links were checked before release (each must be the restaurant's own page), and strip clubs and other adult venues are excluded by name, address and category. The app is independent and not affiliated with any restaurant, agency, the MICHELIN Guide or the James Beard Foundation.
 
-7. A distinct app: Colorado Eats is built only for Colorado, from Colorado records (state liquor licenses, Denver business licenses, Boulder County inspections) and Colorado-only research (green chile, ski towns, the oldest places, MICHELIN Guide Colorado). Its content isn't shared with any other app.
-
 Support: work-with-nick@gmail.com
+```
+
+## If App Review cites Guideline 4.3(a) (Resolution Center only; never in the Notes)
+
+Nick's call (2026-10-07, STATE_EATS_PLAYBOOK.md): submit Colorado Eats as its own app and keep this answer ready. Don't volunteer a
+comparison with the other state apps. If Apple still asks for one app, the fallback is a single multi-state app with a state picker
+(Nick decides then). Numbers from `playbook/site-numbers.json`.
+
+```
+Thank you for the review. Colorado Eats is not a repackaged copy of another app. It is a guide built for Colorado, from Colorado's own
+sources:
+- Its guides are Colorado's food traditions, each place checked by hand against a 2025 or 2026 source: green chile and Pueblo sloppers
+  (47 places), ski-town dining in Aspen, Vail, Breckenridge, Telluride and Steamboat (46), game and steakhouses (39), and the state's
+  oldest restaurants.
+- Its Brewpubs guide is built from the State of Colorado's Brew Pub and Distillery Pub liquor licenses (234 places), and it shows
+  Boulder County Public Health's official inspection results as recorded. No other Colorado health department publishes results in
+  bulk, and the app says so.
+- Its directory is built from Colorado's own public records: the Department of Revenue's liquor licenses and the City and County of
+  Denver's business licenses, placed on Colorado's county boundaries, with the MICHELIN Guide Colorado 2026 and James Beard honorees
+  stated as facts.
+- None of its places, research, guides or text is shared with any other app; the people who use it are in Colorado or traveling
+  there.
+We're glad to answer any question about how the app works.
 ```
 
 When the site moves to colorado.eatsranked.com, change the GitHub Pages line in point 4 to the new address. Keep the numbers in points 2
