@@ -1,5 +1,6 @@
-// Regenerates the brand images: the app icon (a flat Pueblo green chile on flag blue with a Front Range ridge, Nick's pick 2026-10-06,
-// concept A of scripts/icon-concepts-2.swift; it replaced the Palisade peach, which was not local enough), playbook/brand/, and the site's og.png, favicons and manifest icons.
+// Regenerates the brand images: the app icon (a flat Pueblo green chile lying level on flag blue: Nick's pick 2026-10-06, it replaced the
+// Palisade peach, which was not local enough; redrawn 2026-10-09 in the shared Eats Ranked icon style Nick approved, same food and colours,
+// no ridge, snow, shine or tilt, see ../state-prompts/ICON-STYLE.md), playbook/brand/, and the site's og.png, favicons and manifest icons.
 // Usage: swift scripts/make-brand.swift   (run from co-eats/)
 import AppKit
 import CoreGraphics
@@ -8,7 +9,7 @@ let root = FileManager.default.currentDirectoryPath
 func rgb(_ hex: UInt32, _ a: CGFloat = 1) -> CGColor {
     CGColor(srgbRed: CGFloat((hex >> 16) & 255) / 255, green: CGFloat((hex >> 8) & 255) / 255, blue: CGFloat(hex & 255) / 255, alpha: a)
 }
-let blue = rgb(0x002868), blue2 = rgb(0x173A80), gold = rgb(0xFFD700), white = rgb(0xFFFFFF), red = rgb(0xBF0A30)
+let blue = rgb(0x002868), gold = rgb(0xFFD700), white = rgb(0xFFFFFF), red = rgb(0xBF0A30)
 
 func canvas(_ w: Int, _ h: Int, _ draw: (CGContext) -> Void) -> CGImage {
     let ctx = CGContext(data: nil, width: w, height: h, bitsPerComponent: 8, bytesPerRow: 0,
@@ -25,57 +26,63 @@ func save(_ img: CGImage, _ path: String) {
 }
 func P(_ s: CGFloat, _ x: CGFloat, _ y: CGFloat) -> CGPoint { CGPoint(x: x * s, y: y * s) }
 
-/// The ground: flag blue with a low, lighter-blue Front Range ridge along the bottom.
-func ground(_ c: CGContext, _ s: CGFloat) {
-    c.setFillColor(blue); c.fill(CGRect(x: 0, y: 0, width: s, height: s))
-    let r = CGMutablePath()
-    let pts: [(CGFloat, CGFloat)] = [(0, 0.15), (0.10, 0.19), (0.19, 0.16), (0.30, 0.25), (0.38, 0.20), (0.47, 0.28), (0.56, 0.21),
-                                     (0.66, 0.26), (0.75, 0.18), (0.86, 0.23), (1, 0.17)]
-    r.move(to: P(s, 0, 0)); for (x, y) in pts { r.addLine(to: P(s, x, y)) }; r.addLine(to: P(s, 1, 0)); r.closeSubpath()
-    c.setFillColor(blue2); c.addPath(r); c.fillPath()
-    // snow caps on the two tallest peaks
-    c.setFillColor(rgb(0xFFFFFF, 0.85))
-    for (x, y) in [(0.47, 0.28), (0.30, 0.25)] {
-        let cap = CGMutablePath()
-        cap.move(to: P(s, x, y)); cap.addLine(to: P(s, x - 0.035, y - 0.035)); cap.addLine(to: P(s, x - 0.012, y - 0.026))
-        cap.addLine(to: P(s, x + 0.004, y - 0.036)); cap.addLine(to: P(s, x + 0.03, y - 0.03)); cap.closeSubpath()
-        c.addPath(cap); c.fillPath()
-    }
-}
-
-/// A: a Pueblo green chile, flat: one green with a darker underside, a lighter flat highlight, calyx and curled stem.
+/// A Pueblo green chile in side elevation, lying level. Broad, rounded shoulders at the left: the pod is widest there (0.40)
+/// and the top edge leaves the shoulder level, then runs down to the tip in one long, nearly straight sweep. The pod is a
+/// crescent: the bottom has a round belly under the shoulder, arches up through the middle and comes back down into the tip,
+/// so both edges bend the same way and the tip hooks down-right (its centre 0.075 below the shoulder's centre line; a curve
+/// in the pod, not a rotation). The tip is blunt, a 47 px round. One green in two flat tones: the base, and a darker underside
+/// over the lower 35% of the thickness whose hard edge runs parallel to the bottom contour (light from above, like Wisconsin's
+/// top face). A dark calyx sits on the crown like a cap, standing proud of the top edge, with two rounded sepals; the pod's own
+/// rounded end shows below it, so the silhouette stays whole in grayscale. A 46 px stem rises from the cap and curls right.
+/// No outline, no gloss, no marks. Paints nothing behind the food, so og.png can call it at another size (`chile(c, 400)`).
 func chile(_ c: CGContext, _ s: CGFloat) {
+    let ox: CGFloat = -0.031, oy: CGFloat = -0.046   // placement: box centred, mass a little low, as on the references
+    func pt(_ x: CGFloat, _ y: CGFloat) -> CGPoint { CGPoint(x: (x + ox) * s, y: (y + oy) * s) }
+    c.setLineCap(.round); c.setLineJoin(.round)
+
+    // pod, 5 segments: top edge from the shoulder (level there) to the tip, the round tip (radius 0.046, from 45° clockwise
+    // round to -102°), the bottom edge back to the shoulder (hook, arch, belly), and the rounded stem end in two quarters
     let pod = CGMutablePath()
-    pod.move(to: P(s, 0.27, 0.72))
-    pod.addCurve(to: P(s, 0.86, 0.27), control1: P(s, 0.60, 0.82), control2: P(s, 0.84, 0.58))
-    pod.addCurve(to: P(s, 0.70, 0.30), control1: P(s, 0.83, 0.25), control2: P(s, 0.76, 0.26))
-    pod.addCurve(to: P(s, 0.20, 0.53), control1: P(s, 0.58, 0.36), control2: P(s, 0.38, 0.44))
-    pod.addCurve(to: P(s, 0.27, 0.72), control1: P(s, 0.13, 0.57), control2: P(s, 0.16, 0.70))
+    pod.move(to: pt(0.290, 0.700))
+    pod.addCurve(to: pt(0.883, 0.458), control1: pt(0.460, 0.700), control2: pt(0.656, 0.684))
+    pod.addArc(center: pt(0.850, 0.425), radius: 0.046 * s, startAngle: .pi / 4, endAngle: -102 * .pi / 180, clockwise: true)
+    pod.addCurve(to: pt(0.290, 0.300), control1: pt(0.625, 0.426), control2: pt(0.590, 0.300))
+    pod.addCurve(to: pt(0.165, 0.500), control1: pt(0.210, 0.300), control2: pt(0.165, 0.372))
+    pod.addCurve(to: pt(0.290, 0.700), control1: pt(0.165, 0.628), control2: pt(0.210, 0.700))
     pod.closeSubpath()
     c.saveGState(); c.addPath(pod); c.clip()
     c.setFillColor(rgb(0x4E9A2E)); c.fill(CGRect(x: 0, y: 0, width: s, height: s))
-    // the darker underside: a flat band along the bottom edge
+    // underside: everything below an edge 35% of the way from the bottom contour to the top contour (level under the
+    // shoulder, then parallel to the bottom's arch and hook, leaving through the tip); the clip keeps it inside the pod
     let under = CGMutablePath()
-    under.move(to: P(s, 0.14, 0.58)); under.addCurve(to: P(s, 0.88, 0.29), control1: P(s, 0.40, 0.49), control2: P(s, 0.66, 0.40))
-    under.addLine(to: P(s, 0.88, 0.0)); under.addLine(to: P(s, 0.0, 0.0)); under.closeSubpath()
+    under.move(to: pt(0.020, 0.440)); under.addLine(to: pt(0.290, 0.440))
+    under.addCurve(to: pt(0.855, 0.407), control1: pt(0.545, 0.440), control2: pt(0.636, 0.516))
+    under.addLine(to: pt(1.034, 0.318)); under.addLine(to: pt(0.980, 0.050)); under.addLine(to: pt(0.020, 0.050))
+    under.closeSubpath()
     c.setFillColor(rgb(0x3A7A21)); c.addPath(under); c.fillPath()
-    // one flat lighter stripe along the top
-    let hi = CGMutablePath()
-    hi.move(to: P(s, 0.31, 0.665)); hi.addCurve(to: P(s, 0.74, 0.43), control1: P(s, 0.53, 0.72), control2: P(s, 0.69, 0.55))
-    c.setStrokeColor(rgb(0x7CC04F)); c.setLineWidth(s * 0.03); c.setLineCap(.round); c.addPath(hi); c.strokePath()
     c.restoreGState()
-    let cap = CGMutablePath()
-    cap.move(to: P(s, 0.18, 0.66)); cap.addCurve(to: P(s, 0.34, 0.73), control1: P(s, 0.21, 0.76), control2: P(s, 0.29, 0.77))
-    cap.addCurve(to: P(s, 0.18, 0.66), control1: P(s, 0.29, 0.65), control2: P(s, 0.22, 0.61))
-    c.setFillColor(rgb(0x2F5E1A)); c.addPath(cap); c.fillPath()
+
+    // stem: a 46 px round-cap stroke rising out of the cap's crown, leaning left, then curling right (root hidden by the cap)
     let stem = CGMutablePath()
-    stem.move(to: P(s, 0.25, 0.72)); stem.addCurve(to: P(s, 0.25, 0.86), control1: P(s, 0.22, 0.78), control2: P(s, 0.21, 0.83))
-    stem.addCurve(to: P(s, 0.33, 0.88), control1: P(s, 0.28, 0.89), control2: P(s, 0.31, 0.89))
-    c.setStrokeColor(rgb(0x5A8A2A)); c.setLineWidth(s * 0.045); c.setLineCap(.round); c.addPath(stem); c.strokePath()
+    stem.move(to: pt(0.234, 0.700))
+    stem.addCurve(to: pt(0.214, 0.795), control1: pt(0.222, 0.735), control2: pt(0.199, 0.755))
+    stem.addCurve(to: pt(0.309, 0.815), control1: pt(0.229, 0.830), control2: pt(0.284, 0.840))
+    c.setStrokeColor(rgb(0x5A8A2A)); c.setLineWidth(s * 0.045); c.addPath(stem); c.strokePath()
+
+    // calyx: a cap on the crown, 0.14 wide, domed about 0.03 above the top edge and flush with the rounded end, its lower
+    // edge two rounded sepals hanging onto the shoulder
+    let cap = CGMutablePath()
+    cap.move(to: pt(0.310, 0.696))
+    cap.addCurve(to: pt(0.168, 0.590), control1: pt(0.260, 0.756), control2: pt(0.168, 0.725))
+    cap.addCurve(to: pt(0.242, 0.640), control1: pt(0.179, 0.545), control2: pt(0.222, 0.560))
+    cap.addCurve(to: pt(0.310, 0.696), control1: pt(0.262, 0.570), control2: pt(0.305, 0.655))
+    cap.closeSubpath()
+    c.setFillColor(rgb(0x2F5E1A)); c.addPath(cap); c.fillPath()
 }
 
 func icon(_ size: Int) -> CGImage {
-    canvas(size, size) { c in let s = CGFloat(size); ground(c, s); chile(c, s) }
+    // flag blue edge to edge, then the chile: no ridge, snow, gloss or tilt
+    canvas(size, size) { c in let s = CGFloat(size); c.setFillColor(blue); c.fill(CGRect(x: 0, y: 0, width: s, height: s)); chile(c, s) }
 }
 
 func text(_ c: CGContext, _ str: String, font: NSFont, color: CGColor, at p: CGPoint) {

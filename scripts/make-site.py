@@ -281,8 +281,8 @@ def first_fit(cands, lo, hi, what=""):
 
 fit = first_fit
 
-# the app icon in miniature: a Pueblo green chile on flag blue over a Front Range ridge
-LOGO = '<svg viewBox="0 0 64 64" width="30" height="30" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#002868"/><path d="M6 55 L12 51 L19 53 L26 46 L31 49 L37 43 L43 48 L50 45 L58 50 V58 Q58 64 52 64 H12 Q6 64 6 58 Z" fill="#173A80"/><path d="M17.3 17.9 C38.4 11.5 53.8 26.9 55 46.7 C53.1 48 48.6 47.4 44.8 44.8 C37.1 41 24.3 35.8 12.8 30.1 C8.3 27.5 10.2 19.2 17.3 17.9 Z" fill="#4E9A2E"/><ellipse cx="16" cy="20" rx="5" ry="3" fill="#2F5E1A"/><path d="M16 18 C14 14 13.5 11 16 9 C18 7.5 20 7.5 21.2 8" stroke="#5A8A2A" stroke-width="3" stroke-linecap="round" fill="none"/></svg>'
+# the app icon in miniature: a Pueblo green chile lying level on flag blue (redrawn 2026-10-09 in the shared Eats Ranked style; the clip keeps the darker underside inside the pod)
+LOGO = '<svg viewBox="0 0 64 64" width="30" height="30" aria-hidden="true"><defs><clipPath id="co-pod"><path d="M16.6 22.1 C27.5 22.1 40.0 23.2 54.5 37.6 A2.94 2.94 0 0 1 51.8 42.6 C38.0 39.7 35.8 47.7 16.6 47.7 C11.5 47.7 8.6 43.1 8.6 34.9 C8.6 26.8 11.5 22.1 16.6 22.1Z"/></clipPath></defs><rect width="64" height="64" rx="14" fill="#002868"/><path d="M16.6 22.1 C27.5 22.1 40.0 23.2 54.5 37.6 A2.94 2.94 0 0 1 51.8 42.6 C38.0 39.7 35.8 47.7 16.6 47.7 C11.5 47.7 8.6 43.1 8.6 34.9 C8.6 26.8 11.5 22.1 16.6 22.1Z" fill="#4E9A2E"/><path d="M-0.7 38.8 L16.6 38.8 C32.9 38.8 38.7 33.9 52.7 40.9 L64.2 46.6 L60.7 63.7 L-0.7 63.7Z" fill="#3A7A21" clip-path="url(#co-pod)"/><path d="M13.0 22.1 C12.2 19.9 10.8 18.6 11.7 16.1 C12.7 13.8 16.2 13.2 17.8 14.8" stroke="#5A8A2A" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M17.9 22.4 C14.7 18.6 8.8 20.5 8.8 29.2 C9.5 32.1 12.2 31.1 13.5 26.0 C14.8 30.5 17.5 25.0 17.9 22.4Z" fill="#2F5E1A"/></svg>'
 FAVICON = "data:image/svg+xml," + LOGO.replace('width="30" height="30" ', "").replace(' aria-hidden="true"', "").replace("<svg ", "<svg xmlns='http://www.w3.org/2000/svg' ").replace('"', "'").replace("#", "%23").replace("<", "%3C").replace(">", "%3E")
 
 CSS = """
