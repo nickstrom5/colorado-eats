@@ -10,7 +10,9 @@ Static (no browser):
 - the store button carries no Apple logo; no letter-grade CSS; one place per brewpub license in the published data
 Browser (Playwright, channel="chrome"): no horizontal scroll, no console errors, no CSP violations, no broken internal links or
 images; the web app loads, searches ("pueblo slopper" finds only slopper places), opens a place, Back closes it, the phone panel is
-a modal dialog, a hostile #g= doesn't break it, and saved places use the coeats- prefix.
+a modal dialog, a hostile #g= doesn't break it, and saved places use the coeats- prefix. Also (bugs found in sibling web apps):
+phone inputs and selects >= 16px, the open place a labelled modal dialog at every width (Back/Forward/Escape/press outside), bad
+localStorage values don't stop the app, no "Nearest" without a location, and Near me asks for a fresh fix on every tap.
 
 Usage: .venv/bin/python scripts/qa-site.py            (serves docs/ itself on a free localhost port; exits 1 on any problem)
        .venv/bin/python scripts/qa-site.py --static   (static checks only, a few seconds)
@@ -49,9 +51,26 @@ OVERCLAIMS = [
     r"\b(?:all|every)\s+(?:of\s+)?colorado'?s\s+(?:restaurants|brewpubs)\b",
     r"\b(?:confirmed|checked|verified)\s+open\b",            # the research dates show when we checked a source, not that it's open now
     r"\bimminent health hazard at any score\b",              # unconfirmed as Colorado's rule; Boulder County records it (AR-15)
+    # the privacy policy says the app's location is never sent to us; Apple Maps handles its own requests, so not "anywhere"
+    r"\bnever\s+sent\s+anywhere\b",
+    # the 15,716 include the checked lists; 234 of the 252 brewpub licenses matched a listing; not every founding note names a source
+    r"\bthe\s+other\s+[\d,]+\s+(?:places|restaurants)\b",
+    r"\bthe\s+brewpubs\s+are\s+the\s+restaurants\s+on\b",
+    r"\b(?:gives|names)\s+the\s+source\s+of\s+its\s+year\b",
 ]
 # Boulder County's September 2025 system move stamped records with this day: it is not an inspection date and is never shown
 MIGRATION_DATES = [r"2025-09-03", r"September 3, 2025", r"Sep 3, 2025"]
+# Nick, 2026-10-12: the site's contact is nick@eatsranked.com; the old address must not appear anywhere in docs/
+OLD_EMAIL = "work-with-nick@gmail.com"
+SITE_EMAIL = "nick@eatsranked.com"
+HUB = "https://eatsranked.com/"
+# other state apps sharing this family: their app names and repo slugs never appear in this site (4.3(a): each state is its own
+# app), and other state names never appear in the page code or comments (place names and cuisines in the data may say "New York")
+OTHER_APPS = [r"Wisconsin Eats", r"Connecticut Eats", r"Florida Eats", r"California Eats", r"Washington Eats", r"Maine Eats", r"Idaho Eats",
+              r"New York Eats", r"Chicago Restaurants: Ranked", r"Chi Ranked"]
+OTHER_SLUGS = [r"(?:wi|ct|fl|ca|wa|me|id|ny|chi)-eats", r"(?:wisconsin|connecticut|florida|california|washington|maine|idaho|new-york)-eats",
+               r"chicago-restaurants-ranked"]
+OTHER_STATES = r"\b(?:Wisconsin|Connecticut|Florida|California|Washington|Maine|Idaho|New York|Illinois|Chicago)\b"
 # city-page words -> the section that backs them
 CITY_KEYWORDS = [(r"green chile", "green-chile"), (r"brewpub", "brewpubs"), (r"michelin|james beard|honoree", "honors"),
                  (r"\boldest\b", "oldest"), (r"\bski\b", "ski"), (r"steak|\bgame\b", "game"), (r"inspection", "inspections")]
@@ -269,6 +288,76 @@ def static_checks():
                 problems.append(f"{where}: the early-access button carries an Apple logo")
         if re.search(r"\.ex-g-[A-F]\b|\bletter grade\b", text):
             problems.append(f"{where}: letter-grade CSS or wording")
+    # --- the contact address, the Eats Ranked family link, other states' names
+    for path, text in pages.items():
+        if not re.search(r'<p>[^<]*Part of <a href="' + re.escape(HUB) + r'">Eats Ranked</a>, restaurant apps state by state\.</p>', text):
+            problems.append(f"{path}: footer has no 'Part of Eats Ranked' link to {HUB}")
+        orgs = [b for raw in parsed[path].ldjson for b in (lambda d: d.get("@graph", [d]) if isinstance(d, dict) else [])(json.loads(raw))
+                if b.get("@type") == "Organization" and str(b.get("@id", "")).endswith("/#org")]
+        if not orgs or any((o.get("parentOrganization") or {}).get("@id") != HUB + "#organization" for o in orgs):
+            problems.append(f"{path}: no #org Organization with parentOrganization {HUB}#organization")
+        if SITE_EMAIL not in text:
+            problems.append(f"{path}: doesn't show the contact address {SITE_EMAIL}")
+        if not re.search(r'<head>.*?<!--[^>]*?<meta name="apple-itunes-app" content="app-id=[^"]+">.*?-->.*?</head>', text, re.S):
+            problems.append(f"{path}: no apple-itunes-app placeholder in <head>")
+        code = "\n".join(parsed[path].scripts) + "\n".join(re.findall(r"<!--(.*?)-->", text, re.S))
+        for m in re.finditer(OTHER_STATES, code):
+            problems.append(f"{path}: page code or a comment names another state: {m.group(0)!r}")
+    for f in glob.glob(os.path.join(DOCS, "**", "*"), recursive=True):
+        if os.path.isfile(f) and f.rsplit(".", 1)[-1] in ("html", "json", "xml", "txt", "webmanifest", "js", "css", "md"):
+            body = open(f, encoding="utf-8", errors="replace").read()
+            if OLD_EMAIL in body:
+                problems.append(f"{rel(f)}: still has the old contact address {OLD_EMAIL}")
+            for rx in OTHER_APPS + OTHER_SLUGS:
+                for m in re.finditer(r"(?<![\w-])" + rx + r"(?![\w-])", body):
+                    problems.append(f"{rel(f)}: names another state's app or repo: {m.group(0)!r}")
+    # --- SEO: og:url is the canonical; breadcrumbs point at real pages; the FAQ's JSON-LD says exactly what the page shows
+    for path, text in pages.items():
+        pg = parsed[path]
+        og = re.search(r'<meta property="og:url" content="([^"]*)"', text)
+        if pg.canonical and (not og or og.group(1) != pg.canonical):
+            problems.append(f"{path}: og:url {og and og.group(1)} != canonical {pg.canonical}")
+        shown_text = re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", re.sub(r"<(script|style)[^>]*>.*?</\1>", " ", text, flags=re.S))))
+        for raw in pg.ldjson:
+            d = json.loads(raw)
+            for b in (d.get("@graph", [d]) if isinstance(d, dict) else []):
+                if b.get("@type") == "BreadcrumbList":
+                    for it in b.get("itemListElement", []):
+                        tp = urllib.parse.urlparse(it.get("item", "")).path
+                        tp = tp[len(BASE):] if BASE and tp.startswith(BASE) else tp
+                        if not local_exists(tp or "/"):
+                            problems.append(f"{path}: breadcrumb {it.get('item')} isn't a page")
+                if b.get("@type") == "FAQPage":
+                    for q in b.get("mainEntity", []):
+                        for t in (q.get("name", ""), q.get("acceptedAnswer", {}).get("text", "")):
+                            if re.sub(r"\s+", " ", t) not in shown_text:
+                                problems.append(f"{path}: FAQPage text isn't on the page as written: {t[:60]!r}")
+    # --- green chile: each dish counted once, whatever the spelling ("green chili", "breakfast burrito" vs "...burritos")
+    gc = pages.get("colorado-green-chile.html", "")
+    m = re.search(r"The dishes we found most often: ([^<]*)\.", gc)
+    if m:
+        keys = [re.sub(r"s\b", "", re.sub(r"\bgreen chil+i\b", "green chile", re.sub(r"\s*\(\d+\)", "", d).strip().lower()))
+                for d in html.unescape(m.group(1)).split(", ")]
+        if len(keys) != len(set(keys)):
+            problems.append(f"colorado-green-chile.html: a dish is counted twice under two spellings: {m.group(1)}")
+        try:   # the same six, in the same order, as the green chile places' dishes in the published data (a tie goes by name)
+            C = json.load(open(os.path.join(DOCS, "data", "core.json")))["cols"]
+            fold = lambda x: re.sub(r"s\b", "", x)
+            n, forms = {}, {}
+            for i in range(len(C["id"])):
+                if C["hc"][i] == 1 and (C["g"][i] or 0) & 1 and C["v"][i] != 1:
+                    fs = {re.sub(r"\bgreen chil+i\b", "green chile", x.strip().lower()) for x in str(C["dish"][i] or "").replace("; ", ", ").split(",") if x.strip()}
+                    for k in {fold(f) for f in fs}:
+                        n[k] = n.get(k, 0) + 1
+                    for f in fs:
+                        forms.setdefault(fold(f), {}).setdefault(f, 0)
+                        forms[fold(f)][f] += 1
+            shown_as = {k: max(forms[k].items(), key=lambda kv: (kv[1], kv[0]))[0] for k in n}
+            want = ", ".join(f"{shown_as[k]} ({c})" for k, c in sorted(n.items(), key=lambda kv: (-kv[1], shown_as[kv[0]]))[:6])
+            if html.unescape(m.group(1)) != want:
+                problems.append(f"colorado-green-chile.html: the most common dishes read {html.unescape(m.group(1))!r}, the data gives {want!r}")
+        except (OSError, ValueError, KeyError) as ex:
+            problems.append(f"colorado-green-chile.html: couldn't recount the dishes ({ex})")
     # --- the web app's storage keys
     ex = parsed.get("explore/index.html")
     if ex:
@@ -279,7 +368,11 @@ def static_checks():
             if not m.group(2).startswith(STORAGE_PREFIX):
                 problems.append(f"explore/index.html: localStorage key {m.group(2)!r} doesn't start with {STORAGE_PREFIX!r}")
         if re.search(r"""["'`]ce-["'`]""", js):
-            problems.append("explore/index.html: still uses Connecticut Eats' \"ce-\" storage prefix")
+            problems.append("explore/index.html: still uses another site's \"ce-\" storage prefix")
+        priv = html.unescape(re.sub(r"<[^>]+>", " ", pages.get("privacy.html", "")))
+        for k in re.findall(r'store\.set\("([^"]+)"', js):
+            if STORAGE_PREFIX + k not in priv:
+                problems.append(f"privacy.html: doesn't name the web app's localStorage key {STORAGE_PREFIX + k!r}")
     else:
         problems.append("explore/index.html is missing")
     # --- one place per brewpub license in the published data (the Brewpubs page and the web app agree)
@@ -319,7 +412,8 @@ def serve():
     if BASE:   # serve docs/ at /colorado-eats/, the path GitHub Pages will use
         root = tempfile.mkdtemp()
         os.symlink(os.path.abspath(DOCS), os.path.join(root, BASE.strip("/")))
-    srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), functools.partial(Quiet, directory=root))
+    # QA_PORT pins the port (the machine is shared: each session keeps to its own range); default: any free port
+    srv = http.server.ThreadingHTTPServer(("127.0.0.1", int(os.environ.get("QA_PORT") or 0)), functools.partial(Quiet, directory=root))
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     return f"http://127.0.0.1:{srv.server_address[1]}"
 
@@ -430,6 +524,53 @@ def browser_checks(problems):
                         problems.append(f"explore @{width}: Back with a place open didn't just close it (now at {page.url}, panel visible: {panel.is_visible()})")
                     elif width == 375 and page.evaluate("document.querySelector('#ex-app').inert"):
                         problems.append(f"explore @{width}: the page stayed inert after the sheet closed")
+            # ---- the web-app bugs found in sibling sites (addendum 2, 2026-10-12)
+            # phones: the search box and the selects are 16px or more, or iOS Safari zooms the page when one gets focus
+            if width == 375:
+                small = page.evaluate("""[...document.querySelectorAll('#ex-q, .ex-controls select')].map(e => [e.id, parseFloat(getComputedStyle(e).fontSize)]).filter(x => !(x[1] >= 16))""")
+                if small:
+                    problems.append(f"explore @{width}: inputs under 16px make iOS Safari zoom on focus: {small}")
+            # the open place is a labelled modal dialog at every width (on wide screens the side sheet covers Near me and List/Map):
+            # the page behind is inert and focus is inside; Back closes it, Forward reopens it with the search kept, Escape closes it and
+            # returns focus to its row, and a press outside it closes it
+            page.goto(ex + "#g=greenchile", wait_until="networkidle")
+            page.reload(wait_until="networkidle")
+            page.wait_for_selector(".ex-row", timeout=20000)
+            search.fill("pueblo")
+            page.wait_for_timeout(500)
+            page.locator(".ex-row").first.click()
+            page.wait_for_timeout(600)
+            dlg = page.evaluate("""(() => { const p = document.querySelector('#ex-panel'), l = document.getElementById(p.getAttribute('aria-labelledby') || '');
+                return [p.getAttribute('role'), p.getAttribute('aria-modal'), !!(l && p.contains(l) && l.textContent.trim()),
+                        document.querySelector('#ex-app').inert, p.contains(document.activeElement)]; })()""")
+            if dlg != ["dialog", "true", True, True, True]:
+                problems.append(f"explore @{width}: the open place isn't a labelled modal dialog (role, aria-modal, label, page inert, focus inside): {dlg}")
+            page.go_back()
+            page.wait_for_timeout(500)
+            page.go_forward()
+            page.wait_for_timeout(700)
+            if not page.locator("#ex-panel").is_visible() or page.input_value("#ex-q") != "pueblo":
+                problems.append(f"explore @{width}: Forward after Back didn't reopen the place with the search kept ({page.url})")
+            page.keyboard.press("Escape")
+            page.wait_for_timeout(500)
+            if page.locator("#ex-panel").is_visible() or "ex-row" not in (page.evaluate("document.activeElement && document.activeElement.className") or ""):
+                problems.append(f"explore @{width}: Escape didn't close the place and put focus back on its row")
+            page.locator(".ex-row").first.click()
+            page.wait_for_timeout(500)
+            page.mouse.click(5, 40)
+            page.wait_for_timeout(500)
+            if page.locator("#ex-panel").is_visible():
+                problems.append(f"explore @{width}: a press outside the open place (on the inert page) didn't close it")
+            # bad values under this site's keys (any page on the shared github.io origin can write them) don't stop the app
+            for key, bad in (("saved", '{"x":1}'), ("saved", "not json"), ("saved", "[null, 5, {}]"), ("guide", '{"x":1}'), ("guide", '"__proto__"')):
+                errors.clear()
+                page.evaluate("([k, v]) => localStorage.setItem(k, v)", [STORAGE_PREFIX + key, bad])
+                page.goto(ex, wait_until="networkidle")
+                page.reload(wait_until="networkidle")
+                page.wait_for_timeout(500)
+                if not page.locator(".ex-row").count() or errors:
+                    problems.append(f"explore @{width}: {STORAGE_PREFIX}{key} = {bad} stopped the app ({errors[:1]})")
+                page.evaluate("(k) => localStorage.removeItem(k)", STORAGE_PREFIX + key)
             search.fill("🍕")
             page.wait_for_timeout(400)
             if page.locator(".ex-row").count():
@@ -441,6 +582,66 @@ def browser_checks(problems):
                 page.wait_for_timeout(500)
                 if not page.locator(".ex-row").count() or errors:
                     problems.append(f"explore @{width}: {hostile} broke the list ({errors[:1]})")
+            # ---- location outside Colorado (App Review is usually in California): say so, and keep the map on the state
+            ctx.grant_permissions(["geolocation"], origin=base)
+            ctx.set_geolocation({"latitude": 37.7749, "longitude": -122.4194})
+            page.goto(ex + "#g=greenchile", wait_until="networkidle")
+            page.reload(wait_until="networkidle")
+            page.wait_for_selector(".ex-row", timeout=20000)
+            page.locator('.ex-view button[data-v="map"]').click()
+            page.wait_for_timeout(500)
+            page.locator("#ex-locate").click()
+            page.wait_for_timeout(1200)
+            msg = page.locator("#ex-locmsg").inner_text()
+            if "outside Colorado" not in msg:
+                problems.append(f"explore @{width}: Near me from San Francisco doesn't say it's outside Colorado ({msg!r})")
+            white = page.evaluate("""(() => { const c = document.querySelector('#ex-map'), d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+                let n = 0; for (let i = 0; i < d.length; i += 4) if (d[i] === 255 && d[i + 1] === 255 && d[i + 2] === 255) n++; return n; })()""")
+            if white < 2000:
+                problems.append(f"explore @{width}: Near me from outside Colorado left the map off the state ({white} state-fill pixels)")
+            # a map zoomed and dragged away from every dot says so, instead of "tap a dot"
+            for _ in range(6):
+                page.locator("#ex-zin").click()
+            box = page.locator("#ex-map").bounding_box()
+            page.mouse.move(box["x"] + box["width"] / 2, box["y"] + box["height"] / 2)
+            page.mouse.down()
+            page.mouse.move(box["x"] + 5, box["y"] + 5, steps=4)
+            page.mouse.up()
+            page.wait_for_timeout(300)
+            hint = page.locator("#ex-maphint").inner_text()
+            if "tap a dot" in hint and not page.evaluate("""(() => { const c = document.querySelector('#ex-map'), d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
+                    for (let i = 0; i < d.length; i += 4) if (d[i] < 10 && d[i + 1] < 60 && d[i + 2] > 90 && d[i + 2] < 120 || d[i] > 250 && d[i + 1] > 200 && d[i + 1] < 225 && d[i + 2] < 20) return true; return false; })()"""):
+                problems.append(f"explore @{width}: the map shows no dots but its hint says {hint!r}")
+            ctx.clear_permissions()
+            # no location (denied): the list doesn't claim to be sorted by distance
+            page.goto(ex + "#g=brewpubs", wait_until="networkidle")
+            page.reload(wait_until="networkidle")
+            page.wait_for_selector(".ex-row", timeout=20000)
+            page.select_option("#ex-sort", "nearest")
+            page.wait_for_timeout(1200)
+            if "Nearest" in page.locator("#ex-count").inner_text():
+                problems.append(f"explore @{width}: says 'Nearest' after location was denied ({page.locator('#ex-count').inner_text()!r})")
+            # ---- a location timeout isn't "location is off"
+            page.add_init_script("""navigator.geolocation.getCurrentPosition = (ok, fail) => setTimeout(() => fail({ code: 3, message: 'Timeout expired' }), 50);""")
+            page.goto(ex + "#g=greenchile", wait_until="networkidle")
+            page.reload(wait_until="networkidle")
+            page.wait_for_selector(".ex-row", timeout=20000)
+            page.locator("#ex-locate").click()
+            page.wait_for_timeout(500)
+            if "Location is off" in page.locator("#ex-locmsg").inner_text():
+                problems.append(f"explore @{width}: a location timeout reads as 'Location is off' ({page.locator('#ex-locmsg').inner_text()!r})")
+            page.select_option("#ex-sort", "nearest")   # asking for Nearest asks for a location, which times out too
+            page.wait_for_timeout(500)
+            if "Nearest" in page.locator("#ex-count").inner_text():
+                problems.append(f"explore @{width}: says 'Nearest' after a location timeout ({page.locator('#ex-count').inner_text()!r})")
+            # ---- aria-label only where it counts (a span, div, p or canvas needs a role for it to be read)
+            page.goto(ex + "#g=oldest", wait_until="networkidle")
+            page.reload(wait_until="networkidle")
+            page.wait_for_selector(".ex-row", timeout=20000)
+            stray = page.evaluate("""[...document.querySelectorAll('[aria-label]')].filter(e => ['SPAN', 'DIV', 'P', 'CANVAS', 'B', 'SMALL'].includes(e.tagName)
+                && !e.getAttribute('role')).map(e => e.tagName + '.' + e.className + ' ' + e.getAttribute('aria-label')).slice(0, 3)""")
+            if stray:
+                problems.append(f"explore @{width}: aria-label on elements with no role (screen readers skip it): {stray}")
             page.goto(ex + "#g=honors&sort=nearest", wait_until="networkidle")
             page.reload(wait_until="networkidle")
             page.wait_for_function("document.querySelectorAll('.ex-row').length > 0", timeout=20000)
@@ -448,6 +649,21 @@ def browser_checks(problems):
                 problems.append(f"explore @{width}: says 'Nearest' with no location")
             problems += [f"explore @{width}: CSP violation: {v}" for v in page.evaluate("window.__csp || []")]
             problems += [f"explore @{width}: console error: {e}" for e in errors]
+            # Near me asks for a fresh fix on every tap (one from earlier can be a drive away) and stays there to ask again
+            fresh = ctx.new_page()
+            fresh.add_init_script("""window.__geo = []; navigator.geolocation.getCurrentPosition = (ok, fail, o) => { window.__geo.push(o || {});
+                setTimeout(() => ok({ coords: { latitude: 39.74, longitude: -104.99 } }), 20); };""")
+            fresh.goto(ex + "#g=greenchile", wait_until="networkidle")
+            fresh.wait_for_selector(".ex-row", timeout=20000)
+            fresh.locator("#ex-locate").click()
+            fresh.wait_for_timeout(400)
+            if fresh.locator("#ex-locate").is_visible():
+                fresh.locator("#ex-locate").click()
+                fresh.wait_for_timeout(400)
+            geo = fresh.evaluate("window.__geo")
+            if len(geo) < 2 or any((o.get("maximumAge") or 0) > 60000 for o in geo):
+                problems.append(f"explore @{width}: Near me doesn't ask for a fresh location on every tap (requests: {geo})")
+            fresh.close()
             ctx.close()
         browser.close()
     return len(urls)

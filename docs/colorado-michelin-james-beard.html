@@ -150,27 +150,68 @@
 <script type="application/ld+json">
 {
  "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "Organization",
+   "@id": "https://nickstrom5.github.io/colorado-eats/#org",
+   "name": "Colorado Eats",
+   "url": "https://nickstrom5.github.io/colorado-eats/",
+   "logo": {
+    "@type": "ImageObject",
+    "url": "https://nickstrom5.github.io/colorado-eats/icon-512.png",
+    "width": 512,
+    "height": 512
+   },
+   "email": "nick@eatsranked.com",
+   "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer support",
+    "email": "nick@eatsranked.com",
+    "availableLanguage": "en"
+   },
+   "parentOrganization": {
+    "@type": "Organization",
+    "@id": "https://eatsranked.com/#organization",
+    "name": "Eats Ranked",
+    "url": "https://eatsranked.com/"
+   }
+  },
+  {
+   "@type": "WebSite",
+   "@id": "https://nickstrom5.github.io/colorado-eats/#website",
+   "name": "Colorado Eats",
+   "alternateName": [
+    "CO Eats",
+    "Colorado Eats app"
+   ],
+   "url": "https://nickstrom5.github.io/colorado-eats/",
+   "inLanguage": "en",
+   "publisher": {
+    "@id": "https://nickstrom5.github.io/colorado-eats/#org"
+   }
+  }
+ ]
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
  "@type": "Article",
  "headline": "Colorado MICHELIN & James Beard restaurants",
  "description": "85 Colorado restaurants in the MICHELIN Guide Colorado 2026 or honored by the James Beard Foundation, 2023 to 2026, listed by region and town.",
  "datePublished": "2026-10-05",
- "dateModified": "2026-10-07",
+ "dateModified": "2026-10-12",
  "inLanguage": "en",
  "mainEntityOfPage": "https://nickstrom5.github.io/colorado-eats/colorado-michelin-james-beard.html",
  "image": "https://nickstrom5.github.io/colorado-eats/og.png",
  "author": {
-  "@type": "Organization",
-  "name": "Colorado Eats",
-  "url": "https://nickstrom5.github.io/colorado-eats/"
+  "@id": "https://nickstrom5.github.io/colorado-eats/#org"
  },
  "publisher": {
-  "@type": "Organization",
-  "name": "Colorado Eats",
-  "url": "https://nickstrom5.github.io/colorado-eats/",
-  "logo": {
-   "@type": "ImageObject",
-   "url": "https://nickstrom5.github.io/colorado-eats/icon-512.png"
-  }
+  "@id": "https://nickstrom5.github.io/colorado-eats/#org"
+ },
+ "isPartOf": {
+  "@id": "https://nickstrom5.github.io/colorado-eats/#website"
  }
 }
 </script>
@@ -217,11 +258,11 @@
     <p class="kicker">Colorado Eats guide · honors as of fall 2026</p>
     <h1>Colorado MICHELIN &amp; James Beard restaurants</h1>
     <p class="lede">85 Colorado restaurants with an honor: the MICHELIN Guide Colorado 2026 selection (one 2-Star, nine 1-Star, 13 Bib Gourmand and 40 Recommended restaurants), and 37 places with a James Beard Foundation award, nomination or America's Classic from 2023 to 2026.</p>
-    <div class="cta-row"><a class="btn store-btn" href="mailto:work-with-nick@gmail.com?subject=Colorado%20Eats%20early%20access&amp;body=Send%20me%20the%20TestFlight%20link."><span class="store-label">Get early access</span></a><span class="pill store-note">Free iPhone and iPad app, coming soon to the App Store.</span></div>
+    <div class="cta-row"><a class="btn store-btn" href="mailto:nick@eatsranked.com?subject=Colorado%20Eats%20early%20access&amp;body=Send%20me%20the%20TestFlight%20link."><span class="store-label">Get early access</span></a><span class="pill store-note">Free for iPhone and iPad. App Store release in the works.</span></div>
   </section>
   <section id="about">
-    <h2>What's here, and what isn't</h2>
-    <p>These are facts from the honoring organizations, not ratings: a MICHELIN distinction or a James Beard Foundation award or nomination, checked against the official announcements. Restaurants that have closed since their honor are left out. Readers' polls, "best of" lists and star ratings from review sites are never included.</p>
+    <h2>Honors, not ratings</h2>
+    <p>A place is on this page for one reason: a MICHELIN distinction, or a James Beard Foundation award, nomination or America's Classic, checked against the organizations' own announcements. Honored restaurants that have since closed are dropped. Readers' polls, "best of" lists and review-site stars don't count here.</p>
     <p>MICHELIN's Colorado guide covered Denver, Boulder and the resort towns from 2023 and expanded statewide in 2026. The Green Star was retired worldwide in June 2026, so none is shown.</p>
     <p class="fine">MICHELIN and the MICHELIN Guide are trademarks of Michelin. James Beard Foundation and James Beard Award are trademarks of the James Beard Foundation. Colorado Eats is not affiliated with either.</p>
     <p class="fine">Other guides: <a href="/colorado-eats/colorado-green-chile.html">Colorado green chile guide</a>, <a href="/colorado-eats/colorado-brewpubs.html">Colorado brewpubs</a>, <a href="/colorado-eats/colorado-ski-town-restaurants.html">Ski town dining</a>, <a href="/colorado-eats/colorado-game-steakhouses.html">Colorado game &amp; steakhouses</a>, <a href="/colorado-eats/colorado-oldest-restaurants.html">Oldest restaurants</a>, <a href="/colorado-eats/boulder-county-restaurant-inspections.html">Boulder County restaurant inspections</a>. City pages: <a href="/colorado-eats/cities/denver.html">Denver</a>, <a href="/colorado-eats/cities/colorado-springs.html">Colorado Springs</a>, <a href="/colorado-eats/cities/aurora.html">Aurora</a>, <a href="/colorado-eats/cities/fort-collins.html">Fort Collins</a>, <a href="/colorado-eats/cities/boulder.html">Boulder</a>, <a href="/colorado-eats/cities/pueblo.html">Pueblo</a>, <a href="/colorado-eats/cities/lakewood.html">Lakewood</a>, <a href="/colorado-eats/cities/longmont.html">Longmont</a>, <a href="/colorado-eats/cities/greeley.html">Greeley</a>, <a href="/colorado-eats/cities/golden.html">Golden</a>, <a href="/colorado-eats/cities/grand-junction.html">Grand Junction</a>, <a href="/colorado-eats/cities/durango.html">Durango</a>, <a href="/colorado-eats/cities/aspen.html">Aspen</a>, <a href="/colorado-eats/cities/breckenridge.html">Breckenridge</a>, <a href="/colorado-eats/cities/steamboat-springs.html">Steamboat Springs</a>, <a href="/colorado-eats/cities/vail.html">Vail</a>.</p>
@@ -250,10 +291,10 @@
       <a href="/colorado-eats/cities/">Cities and towns</a>
       <a href="/colorado-eats/privacy.html">Privacy policy</a>
       <a href="/colorado-eats/terms.html">Terms of use</a>
-      <a href="mailto:work-with-nick@gmail.com">Email us</a>
+      <a href="mailto:nick@eatsranked.com">Email us</a>
     </nav>
     <p>Place data: hand-checked research by Colorado Eats (fall 2026); Overture Maps Foundation places (CDLA Permissive 2.0) and addresses (open address sources under permissive licenses, docs.overturemaps.org/attribution); © OpenStreetMap contributors (ODbL); U.S. Census Bureau Geocoder (public domain); Colorado Department of Revenue liquor licenses and Boulder County Public Health inspections (data.colorado.gov, public domain); City and County of Denver Open Data. Not affiliated with or endorsed by any restaurant, team, chain or government agency, the MICHELIN Guide or the James Beard Foundation. MICHELIN and the MICHELIN Guide are trademarks of Michelin; James Beard Foundation and James Beard Award are trademarks of the James Beard Foundation. Places open and close, so check before you go.</p>
-    <p>© 2026 Colorado Eats.</p>
+    <p>© 2026 Colorado Eats. Part of <a href="https://eatsranked.com/">Eats Ranked</a>, restaurant apps state by state.</p>
   </footer>
 </div>
 <script>

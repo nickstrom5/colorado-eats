@@ -40,10 +40,10 @@ DOMAIN = f"https://{CUSTOM_DOMAIN}" if CUSTOM_DOMAIN else f"https://nickstrom5.g
 BASE = "" if CUSTOM_DOMAIN else f"/{REPO}"     # path prefix for root-relative links
 BRAND = "Colorado Eats"
 TAGLINE = "Green chile & brewpub guide"
-EMAIL = "work-with-nick@gmail.com"
+EMAIL = "nick@eatsranked.com"   # Nick, 2026-10-12: the site's contact (Cloudflare Email Routing); the app and the listing switch in its next build
 PUBLISHED = "2026-10-05"        # the site's first publication (Article datePublished)
-SITE_REV = "2026-10-07"         # the last change to this generator's own copy or code: bump it when you change the words
-POLICY_UPDATED = "2026-10-07"   # privacy policy and terms: bump only when their text changes
+SITE_REV = "2026-10-12"         # the last change to this generator's own copy or code: bump it when you change the words
+POLICY_UPDATED = "2026-10-12"   # privacy policy and terms: bump only when their text changes
 CHECKED = "fall 2026"
 
 D = json.load(open(f"{ROOT}/data/app/places.json"))
@@ -404,6 +404,19 @@ CSS = """
 """
 
 
+ORG_ID, SITE_ID = f"{DOMAIN}/#org", f"{DOMAIN}/#website"
+HUB = "https://eatsranked.com/"
+# On every page: who publishes the site, and that it is part of Eats Ranked (the hub lists each state as a subOrganization;
+# this says so from this side too, in the family's shared wording).
+BASE_LD = {"@context": "https://schema.org", "@graph": [
+    {"@type": "Organization", "@id": ORG_ID, "name": BRAND, "url": f"{DOMAIN}/",
+     "logo": {"@type": "ImageObject", "url": f"{DOMAIN}/icon-512.png", "width": 512, "height": 512}, "email": EMAIL,
+     "contactPoint": {"@type": "ContactPoint", "contactType": "customer support", "email": EMAIL, "availableLanguage": "en"},
+     "parentOrganization": {"@type": "Organization", "@id": HUB + "#organization", "name": "Eats Ranked", "url": HUB}},
+    {"@type": "WebSite", "@id": SITE_ID, "name": BRAND, "alternateName": ["CO Eats", "Colorado Eats app"], "url": f"{DOMAIN}/",
+     "inLanguage": "en", "publisher": {"@id": ORG_ID}}]}
+
+
 def jsonld(obj):
     big = obj.get("@type") == "ItemList"
     raw = json.dumps(obj, ensure_ascii=False, indent=None if big else 1, separators=(",", ":") if big else None)
@@ -426,7 +439,7 @@ def store_button(label="Get early access"):
             f'<span class="store-label">{label}</span></a>')
 
 
-STORE_NOTE = "Free iPhone and iPad app, coming soon to the App Store."
+STORE_NOTE = "Free for iPhone and iPad. App Store release in the works."
 
 
 def sha256_src(s):
@@ -455,7 +468,7 @@ def page(path, title, desc, body, lds=(), robots="index,follow,max-image-preview
     url = DOMAIN + "/" + ("" if path == "index.html" else path.removesuffix("index.html"))
     indexed = "noindex" not in robots
     og_alt = og_alt or f"{BRAND}: {TAGLINE}. Colorado restaurants, with hand-checked green chile, ski-town dining and the state's oldest places."
-    ld = "\n".join(jsonld(x) for x in lds)
+    ld = "\n".join(jsonld(x) for x in (BASE_LD, *lds))
     canon = f'<link rel="canonical" href="{url}">\n' if indexed else ""
     og_url = f'<meta property="og:url" content="{url}">\n' if indexed else ""
     doc = f"""<!DOCTYPE html>
@@ -522,7 +535,7 @@ def page(path, title, desc, body, lds=(), robots="index,follow,max-image-preview
       <a href="mailto:{EMAIL}">Email us</a>
     </nav>
     <p>{SOURCES_LINE}</p>
-    <p>© 2026 {BRAND}.</p>
+    <p>© 2026 {BRAND}. Part of <a href="{HUB}">Eats Ranked</a>, restaurant apps state by state.</p>
   </footer>
 </div>
 <script>
@@ -639,8 +652,7 @@ def item_list(name, places, url, anchors):
 def article_ld(url, headline, desc):
     return {"@context": "https://schema.org", "@type": "Article", "headline": headline, "description": desc,
             "datePublished": PUBLISHED, "dateModified": TODAY, "inLanguage": "en", "mainEntityOfPage": url,
-            "image": f"{DOMAIN}/og.png", "author": {"@type": "Organization", "name": BRAND, "url": DOMAIN + "/"},
-            "publisher": {"@type": "Organization", "name": BRAND, "url": DOMAIN + "/", "logo": {"@type": "ImageObject", "url": f"{DOMAIN}/icon-512.png"}}}
+            "image": f"{DOMAIN}/og.png", "author": {"@id": ORG_ID}, "publisher": {"@id": ORG_ID}, "isPartOf": {"@id": SITE_ID}}
 
 
 # ---------------------------------------------------------------- counts shared by several pages
@@ -648,9 +660,15 @@ N_REST = len(REST)
 N_TOWNS = len({p.city for p in REST if p.city})
 N_COUNTIES = len({p.county for p in REST if p.county})
 DISH_WORDS = Counter()
+_dish_forms = defaultdict(Counter)
 for p in CHILE_L:
-    for d in {x.strip().lower() for x in p.dishes.split(",") if x.strip()}:
-        DISH_WORDS[d] += 1
+    # one dish, one count: "green chili" is the same stew as "green chile", and "breakfast burrito" the same as "breakfast burritos"
+    forms = {re.sub(r"\bgreen chil+i\b", "green chile", x.strip().lower()) for x in p.dishes.split(",") if x.strip()}
+    for k in {re.sub(r"s\b", "", f) for f in forms}:
+        DISH_WORDS[k] += 1
+    for f in forms:
+        _dish_forms[re.sub(r"s\b", "", f)][f] += 1
+DISH_WORDS = Counter({max(_dish_forms[k].items(), key=lambda kv: (kv[1], kv[0]))[0]: n for k, n in DISH_WORDS.items()})   # shown in the spelling seen most (a tie: the same one every run)
 N_SLOPPER = sum(1 for p in CHILE_L if "slopper" in p.dishes.lower())
 N_PUEBLO_CHILE = sum(1 for p in CHILE_L if p.county == "Pueblo")
 BREW_TOWNS = Counter(p.city for p in BREW_L)
@@ -747,23 +765,22 @@ def towns_text(counter, k):
 
 
 # ---------------------------------------------------------------- green chile
-top_dish = ", ".join(f"{d} ({n})" for d, n in DISH_WORDS.most_common(6))
+top_dish = ", ".join(f"{d} ({n})" for d, n in sorted(DISH_WORDS.items(), key=lambda kv: (-kv[1], kv[0]))[:6])   # ties by name: same page on every run
 slop = ", Pueblo sloppers" if N_SLOPPER else ""
 guide_page("colorado-green-chile.html", "Colorado green chile guide", f"{BRAND} guide · checked {CHECKED}",
-           [f"Colorado Green Chile Guide: {len(CHILE_L)} Checked Places | {BRAND}", f"Colorado Green Chile: {len(CHILE_L)} Checked Places | {BRAND}",
-            f"Colorado Green Chile Guide: {len(CHILE_L)} Hand-Checked Places"]
-           + ([f"Colorado Green Chile Guide: {len(CHILE_L)} Places & Pueblo Sloppers"] if N_SLOPPER else []),
-           [f"{plural(len(CHILE_L), 'Colorado green chile spot')}, checked in {CHECKED} against a 2025–26 source: smothered burritos, breakfast burritos{slop} and chile by the bowl.",
-            f"{plural(len(CHILE_L), 'Colorado green chile spot')} checked in {CHECKED}: smothered burritos, breakfast burritos{slop} and chile by the bowl, by region.",
-            f"{plural(len(CHILE_L), 'Colorado place')} for green chile, checked in {CHECKED}: smothered and breakfast burritos{slop}, chile by the bowl. By region and town.",
+           ([f"Green Chile in Colorado: {len(CHILE_L)} Spots, Pueblo Sloppers Too"] if N_SLOPPER else [])
+           + [f"Where to Eat Colorado Green Chile: {len(CHILE_L)} Places", f"Colorado Green Chile, Smothered & by the Bowl: {len(CHILE_L)} Places",
+              f"Colorado Green Chile Guide: {len(CHILE_L)} Hand-Checked Places"],
+           [f"Smothered burritos, green chile by the bowl{' and Pueblo sloppers' if N_SLOPPER else ''}: {len(CHILE_L)} Colorado restaurants, diners and taverns, each matched to a 2025–26 menu or news story.",
+            f"Where Colorado ladles its green chile: {plural(len(CHILE_L), 'restaurant')}, diners and taverns{slop} included, each matched to a 2025–26 menu or news story in {CHECKED}.",
             f"{plural(len(CHILE_L), 'Colorado place')} for green chile, hand-checked in {CHECKED}: smothered burritos, breakfast burritos and chile by the bowl, listed by region and town."],
-           f"{plural(len(CHILE_L), 'restaurant')}, diners and taverns across Colorado known for green chile, each checked in {CHECKED} against a 2025–26 source: its own menu or recent local news. For each one: what's on the menu, and how long it's been at this address when that's documented.",
+           f"{plural(len(CHILE_L), 'restaurant')}, diners and taverns where Colorado's green chile is on the menu: smothered over a burrito, served by the bowl{' or, in Pueblo, poured over a slopper' if N_SLOPPER else ''}. We matched each one to a 2025–26 menu or local news story in {CHECKED}, and list its green chile dishes and, where it's documented, how long it has been at its address.",
            f"""<h2>Colorado green chile, briefly</h2>
     <p>Colorado green chile is a pork-and-roasted-pepper stew, thicker and often hotter than New Mexico's, ladled over almost everything: smothered burritos, breakfast burritos, chile rellenos and fries. In Pueblo it tops a hamburger in a bowl, the slopper. Peppers come from Pueblo and the San Luis Valley, and late summer smells like chile roasters outside grocery stores.</p>
     <h2>What's on the list</h2>
     <p>{N_PUEBLO_CHILE:,} of the {len(CHILE_L):,} are in Pueblo County, and {N_SLOPPER:,} serve a slopper. The dishes we found most often: {e(top_dish)}.</p>
-    <p>How the list was built: each place was checked against a 2025 or 2026 source, such as its own menu page or a dated local news story. Places with no current source, a dead website or green chile only mentioned in passing were left out. Nothing here comes from review sites, and the order is by region and town, not by anyone's rating. Menus change, so check before you go.</p>
-    <p>In the {BRAND} app, the same list sorts by distance from you, and each place opens Apple Maps' own card for live hours, photos and directions.</p>""",
+    <p>Our method: a place got on only if a 2025 or 2026 menu page or a dated local news story shows green chile on its menu. We skipped places with no current source, a dead website, or green chile in a single passing mention. Review sites played no part, and the list runs by region and town rather than by anyone's score. Menus change, so call before you drive across town for a bowl.</p>
+    <p>On an iPhone, {BRAND} puts these spots in order of distance and opens each one's Apple Maps card for hours, photos and directions.</p>""",
            CHILE_L, "green chile spot", "green chile spots", "Colorado green chile restaurants")
 
 # ---------------------------------------------------------------- brewpubs
@@ -771,8 +788,8 @@ top_brew = ", ".join(f"{c} ({n})" for c, n in BREW_TOWNS.most_common(6))
 NB = len(BREW_L)
 LIQ = hdate(LIQUOR_DATE)
 if N_BREW_LICENSES:
-    brew_lede = (f"{plural(NB, 'place')} matched to the state's {N_BREW_LICENSES:,} active Brew Pub and Distillery Pub licenses (the list of {LIQ}). "
-                 "A Brew Pub license lets a restaurant brew beer on site and serve it with food; a Distillery Pub license does the same for spirits.")
+    brew_lede = (f"{plural(NB, 'place')} to eat, matched to the state's {N_BREW_LICENSES:,} active Brew Pub and Distillery Pub licenses on the Liquor Enforcement Division's list of {LIQ}. "
+                 "Brew Pub means beer brewed on the premises and served with food; Distillery Pub means the same for spirits.")
     brew_desc = [f"{plural(NB, 'Colorado place')} matched to the state's {N_BREW_LICENSES:,} active Brew Pub and Distillery Pub licenses, beer or spirits made on site, by region and town."]
 else:
     brew_lede = (f"{plural(NB, 'place')} with a state Brew Pub or Distillery Pub license, from the state's active license list of {LIQ}, matched to their "
@@ -782,13 +799,13 @@ brew_desc += [f"{plural(NB, 'Colorado place')} with a state Brew Pub or Distille
               f"{plural(NB, 'Colorado place')} with a state Brew Pub or Distillery Pub license, where the beer or spirits are made on site, listed by region and town.",
               f"{plural(NB, 'Colorado place')} holding a state Brew Pub or Distillery Pub license, making beer or spirits on site, by region and town. State list of {hmonth(LIQUOR_DATE)}."]
 guide_page("colorado-brewpubs.html", "Colorado brewpubs", f"{BRAND} guide · state licenses as of {e(LIQ)}",
-           [f"Colorado Brewpubs: {NB} Licensed Brewpubs by Town | {BRAND}", f"Colorado Brewpubs: {NB} Licensed by Town | {BRAND}",
-            f"Colorado Brewpubs by Town: {NB} Licensed Places | {BRAND}", f"Colorado Brewpubs: {NB} Places with a Brew Pub License"],
+           [f"Colorado Brewpubs: {NB} Restaurants That Brew In House", f"Colorado Brewpubs, Town by Town: {NB} Licensed Places",
+            f"Colorado Brewpubs: {NB} Places with a Brew Pub License"],
            brew_desc, brew_lede,
            f"""<h2>What a brewpub license means</h2>
     <p>Colorado's Liquor Enforcement Division issues a Brew Pub license to a restaurant that brews its own beer on the premises, and a Distillery Pub license to one that distills. That's different from a production brewery's taproom, which holds a manufacturer license and doesn't have to serve food. So this list is the brewpubs in the legal sense: places to eat where the beer is made in house.</p>
     <p>The towns with the most: {e(top_brew)}.</p>
-    <p>How the list was built: from the Colorado Department of Revenue's list of active liquor licenses on data.colorado.gov ({e(LIQ)}), matched to each place's map listing by name and street address. A license that matched two listings at one address is shown once, on the listing whose name matches the license. A licensed brewpub can be missing when its address couldn't be matched to a listing. The order is by region and town.</p>""",
+    <p>Where the list comes from: the Colorado Department of Revenue publishes its active liquor licenses on data.colorado.gov ({e(LIQ)}), and we matched each Brew Pub and Distillery Pub license to a map listing by name and street address. When one license matched two listings at the same address, it appears once, on the listing that carries the license's name. A brewpub whose address we couldn't match to a listing is missing here. Places run by region, then town.</p>""",
            BREW_L, "brewpub", "brewpubs", "Colorado brewpubs")
 
 # ---------------------------------------------------------------- ski towns
@@ -799,21 +816,21 @@ for k in (5, 4, 3, 2):
     ski_opts += [f"{plural(len(SKI_L), 'restaurant')} in {t} and other Colorado ski towns, checked in {CHECKED}, with seasonal hours noted.",
                  f"{plural(len(SKI_L), 'Colorado ski town restaurant')} in {t} and more, checked in {CHECKED}, seasons noted, by region and town."]
 guide_page("colorado-ski-town-restaurants.html", "Colorado ski town restaurants", f"{BRAND} guide · checked {CHECKED}",
-           [f"Colorado Ski Town Restaurants: {len(SKI_L)} Checked Places | {BRAND}", f"Colorado Ski Town Dining: {len(SKI_L)} Places | {BRAND}",
+           [f"Where to Eat in Colorado Ski Towns: {len(SKI_L)} Places, Checked", f"Colorado Ski Town Restaurants: {len(SKI_L)} Places, {towns_text(ski_towns, 1)} to {ski_towns.most_common(2)[-1][0]}",
             f"Colorado Ski Town Restaurants: {len(SKI_L)} Checked Places"],
            ski_opts,
            f"{plural(len(SKI_L), 'restaurant')} in Colorado's ski towns, from slopeside lodges to downtown institutions, each checked in {CHECKED} against a 2025–26 source. On-mountain places that only open in winter are marked.",
            f"""<h2>Eating in the mountains</h2>
     <p>Colorado's resort towns have more good restaurants per resident than anywhere else in the state, and many keep their own schedule: on-mountain lodges open only in ski season, and lots of town restaurants close for a few weeks of "mud season" in spring and fall. Those closures are not permanent, and the list marks seasonal places when they say so.</p>
     <p>By town: {e(", ".join(f"{c} ({n})" for c, n in ski_towns.most_common(10)))}.</p>
-    <p>How the list was built: each place was checked against a 2025 or 2026 source, usually its own site or menu or a dated story in the local paper. Places with no current source were left out. MICHELIN Guide Colorado restaurants in these towns are included. The order is by region and town, never by rating.</p>""",
+    <p>Our method: we matched each place to a 2025 or 2026 source, usually its own site or menu or a dated story in the mountain-town paper, and dropped the places we couldn't. MICHELIN Guide Colorado restaurants in these towns are on it. Places run by region and town; no rating decides the order.</p>""",
            SKI_L, "restaurant", "restaurants", "Colorado ski town restaurants")
 
 # ---------------------------------------------------------------- game & steakhouses
 buck = next((p for p in GAME_L if p.name.lower().startswith("buckhorn exchange") and p.promo_ok()), None)
 from_buck = f"from the {buck.name} to mountain-town lodges" if buck else "from Denver steakhouses to mountain-town lodges"
 guide_page("colorado-game-steakhouses.html", "Colorado game & steakhouses", f"{BRAND} guide · checked {CHECKED}",
-           [f"Colorado Steakhouses & Game: {len(GAME_L)} Checked Places | {BRAND}", f"Colorado Bison, Elk & Steakhouses: {len(GAME_L)} Places",
+           [f"Bison, Elk & Steak in Colorado: {len(GAME_L)} Places We Checked", f"Colorado Bison, Elk & Steakhouses: {len(GAME_L)} Places",
             f"Colorado Game & Steakhouses: {len(GAME_L)} Places | {BRAND}"],
            [f"{plural(len(GAME_L), 'Colorado restaurant')} serving bison, elk, trout and steak, checked in {CHECKED}, {from_buck}, by region.",
             f"{plural(len(GAME_L), 'Colorado place')} for bison, elk, trout and steak, checked in {CHECKED}, {from_buck}, by region and town.",
@@ -821,7 +838,7 @@ guide_page("colorado-game-steakhouses.html", "Colorado game & steakhouses", f"{B
            f"{plural(len(GAME_L), 'restaurant')} with bison, elk, venison, trout or a classic steakhouse menu, each checked in {CHECKED} against a 2025–26 source: its menu or recent local news.",
            f"""<h2>Colorado on the plate</h2>
     <p>Bison and elk ranch across the state, Rocky Mountain trout comes out of its rivers, and steakhouses have fed Denver since the stockyards. The dishes listed with each place are from its current menu when we checked.</p>
-    <p>How the list was built: each place was checked against a 2025 or 2026 source. Menus change with the season, so check before you go. The order is by region and town, never by rating.</p>""",
+    <p>Our method: every entry has a 2025 or 2026 menu or news source behind it. Game dishes come and go with the seasons, so check the menu before you go. Places run by region and town, and no rating sets the order.</p>""",
            GAME_L, "place", "places", "Colorado game and steakhouse restaurants")
 
 # ---------------------------------------------------------------- MICHELIN & James Beard
@@ -836,8 +853,8 @@ guide_page("colorado-michelin-james-beard.html", "Colorado MICHELIN & James Bear
             f"{plural(len(HON_L), 'Colorado restaurant')} in the MICHELIN Guide Colorado 2026 or honored by the James Beard Foundation, 2023 to 2026, listed by region and town.",
             f"{plural(len(HON_L), 'Colorado restaurant')} with a MICHELIN Guide Colorado 2026 distinction or a 2023–2026 James Beard honor, listed by region and town."],
            f"{plural(len(HON_L), 'Colorado restaurant')} with an honor: {honors_mi}, and {plural(N_JBF, 'place')} with a James Beard Foundation award, nomination or America's Classic from 2023 to 2026.",
-           f"""<h2>What's here, and what isn't</h2>
-    <p>These are facts from the honoring organizations, not ratings: a MICHELIN distinction or a James Beard Foundation award or nomination, checked against the official announcements. Restaurants that have closed since their honor are left out. Readers' polls, "best of" lists and star ratings from review sites are never included.</p>
+           f"""<h2>Honors, not ratings</h2>
+    <p>A place is on this page for one reason: a MICHELIN distinction, or a James Beard Foundation award, nomination or America's Classic, checked against the organizations' own announcements. Honored restaurants that have since closed are dropped. Readers' polls, "best of" lists and review-site stars don't count here.</p>
     <p>MICHELIN's Colorado guide covered Denver, Boulder and the resort towns from 2023 and expanded statewide in 2026. The Green Star was retired worldwide in June 2026, so none is shown.</p>
     <p class="fine">MICHELIN and the MICHELIN Guide are trademarks of Michelin. James Beard Foundation and James Beard Award are trademarks of the James Beard Foundation. {BRAND} is not affiliated with either.</p>""",
            HON_L, "restaurant", "restaurants", "Colorado MICHELIN Guide and James Beard restaurants", honors=True)
@@ -846,14 +863,15 @@ guide_page("colorado-michelin-james-beard.html", "Colorado MICHELIN & James Bear
 old_pre1950 = sum(1 for p in OLD_L if p.founded < 1950)
 old_checked = f" Each was checked in {CHECKED} against a 2025–26 source." if OLD_ALL_HC else ""
 guide_page("colorado-oldest-restaurants.html", "Colorado's oldest restaurants", f"{BRAND} guide · checked {CHECKED}" if OLD_ALL_HC else f"{BRAND} guide",
-           [f"Colorado's Oldest Restaurants & Saloons: {len(OLD_L)} Places | {BRAND}", f"Oldest Restaurants in Colorado: {len(OLD_L)} Places | {BRAND}",
+           [f"Colorado's Oldest Restaurants and Saloons, Since {OLD_L[0].founded}", f"Colorado's Oldest Restaurants & Saloons: {len(OLD_L)} Places | {BRAND}",
             f"Colorado's Oldest Restaurants and Saloons, Year by Year"],
-           [f"{plural(len(OLD_L), 'Colorado restaurant')} and saloons with a documented founding year at their current address, oldest first, with what each year rests on.",
+           [f"Colorado's longest-running dining rooms and saloons: {plural(len(OLD_L), 'place')} with a documented opening year at today's address, from {OLD_L[0].founded} on.",
+            f"{plural(len(OLD_L), 'Colorado restaurant')} and saloons with a documented founding year at their current address, oldest first, with what each year rests on.",
             f"Colorado's oldest restaurants and saloons: {plural(len(OLD_L), 'place')} with a documented founding year at the same address, oldest first, sources noted.",
             f"Colorado's oldest restaurants and saloons: {plural(len(OLD_L), 'place')} with a documented founding year at this address, oldest first, and the story behind each date."],
-           f"{plural(len(OLD_L), 'Colorado restaurant')} and saloons with a documented founding year at their current address, oldest first. {old_pre1950:,} opened before 1950. Under each one, a note says what the year rests on.",
-           f"""<h2>How a founding year is chosen</h2>
-    <p>A founding year here means the year the place opened at this address in its present form, as the place itself or a published history documents it; for a hotel's bar or dining room that opened with the hotel, the hotel's year. It is never the year a brand started elsewhere, and never a year before a move. Earlier history on the same lot, like a tent saloon, is in the note under the place. When sources disagree we use the later date, and when the year rests on the place's own account, the note under it says so.{old_checked}</p>""",
+           f"Colorado's longest-running dining rooms and bars: {plural(len(OLD_L), 'place')} whose opening year at their present address is on record, from the oldest down. {old_pre1950:,} of them date from before 1950, and a note under each one explains its year.",
+           f"""<h2>What counts as a founding year</h2>
+    <p>We count the year a place opened at its current address in its current form, from the place's own history or a published one. A hotel bar or dining room that opened with its hotel takes the hotel's year. A brand's start somewhere else doesn't count, and neither does any year before a move; older history on the same lot, such as a tent saloon, goes in the note. If sources disagree, the later year wins, and the note flags a year that rests only on the place's own telling.{old_checked}</p>""",
            OLD_L, "place", "places", "Colorado's oldest restaurants", region=False, show_fn=True)
 
 # ---------------------------------------------------------------- Boulder County inspections
@@ -1072,7 +1090,7 @@ for c in CITY_PAGES:
     if insp:
         notes.append(f"Inspection results are Boulder County Public Health's records through {e(hdate(INS_THROUGH))}.")
     lede = ((f"{area}: {e(join_words(counts))}. " if counts else "") + " ".join(notes) + ("" if not notes else " ")
-            + f"The {BRAND} app lists {n_town:,} restaurants, cafés, bars and bakeries in {e(c)} and sorts them by distance from you.")
+            + f"{BRAND} knows {n_town:,} restaurants, cafés, bars and bakeries in {e(c)}: search them on the web, or sort them by distance in the app.")
     metro_note = (f'<p class="fine">These lists stay inside {e(c)}. For {e(metro)}, {miles(CENTER[c], CENTER[metro]):.0f} miles away, see the '
                   f'<a href="{city_url(metro)}">{e(metro)} page</a>.</p>') if metro else ""
     parts = [f"""{nav}
@@ -1088,28 +1106,28 @@ for c in CITY_PAGES:
     def items(lst, **kw):
         return "".join(place_item(p, anchors, extra=None if p.city == c else f"{d:.0f} mi from {c}", **kw) for d, p in lst)
 
-    scope = lambda r: f"Places in {e(c)}" if suburb else f"Places in {e(c)} first, then others within {r} miles, closest first"
+    scope = lambda r: f"Only places in {e(c)}" if suburb else f"{e(c)} itself first, then places within {r} miles by distance"
     if gc:
         parts.append(f'<section id="green-chile"><h2>Green chile in {"" if suburb else "and near "}{e(c)}</h2><p class="sub">{scope(12)}, hand-checked in {CHECKED} against a 2025–26 source. Statewide: <a href="/colorado-green-chile.html">{plural(len(CHILE_L), "Colorado green chile spot")}</a>.</p><ol class="places">{items(gc)}</ol></section>')
     if sk:
         parts.append(f'<section id="ski"><h2>{e(c)} ski town dining</h2><p class="sub">{scope(8)}, hand-checked in {CHECKED} against a 2025–26 source. Seasonal places are marked. Statewide: <a href="/colorado-ski-town-restaurants.html">{plural(len(SKI_L), "Colorado ski town restaurant")}</a>.</p><ol class="places">{items(sk)}</ol></section>')
     if hon:
-        parts.append(f'<section id="honors"><h2>MICHELIN &amp; James Beard in {e(c)}</h2><p class="sub">MICHELIN Guide Colorado 2026 and James Beard Foundation honorees, 2023–26. Honors are facts, not ratings. Statewide: <a href="/colorado-michelin-james-beard.html">{plural(len(HON_L), "Colorado MICHELIN and James Beard restaurant")}</a>.</p><ol class="places">'
+        parts.append(f'<section id="honors"><h2>MICHELIN &amp; James Beard in {e(c)}</h2><p class="sub">Honored by the MICHELIN Guide Colorado 2026 or the James Beard Foundation (2023–26); an honor is a fact, not a score. Statewide: <a href="/colorado-michelin-james-beard.html">{plural(len(HON_L), "Colorado MICHELIN and James Beard restaurant")}</a>.</p><ol class="places">'
                      + "".join(place_item(p, anchors, honors=True) for p in hon) + "</ol></section>")
     if bp:
         parts.append(f'<section id="brewpubs"><h2>Brewpubs in {"" if suburb else "and near "}{e(c)}</h2><p class="sub">{scope(8)}: places with a Colorado Brew Pub or Distillery Pub license on the state\'s list of {e(LIQ)}. Statewide: <a href="/colorado-brewpubs.html">{plural(len(BREW_L), "licensed Colorado brewpub")}</a>.</p><ol class="places">{items(bp)}</ol></section>')
     if gm:
         parts.append(f'<section id="game"><h2>Game &amp; steakhouses {"in" if suburb else "near"} {e(c)}</h2><p class="sub">{scope(12)}: bison, elk, trout and steak, hand-checked in {CHECKED} against a 2025–26 source. Statewide: <a href="/colorado-game-steakhouses.html">{plural(len(GAME_L), "Colorado game and steak place")}</a>.</p><ol class="places">{items(gm)}</ol></section>')
     if oldest:
-        parts.append(f'<section id="oldest"><h2>Oldest restaurants in {e(c)}</h2><p class="sub">Founding years at the current address, as each place or a published history documents them, oldest first. The note under each says what the year rests on. Statewide: <a href="/colorado-oldest-restaurants.html">Colorado\'s oldest restaurants</a>.</p><ol class="places">'
+        parts.append(f'<section id="oldest"><h2>Oldest restaurants in {e(c)}</h2><p class="sub">Opening years at today\'s address, from the place\'s own history or a published one, oldest first; the note under each explains its year. Statewide: <a href="/colorado-oldest-restaurants.html">Colorado\'s oldest restaurants</a>.</p><ol class="places">'
                      + "".join(place_item(p, anchors, show_fn=True) for p in oldest) + "</ol></section>")
     if insp:
         parts.append(f'<section id="inspections" aria-labelledby="h-insp"><h2 id="h-insp">Restaurant inspections in {e(c)}</h2><p class="sub">Boulder County Public Health\'s latest recorded result for {plural(len(insp), "place")} in {e(c)}, records through {e(hdate(INS_THROUGH))}. {e(TIERS)} These are the county\'s recorded results, not a grade.{" " + e(NO_DATE_NOTE) if any(not p.ins.get("d") for p in insp) else ""} All of Boulder County: <a href="/{INS_PATH}">Boulder County restaurant inspections</a>.</p>'
                      + ins_table(insp, "h-insp") + "</section>")
     if cuis:
         rows = "".join(f'<tr><td>{e(k)}</td><td class="n">{n:,}</td></tr>' for k, n in cuis)
-        parts.append(f'<section id="cuisines"><h2>What {e(c)} eats</h2><p class="sub">The most common kinds of restaurant among the {n_town:,} in {e(c)}, from open map data and the state and city license lists.</p><table><thead><tr><th scope="col">Kind of place</th><th scope="col" class="n">Places</th></tr></thead><tbody>{rows}</tbody></table></section>')
-    parts.append(f'<section id="more"><h2>More Colorado cities and towns</h2>{city_links(current=c)}<p class="fine"><a href="/cities/">All city pages</a></p></section>\n  </main>')
+        parts.append(f'<section id="cuisines"><h2>What {e(c)} eats</h2><p class="sub">The kinds of places {e(c)} has most of, out of {n_town:,}, counted from open map listings and Colorado\'s license records.</p><table><thead><tr><th scope="col">Kind of place</th><th scope="col" class="n">Places</th></tr></thead><tbody>{rows}</tbody></table></section>')
+    parts.append(f'<section id="more"><h2>Other Colorado city pages</h2>{city_links(current=c)}<p class="fine"><a href="/cities/">The city index, with what each page covers</a></p></section>\n  </main>')
     listed = info["listed"]
     lds = [article_ld(url, h1, desc), bc]
     if listed:
@@ -1187,6 +1205,7 @@ EXPLORE_CSS = """
   .ex-row1 input[type=search] { flex: 1; min-width: 0; font: 16px/1.3 system-ui, sans-serif; font-family: inherit; padding: 10px 12px; border: 2px solid var(--green); border-radius: 12px; background: var(--surface); color: var(--ink); }
   .ex-row2 { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; font-size: 14px; }
   .ex-row2 select { font: 14px system-ui, sans-serif; font-family: inherit; padding: 6px 8px; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); color: var(--ink); max-width: 46vw; }
+  @media (max-width: 600px) { .ex-row2 select { font-size: 16px; } }   /* iOS Safari zooms the page into any input or select under 16px */
   .ex-view { margin-left: auto; display: flex; gap: 4px; }
   #ex-count { margin: 8px 0 0; font-size: 14px; color: var(--muted); }
   #ex-sub { margin: 4px 0 0; font-size: 14px; color: var(--ink2); }
@@ -1253,16 +1272,19 @@ guide_buttons = "".join(f'<button type="button" data-g="{k}" aria-pressed="false
                         (("greenchile", "Green chile"), ("brewpubs", "Brewpubs"), ("ski", "Ski towns"), ("game", "Game & steak"),
                          ("honors", "MICHELIN & James Beard"), ("oldest", "Oldest"), ("inspections", "Inspections"), ("all", "All restaurants"), ("saved", "Saved")))
 explore_js = open(f"{ROOT}/scripts/explore.js").read()
+# every localStorage key the web app writes (its store.set calls, under its prefix): the privacy policy names each one
+STORAGE_KEYS = [re.search(r'const PREFIX = "([^"]+)"', explore_js)[1] + k for k in re.findall(r'store\.set\("([^"]+)"', explore_js)]
+assert STORAGE_KEYS, "explore.js writes no localStorage keys?"
 assert "</script" not in explore_js.lower()
 body = f"""{nav}
   <main id="main">
   <section class="ex-hero">
     <p class="kicker">{BRAND} · on the web</p>
     <h1>Search Colorado restaurants</h1>
-    <p class="sub">{N_REST:,} restaurants, cafés, bars and bakeries, with {len(CHILE_L)} hand-checked green chile spots, {len(BREW_L)} licensed brewpubs, {len(SKI_L)} ski-town restaurants and Boulder County's recorded inspection results. The same data as the iPhone and iPad app, which is coming soon. Nothing about you is stored anywhere but this browser.</p>
+    <p class="sub">Look up {N_REST:,} Colorado restaurants, cafés, bars and bakeries by name, town, street, zip or dish, or open a list: {len(CHILE_L)} green chile spots and {len(SKI_L)} ski-town restaurants we checked by hand, {len(BREW_L)} brewpubs on the state's license list, and Boulder County's recorded inspection results. It runs on the app's own data, and what you save stays in this browser.</p>
   </section>
   <p id="ex-loading" hidden>Loading the restaurant list…</p>
-  <noscript><p>The search needs JavaScript. The guides work without it: <a href="/colorado-green-chile.html">green chile</a>, <a href="/colorado-brewpubs.html">brewpubs</a>, <a href="/colorado-ski-town-restaurants.html">ski towns</a>, <a href="/{INS_PATH}">Boulder County inspections</a>.</p></noscript>
+  <noscript><p>Search runs on JavaScript. The lists are plain pages, though: <a href="/colorado-green-chile.html">green chile</a>, <a href="/colorado-brewpubs.html">brewpubs</a>, <a href="/colorado-ski-town-restaurants.html">ski towns</a>, <a href="/{INS_PATH}">Boulder County inspections</a>.</p></noscript>
   <div id="ex-app" hidden>
     <div class="ex-controls">
       <div class="ex-guides" role="group" aria-label="Guides">{guide_buttons}</div>
@@ -1285,7 +1307,7 @@ body = f"""{nav}
     </div>
     <div id="ex-listwrap"><ol id="ex-list" class="ex-list"></ol><button type="button" id="ex-more" class="ex-small" hidden></button></div>
     <div id="ex-mapwrap" hidden>
-      <canvas id="ex-map" aria-label="Map of Colorado with a dot for each place in the list. The list view has the same places."></canvas>
+      <canvas id="ex-map" role="img" aria-label="Map of Colorado with a dot for each place in the list. The list view has the same places."></canvas>
       <div class="ex-zoom"><button type="button" id="ex-zin" aria-label="Zoom in">+</button><button type="button" id="ex-zout" aria-label="Zoom out">−</button></div>
       <p id="ex-maphint"></p>
     </div>
@@ -1298,15 +1320,15 @@ body = f"""{nav}
 webapp_ld = {"@context": "https://schema.org", "@type": "WebApplication", "name": f"{BRAND} web app", "url": url,
              "applicationCategory": "TravelApplication", "operatingSystem": "Any", "browserRequirements": "Requires JavaScript",
              "description": desc, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
-             "publisher": {"@type": "Organization", "@id": f"{DOMAIN}/#org", "name": BRAND, "url": f"{DOMAIN}/"}}
+             "publisher": {"@id": ORG_ID}, "isPartOf": {"@id": SITE_ID}}
 page("explore/index.html", title, desc, body, [webapp_ld, bc], extra_css=EXPLORE_CSS, og_type="website")
 
 # ---------------------------------------------------------------- landing page
-shots = [("home", "Colorado Eats home screen: Green Chile, Brewpubs, Ski Town Dining, Game & Steakhouses, MICHELIN & James Beard, Oldest Places and Inspections guides, with a search box for Colorado restaurants.", "Guides for green chile, brewpubs and ski towns."),
-         ("greenchile", "The hand-checked Green Chile list in Colorado Eats, sorted by distance from downtown Denver.", "Green chile nearest you first."),
-         ("detail", "The Buckhorn Exchange in Denver in Colorado Eats: address, a button for ratings, hours and photos in Apple Maps, bison and elk on the menu, open since 1893.", "Each place, with live Apple Maps hours and photos."),
-         ("map", "Colorado Eats map of Colorado with pins for green chile spots.", "The map, by guide."),
-         ("honors", "MICHELIN & James Beard list in Colorado Eats.", "MICHELIN Guide and James Beard honorees.")]
+shots = [("home", "Colorado Eats home screen: Green Chile, Brewpubs, Ski Town Dining, Game & Steakhouses, MICHELIN & James Beard, Oldest Places and Inspections guides, with a search box for Colorado restaurants.", "Seven Colorado lists and a search box."),
+         ("greenchile", "The hand-checked Green Chile list in Colorado Eats, sorted by distance from downtown Denver.", "Green chile, closest first."),
+         ("detail", "The Buckhorn Exchange in Denver in Colorado Eats: address, a button for ratings, hours and photos in Apple Maps, bison and elk on the menu, open since 1893.", "A place: menu notes, founding year, Apple Maps card."),
+         ("map", "Colorado Eats map of Colorado with pins for green chile spots.", "The whole state, one list at a time."),
+         ("honors", "MICHELIN & James Beard list in Colorado Eats.", "MICHELIN Guide Colorado and James Beard honors.")]
 shot_html = []
 for i, (name, alt, cap) in enumerate(shots):
     png = f"{DOCS}/img/screen-{name}.png"
@@ -1319,14 +1341,16 @@ for i, (name, alt, cap) in enumerate(shots):
     shot_html.append(f'<li><picture>{src}<img src="/img/screen-{name}.png" alt="{e(alt)}" width="{w}" height="{h}"{lazy} decoding="async"></picture><p>{e(cap)}</p></li>')
 
 checked_lists = ["green chile", "game and steakhouse", "ski-town"] + (["oldest"] if OLD_ALL_HC else [])
-faq = [
-    ("Is Colorado Eats free?", "Yes. The app is free, with no ads, no in-app purchases and no account. It's coming soon to the App Store; the web search works today."),
-    ("Where do the green chile spots and ski-town restaurants come from?", f"We checked them by hand in {CHECKED}: each place on the {join_words(checked_lists)} lists has a 2025 or 2026 source such as its own menu page or a dated local news story. Brewpubs are places matched to a state Brew Pub or Distillery Pub license. The other {N_REST:,} restaurants come from Overture Maps' open place data, Denver's business licenses and the state's liquor licenses, placed on the map with Overture's address points and the U.S. Census Bureau Geocoder."),
-    ("Does the app show ratings and reviews?", "Not its own. Tap a place and Apple Maps' own place card opens inside the app with Apple's current ratings, hours, photos and directions. Our lists are never ordered by ratings."),
-    ("Does it need my location?", "Only if you want lists sorted by distance. Your location stays on your iPhone or iPad and is never sent to us. Everything else works without it. On the website, Near me uses your location only inside your browser."),
-    ("What are the inspection results?", f"For Boulder County, the app and the Boulder County inspections page show Boulder County Public Health's result at each place's latest recorded inspection: Pass, Re-Inspection Required or Closure, with the risk points behind it (records through {hdate(INS_THROUGH)}). We never compute a grade of our own. Other counties don't publish inspections in bulk."),
-    ("A place closed or is missing. How do I tell you?", f"Email {EMAIL} with the name and town. Corrections go into the next update."),
-    ("Is there an Android version?", f"Not yet. Colorado Eats is for iPhone and iPad. If enough people ask at {EMAIL}, it moves up the list."),
+faq = [   # Colorado's own questions (the 4.3(a) rule: each state app has its own copy); keep answers to facts the pages back up
+    ("Does Colorado Eats cost anything?", "Not a cent. Colorado Eats has no ads, no purchases and no sign-up. It runs on iPhone and iPad only (no Android build for now) and reaches the App Store soon; the web search is live already."),
+    ("What's a slopper, and where can I get one?", f"A Pueblo dish: a hamburger in a bowl, smothered in green chile. {plural(N_SLOPPER, 'place')} on the green chile list {'serves' if N_SLOPPER == 1 else 'serve'} one, and {N_PUEBLO_CHILE} of the list's {len(CHILE_L)} are in Pueblo County. Search \"slopper\" in the app or on the web to see them."
+     if N_SLOPPER else f"A Pueblo dish: a hamburger in a bowl, smothered in green chile. {N_PUEBLO_CHILE} of the {len(CHILE_L)} places on the green chile list are in Pueblo County."),
+    ("Is a brewpub the same as a brewery taproom?", f"Not in Colorado's licensing. A Brew Pub license is for a restaurant that brews beer on site and serves it with food (a Distillery Pub license does the same for spirits); a production brewery's taproom holds a manufacturer license and needn't serve food. The brewpub list is the {len(BREW_L)} places matched to those licenses on the state's list of {LIQ}."),
+    ("Are ski-town restaurants open in mud season?", "Many close for a few weeks in spring and fall, and on-mountain lodges open only in ski season. The ski-town list notes the seasons places publish, so check before you drive up."),
+    ("Can I see restaurant inspections for my county?", f"Only Boulder County's: it's the one Colorado county that publishes inspection results in bulk. The app and the Boulder County inspections page show each place's latest recorded result from Boulder County Public Health (Pass, Re-Inspection Required or Closure) with its risk points, records through {hdate(INS_THROUGH)}. We never turn them into a grade. Other counties publish one search at a time."),
+    ("Who checked these lists, and why no star ratings?", f"We checked the {join_words(checked_lists)} lists by hand in {CHECKED}, each place against a 2025 or 2026 source such as its own menu page or a dated local news story. Brewpubs come from the state's license list. The rest of the {N_REST:,} places come from Overture Maps' open place data, Denver's business licenses and the state's liquor licenses. We publish no ratings: tap a place and Apple Maps' own card shows Apple's ratings, hours and photos."),
+    ("Does Colorado Eats track where I am?", "No. Location, if you turn it on, only orders the lists by distance, on your iPhone or iPad; we never receive it. On this website, Near me does the same inside your browser."),
+    ("Spotted a closed place, or one that's missing?", f"Tell us at {EMAIL}; the place's name and town are enough. We correct the lists in the next app and site update."),
 ]
 faq_html = "".join(f"<details><summary>{e(q)}</summary><p>{e(a)}</p></details>" for q, a in faq)
 faq_ld = {"@context": "https://schema.org", "@type": "FAQPage", "@id": f"{DOMAIN}/#faq",
@@ -1337,17 +1361,13 @@ app_ld = {"@context": "https://schema.org", "@graph": [
      "alternateName": ["Colorado Eats", "CO Eats", "Colorado Eats: Green Chile & Brewpub Guide"],
      "description": f"A free guide to {N_REST:,} Colorado restaurants, with hand-checked lists of {len(CHILE_L)} green chile spots, {len(SKI_L)} ski-town restaurants and the state's oldest places, {len(BREW_L)} licensed brewpubs and the MICHELIN Guide and James Beard honorees. Sort by distance, open Apple Maps' live place card for hours and photos, and save places for your next trip.",
      "url": f"{DOMAIN}/", "image": f"{DOMAIN}/og.png", "operatingSystem": "iOS, iPadOS", "applicationCategory": "TravelApplication",
-     "applicationSubCategory": "Food & Drink", "inLanguage": "en", "publisher": {"@id": f"{DOMAIN}/#org"}},
-    {"@type": "Organization", "@id": f"{DOMAIN}/#org", "name": BRAND, "url": f"{DOMAIN}/",
-     "logo": {"@type": "ImageObject", "url": f"{DOMAIN}/icon-512.png", "width": 512, "height": 512}, "email": EMAIL,
-     "contactPoint": {"@type": "ContactPoint", "contactType": "customer support", "email": EMAIL, "availableLanguage": "en"}},
-    {"@type": "WebSite", "@id": f"{DOMAIN}/#website", "name": BRAND, "alternateName": ["CO Eats", "Colorado Eats app"], "url": f"{DOMAIN}/",
-     "inLanguage": "en", "publisher": {"@id": f"{DOMAIN}/#org"}}]}
+     "applicationSubCategory": "Food & Drink", "inLanguage": "en", "publisher": {"@id": ORG_ID}}]}   # Organization + WebSite: BASE_LD
 if shot_html:
     app_ld["@graph"][0]["screenshot"] = f"{DOMAIN}/img/screen-home.png"
-title = "Colorado Eats: Green Chile, Brewpub & Restaurant App"
-desc = fit([f"Free iPhone and iPad guide to {N_REST:,} Colorado restaurants, with {len(CHILE_L)} hand-checked green chile spots, {len(BREW_L)} brewpubs and ski-town dining.",
-            f"A free iPhone and iPad guide to {N_REST:,} Colorado restaurants, with hand-checked green chile spots, {len(BREW_L)} licensed brewpubs and ski-town dining."], 140, 160, "landing description")
+title = fit(["Colorado Restaurants, Green Chile & Ski Towns | Colorado Eats", "Colorado Eats: Restaurants, Green Chile & Ski-Town Dining"], 50, 60, "landing title")
+desc = fit([f"Colorado restaurants on your iPhone: {len(CHILE_L)} green chile spots and {len(SKI_L)} ski-town dining rooms we checked, {len(BREW_L)} brewpubs and {N_REST:,} places in all. Free.",
+            f"Colorado restaurants on your iPhone: {len(CHILE_L)} green chile spots and {len(SKI_L)} ski-town restaurants we checked, {len(BREW_L)} licensed brewpubs, and more. Free.",
+            f"Free iPhone and iPad guide to {N_REST:,} Colorado restaurants, with {len(CHILE_L)} hand-checked green chile spots, {len(BREW_L)} brewpubs and ski-town dining."], 140, 160, "landing description")
 city_cards = "".join(f'<li><a href="{city_url(c)}">{e(c)}</a></li>' for c in CITY_PAGES)
 screens = f"""
   <section id="screens">
@@ -1360,10 +1380,10 @@ ins_card = (f'<a class="card" href="/{INS_PATH}"><h3>Boulder County inspections<
             if INS_L else "")
 body = f"""  <main id="main">
   <section class="hero">
-    <p class="kicker">{BRAND}: the {TAGLINE.lower()} for iPhone and iPad</p>
-    <h1>Colorado's restaurants, and the green chile worth the drive</h1>
-    <p class="lede">{BRAND} is a free Colorado restaurant guide. Find a smothered burrito near you, a brewpub for after the hike and a dining room in the next ski town, from hand-checked lists and the state's own license records, plus {N_REST:,} restaurants, cafés, bars and bakeries in {N_TOWNS:,} towns.</p>
-    <div class="cta-row">{store_button()}<a class="btn btn-ghost" href="/explore/">Search on the web</a><span class="pill store-note">Free. No ads, no account. Coming soon to the App Store.</span></div>
+    <p class="kicker">Green chile, brewpubs and mountain-town dining · iPhone and iPad</p>
+    <h1>Colorado restaurants, from {"Pueblo sloppers" if N_SLOPPER else "green chile"} to slopeside lodges</h1>
+    <p class="lede">Where's the closest bowl of green chile? Which pub brews its own beer? Where do you eat in {e(towns_text(ski_towns, 1))} after the last chair? {BRAND} is a free iPhone and iPad guide built around those questions: {len(CHILE_L)} green chile spots and {len(SKI_L)} ski-town restaurants we checked ourselves, {len(BREW_L)} brewpubs from the state's license list, and {N_REST:,} restaurants, cafés, bars and bakeries across {N_TOWNS:,} Colorado towns.</p>
+    <div class="cta-row">{store_button()}<a class="btn btn-ghost" href="/explore/">Search on the web</a><span class="pill store-note">Free, with no ads or sign-in. App Store release coming.</span></div>
     <ul class="stats" aria-label="What's in the app">
       <li><b>{len(CHILE_L)}</b><span>green chile spots</span></li>
       <li><b>{len(BREW_L)}</b><span>licensed brewpubs</span></li>
@@ -1373,47 +1393,47 @@ body = f"""  <main id="main">
   </section>
 
   <section id="what">
-    <h2>A Colorado restaurant guide that knows what's smothered</h2>
-    <p class="sub">General restaurant apps rank by star ratings and can't tell you where the slopper is. {BRAND} starts from the things people here look for: green chile, a brewpub that makes its own beer, a dining room in a ski town, bison and elk, and the saloons that have been open since the mining days. The hand-checked lists were checked in {CHECKED} against 2025–26 sources, and the brewpubs come from the state's own license list. For ratings, hours and photos, each place opens Apple Maps' own live card.</p>
+    <h2>Green chile first, star ratings never</h2>
+    <p class="sub">Map apps sort by stars and crowds. This one starts from Colorado's own short list: a smothered burrito, a pint brewed behind the bar, dinner in a mountain town, elk or bison on the menu, and a saloon that's been pouring since the mining days. We checked the green chile, ski-town and game lists in {CHECKED} against 2025–26 sources, and the brewpubs are matched to the state's Brew Pub and Distillery Pub license list. Ratings, hours and photos are one tap away, on the place's own Apple Maps card.</p>
   </section>
 
   <section id="how">
     <h2>How it works</h2>
     <ol class="steps">
-      <li class="step"><div class="n" aria-hidden="true">1</div><div><h3>Pick a guide.</h3><p>Green Chile, Brewpubs, Ski Town Dining, Game &amp; Steakhouses, MICHELIN &amp; James Beard, Oldest Places, or search {N_REST:,} restaurants by name, town, street or dish.</p></div></li>
-      <li class="step"><div class="n" aria-hidden="true">2</div><div><h3>See what's near you.</h3><p>Sort by distance, filter by town or cuisine, or browse the map.</p></div></li>
-      <li class="step"><div class="n" aria-hidden="true">3</div><div><h3>Go.</h3><p>Open Apple Maps' place card for live hours and photos, call, get directions, or save it for your next trip.</p></div></li>
+      <li class="step"><div class="n" aria-hidden="true">1</div><div><h3>Choose a list.</h3><p>Green Chile, Brewpubs, Ski Town Dining, Game &amp; Steakhouses, MICHELIN &amp; James Beard, Oldest Places or Boulder County inspections. Or search {N_REST:,} places by whatever you remember: a name, a town, a street, a dish.</p></div></li>
+      <li class="step"><div class="n" aria-hidden="true">2</div><div><h3>Narrow it down.</h3><p>Closest first, one town or one cuisine at a time, or dots on a map of the state.</p></div></li>
+      <li class="step"><div class="n" aria-hidden="true">3</div><div><h3>Head out.</h3><p>Open its Apple Maps card for today's hours and photos, ring the kitchen, pull up directions, or keep it for the next drive over the Divide.</p></div></li>
     </ol>
   </section>
 {screens}
   <section id="guides">
     <h2>Colorado food guides</h2>
-    <p class="sub">The app's lists, readable on the web.</p>
+    <p class="sub">Read the app's lists here, no download needed.</p>
     <div class="grid2">
       <a class="card" href="/colorado-green-chile.html"><h3>Colorado green chile guide</h3><p>{plural(len(CHILE_L), "hand-checked place")}{", Pueblo sloppers included" if N_SLOPPER else ""}.</p></a>
       <a class="card" href="/colorado-brewpubs.html"><h3>Colorado brewpubs</h3><p>{plural(len(BREW_L), "place")} with a state Brew Pub or Distillery Pub license.</p></a>
       <a class="card" href="/colorado-ski-town-restaurants.html"><h3>Ski town dining</h3><p>{plural(len(SKI_L), "restaurant")} in {e(towns_text(ski_towns, 4))} and more.</p></a>
       <a class="card" href="/colorado-game-steakhouses.html"><h3>Game &amp; steakhouses</h3><p>{plural(len(GAME_L), "place")} for bison, elk, trout and steak.</p></a>
       <a class="card" href="/colorado-michelin-james-beard.html"><h3>MICHELIN &amp; James Beard</h3><p>{plural(len(HON_L), "honored Colorado restaurant")}.</p></a>
-      <a class="card" href="/colorado-oldest-restaurants.html"><h3>Colorado's oldest restaurants</h3><p>{plural(len(OLD_L), "place")} with a documented founding year.</p></a>
+      <a class="card" href="/colorado-oldest-restaurants.html"><h3>Colorado's oldest restaurants</h3><p>{plural(len(OLD_L), "place")} with an opening year on record, back to {OLD_L[0].founded}.</p></a>
       {ins_card}
     </div>
   </section>
 
   <section id="cities">
     <h2>Green chile, brewpubs and more by city</h2>
-    <p class="sub">The guides for Colorado's biggest cities and resort towns. <a href="/cities/">See what each city page has</a>.</p>
+    <p class="sub">Front Range cities, Western Slope towns and the ski resorts, each with its own page. <a href="/cities/">What each city page covers</a>.</p>
     <ul class="cities">{city_cards}</ul>
   </section>
 
   <section id="pricing">
-    <h2>Free, and staying that way</h2>
-    <p class="sub">No ads, no subscription, no in-app purchases, no account. The whole guide is built into the app, so lists open instantly and work with a weak signal in the mountains.</p>
+    <h2>Costs nothing, sells nothing</h2>
+    <p class="sub">{BRAND} costs nothing and has nothing to sell: no ads, no subscription, no in-app purchases, no account to make. The lists ship inside the app, so they open fast and keep working when the signal drops out on a mountain pass.</p>
   </section>
 
   <section id="privacy">
-    <h2>Your plans are your business</h2>
-    <p class="sub">{BRAND} collects nothing. If you allow location, it only sorts lists by distance on your device. Saved places stay on your device. This website sets no cookies and runs no trackers. <a href="/privacy.html">Read the privacy policy</a>.</p>
+    <h2>Your green chile habits are nobody's business</h2>
+    <p class="sub">We don't collect a thing. If you turn on location, it orders the lists on your own device and is never sent to us; saved places stay on the device too. No cookies, analytics or trackers here either. <a href="/privacy.html">The privacy policy</a> has the details.</p>
   </section>
 
   <section id="faq">
@@ -1422,8 +1442,8 @@ body = f"""  <main id="main">
   </section>
 
   <section id="download" class="final">
-    <h2>Find your next green chile</h2>
-    <p class="sub">{BRAND} is coming soon to the App Store for iPhone and iPad. Free.</p>
+    <h2>Take the lists over the pass</h2>
+    <p class="sub">Free for iPhone and iPad, with the App Store release in the works. Want it sooner? Ask for early access and we'll email you a TestFlight invite.</p>
     <div class="cta-row">{store_button()}</div>
   </section>
   </main>"""
@@ -1451,7 +1471,7 @@ body = f"""{nav}
     <h2>This website</h2>
     <p>The site is static pages hosted on GitHub Pages. It sets no cookies and loads no analytics, fonts or scripts from anyone else.</p>
     <ul>
-      <li><b>Saved places and your last guide.</b> The search page (<a href="/explore/">/explore/</a>) keeps the places you save and the last guide you opened in your browser's local storage, on this device only. Nothing is sent to us. Clearing this site's data in your browser removes them.</li>
+      <li><b>Saved places and your last guide.</b> The search page (<a href="/explore/">/explore/</a>) keeps the places you save and the last guide you opened in your browser's local storage, on this device only, under the keys {join_words(STORAGE_KEYS)}. Nothing is sent to us. Clearing this site's data in your browser removes them.</li>
       <li><b>Location.</b> If you tap Near me or choose the Nearest sort, your browser asks whether to share your location. If you allow it, the location is used only inside your browser to sort places by distance and is never sent to us or anyone else.</li>
     </ul>
     <p>GitHub may keep standard server logs, such as IP addresses, for security; see <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">GitHub's privacy statement</a>.</p>
@@ -1509,7 +1529,7 @@ page("terms.html", "Terms of Use: Colorado Eats Green Chile & Restaurant App",
 body = f"""  <main id="main">
   <section class="hero">
     <h1>Page not found</h1>
-    <p class="lede">That page isn't here. Try the <a href="/">{BRAND} home page</a>, the <a href="/colorado-green-chile.html">green chile guide</a> or the <a href="/colorado-brewpubs.html">brewpubs</a>.</p>
+    <p class="lede">This trail dead-ends: the page you followed isn't here, or it has moved. Try the <a href="/">{BRAND} home page</a>, <a href="/explore/">search Colorado restaurants</a>, or head for the <a href="/colorado-green-chile.html">green chile list</a>.</p>
   </section>
   </main>"""
 page("404.html", f"Page not found | {BRAND}", "This page doesn't exist.", body, robots="noindex,follow")

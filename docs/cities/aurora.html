@@ -150,27 +150,68 @@
 <script type="application/ld+json">
 {
  "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "Organization",
+   "@id": "https://nickstrom5.github.io/colorado-eats/#org",
+   "name": "Colorado Eats",
+   "url": "https://nickstrom5.github.io/colorado-eats/",
+   "logo": {
+    "@type": "ImageObject",
+    "url": "https://nickstrom5.github.io/colorado-eats/icon-512.png",
+    "width": 512,
+    "height": 512
+   },
+   "email": "nick@eatsranked.com",
+   "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer support",
+    "email": "nick@eatsranked.com",
+    "availableLanguage": "en"
+   },
+   "parentOrganization": {
+    "@type": "Organization",
+    "@id": "https://eatsranked.com/#organization",
+    "name": "Eats Ranked",
+    "url": "https://eatsranked.com/"
+   }
+  },
+  {
+   "@type": "WebSite",
+   "@id": "https://nickstrom5.github.io/colorado-eats/#website",
+   "name": "Colorado Eats",
+   "alternateName": [
+    "CO Eats",
+    "Colorado Eats app"
+   ],
+   "url": "https://nickstrom5.github.io/colorado-eats/",
+   "inLanguage": "en",
+   "publisher": {
+    "@id": "https://nickstrom5.github.io/colorado-eats/#org"
+   }
+  }
+ ]
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
  "@type": "Article",
  "headline": "Aurora green chile, brewpubs and MICHELIN & James Beard",
  "description": "In Aurora, Colorado: 1 hand-checked green chile spot, 3 licensed brewpubs and 4 MICHELIN or James Beard honorees. Search 811 Aurora restaurants, cafés and bars.",
  "datePublished": "2026-10-05",
- "dateModified": "2026-10-07",
+ "dateModified": "2026-10-12",
  "inLanguage": "en",
  "mainEntityOfPage": "https://nickstrom5.github.io/colorado-eats/cities/aurora.html",
  "image": "https://nickstrom5.github.io/colorado-eats/og.png",
  "author": {
-  "@type": "Organization",
-  "name": "Colorado Eats",
-  "url": "https://nickstrom5.github.io/colorado-eats/"
+  "@id": "https://nickstrom5.github.io/colorado-eats/#org"
  },
  "publisher": {
-  "@type": "Organization",
-  "name": "Colorado Eats",
-  "url": "https://nickstrom5.github.io/colorado-eats/",
-  "logo": {
-   "@type": "ImageObject",
-   "url": "https://nickstrom5.github.io/colorado-eats/icon-512.png"
-  }
+  "@id": "https://nickstrom5.github.io/colorado-eats/#org"
+ },
+ "isPartOf": {
+  "@id": "https://nickstrom5.github.io/colorado-eats/#website"
  }
 }
 </script>
@@ -222,15 +263,15 @@
   <section class="hero">
     <p class="kicker">Colorado Eats · Aurora, Colorado</p>
     <h1>Aurora green chile, brewpubs and MICHELIN &amp; James Beard</h1>
-    <p class="lede">In Aurora: 1 green chile spot, 3 brewpubs and 4 MICHELIN or James Beard honorees. The green chile list was hand-checked in fall 2026 against 2025–26 sources. Brewpubs come from the state's Brew Pub and Distillery Pub license list of September 24, 2026. The Colorado Eats app lists 811 restaurants, cafés, bars and bakeries in Aurora and sorts them by distance from you.</p>
-    <div class="cta-row"><a class="btn store-btn" href="mailto:work-with-nick@gmail.com?subject=Colorado%20Eats%20early%20access&amp;body=Send%20me%20the%20TestFlight%20link."><span class="store-label">Get early access</span></a><span class="pill store-note">Free iPhone and iPad app, coming soon to the App Store.</span></div>
+    <p class="lede">In Aurora: 1 green chile spot, 3 brewpubs and 4 MICHELIN or James Beard honorees. The green chile list was hand-checked in fall 2026 against 2025–26 sources. Brewpubs come from the state's Brew Pub and Distillery Pub license list of September 24, 2026. Colorado Eats knows 811 restaurants, cafés, bars and bakeries in Aurora: search them on the web, or sort them by distance in the app.</p>
+    <div class="cta-row"><a class="btn store-btn" href="mailto:nick@eatsranked.com?subject=Colorado%20Eats%20early%20access&amp;body=Send%20me%20the%20TestFlight%20link."><span class="store-label">Get early access</span></a><span class="pill store-note">Free for iPhone and iPad. App Store release in the works.</span></div>
     <p class="fine">These lists stay inside Aurora. For Denver, 9 miles away, see the <a href="/colorado-eats/cities/denver.html">Denver page</a>.</p>
   </section>
-<section id="green-chile"><h2>Green chile in Aurora</h2><p class="sub">Places in Aurora, hand-checked in fall 2026 against a 2025–26 source. Statewide: <a href="/colorado-eats/colorado-green-chile.html">47 Colorado green chile spots</a>.</p><ol class="places"><li id="nicks-cafe-at-nicks-garden-center-80014"><h3>Nick&#x27;s Cafe at Nick&#x27;s Garden Center</h3><p class="where">2001 S Chambers Rd, Aurora</p><p class="facts"><span class="tag">Green chile</span> <b>On the menu:</b> green chile, breakfast burritos, chile rellenos</p><p class="note">Seasonal weekend cafe inside an Aurora garden center, open September and October for green chile, breakfast burritos and chile rellenos.</p><p class="link"><a href="https://nicksgardencenter.com/" rel="noopener nofollow">nicksgardencenter.com</a></p></li></ol></section>
-<section id="honors"><h2>MICHELIN &amp; James Beard in Aurora</h2><p class="sub">MICHELIN Guide Colorado 2026 and James Beard Foundation honorees, 2023–26. Honors are facts, not ratings. Statewide: <a href="/colorado-eats/colorado-michelin-james-beard.html">85 Colorado MICHELIN and James Beard restaurants</a>.</p><ol class="places"><li id="annette-80010"><h3>Annette</h3><p class="where">2501 Dallas St, Aurora</p><p class="facts"><span class="tag tag-mi">Bib Gourmand</span></p></li><li id="d-n-d-80010"><h3>Dân Dã</h3><p class="where">9945 E Colfax Ave, Aurora</p><p class="facts"><span class="tag tag-mi">MICHELIN Recommended</span></p></li><li id="traveling-mercies-80010"><h3>Traveling Mercies</h3><p class="where">2501 Dallas Street Unit #311, Aurora</p><p class="facts"><span class="tag tag-jb">James Beard semifinalist</span></p><p class="fine">James Beard: Best New Bar semifinalist 2025</p></li><li id="molino-chido-80010"><h3>Molino Chido</h3><p class="where">2501 Dallas Street Suite 140, Aurora</p><p class="fine">James Beard: Outstanding Restaurateur semifinalist 2026 (Tommy Lee)</p></li></ol></section>
-<section id="brewpubs"><h2>Brewpubs in Aurora</h2><p class="sub">Places in Aurora: places with a Colorado Brew Pub or Distillery Pub license on the state's list of September 24, 2026. Statewide: <a href="/colorado-eats/colorado-brewpubs.html">234 licensed Colorado brewpubs</a>.</p><ol class="places"><li id="a-bit-twisted-brewery-bbq-80014"><h3>A Bit Twisted Brewery &amp; BBQ</h3><p class="where">3095 S Peoria St, Aurora</p><p class="facts"><span class="tag">Brewpub</span></p><p class="link"><a href="https://twistedbrewpub.com/" rel="noopener nofollow">twistedbrewpub.com</a></p></li><li id="cheluna-brewing-company-80010"><h3>Cheluna Brewing Company</h3><p class="where">2501 Dallas St #148, Aurora</p><p class="facts"><span class="tag">Brewpub</span></p><p class="link"><a href="https://www.cheluna.com/" rel="noopener nofollow">cheluna.com</a></p></li><li id="six-capital-brewing-80013"><h3>Six Capital Brewing</h3><p class="where">16701 E Iliff Ave, Aurora</p><p class="facts"><span class="tag">Brewpub</span></p><p class="link"><a href="https://sixcapitalbrewing.com/" rel="noopener nofollow">sixcapitalbrewing.com</a></p></li></ol></section>
-<section id="cuisines"><h2>What Aurora eats</h2><p class="sub">The most common kinds of restaurant among the 811 in Aurora, from open map data and the state and city license lists.</p><table><thead><tr><th scope="col">Kind of place</th><th scope="col" class="n">Places</th></tr></thead><tbody><tr><td>Mexican</td><td class="n">140</td></tr><tr><td>Bar &amp; Pub</td><td class="n">83</td></tr><tr><td>Bakery &amp; Sweets</td><td class="n">75</td></tr><tr><td>Burgers</td><td class="n">66</td></tr><tr><td>Coffee &amp; Café</td><td class="n">59</td></tr><tr><td>Pizza</td><td class="n">45</td></tr><tr><td>Chicken &amp; Wings</td><td class="n">38</td></tr><tr><td>Sandwiches &amp; Deli</td><td class="n">38</td></tr><tr><td>Chinese</td><td class="n">37</td></tr><tr><td>Japanese &amp; Sushi</td><td class="n">26</td></tr></tbody></table></section>
-<section id="more"><h2>More Colorado cities and towns</h2><ul class="cities"><li><a href="/colorado-eats/cities/denver.html">Denver</a></li><li><a href="/colorado-eats/cities/colorado-springs.html">Colorado Springs</a></li><li><a href="/colorado-eats/cities/aurora.html" aria-current="page">Aurora</a></li><li><a href="/colorado-eats/cities/fort-collins.html">Fort Collins</a></li><li><a href="/colorado-eats/cities/boulder.html">Boulder</a></li><li><a href="/colorado-eats/cities/pueblo.html">Pueblo</a></li><li><a href="/colorado-eats/cities/lakewood.html">Lakewood</a></li><li><a href="/colorado-eats/cities/longmont.html">Longmont</a></li><li><a href="/colorado-eats/cities/greeley.html">Greeley</a></li><li><a href="/colorado-eats/cities/golden.html">Golden</a></li><li><a href="/colorado-eats/cities/grand-junction.html">Grand Junction</a></li><li><a href="/colorado-eats/cities/durango.html">Durango</a></li><li><a href="/colorado-eats/cities/aspen.html">Aspen</a></li><li><a href="/colorado-eats/cities/breckenridge.html">Breckenridge</a></li><li><a href="/colorado-eats/cities/steamboat-springs.html">Steamboat Springs</a></li><li><a href="/colorado-eats/cities/vail.html">Vail</a></li></ul><p class="fine"><a href="/colorado-eats/cities/">All city pages</a></p></section>
+<section id="green-chile"><h2>Green chile in Aurora</h2><p class="sub">Only places in Aurora, hand-checked in fall 2026 against a 2025–26 source. Statewide: <a href="/colorado-eats/colorado-green-chile.html">47 Colorado green chile spots</a>.</p><ol class="places"><li id="nicks-cafe-at-nicks-garden-center-80014"><h3>Nick&#x27;s Cafe at Nick&#x27;s Garden Center</h3><p class="where">2001 S Chambers Rd, Aurora</p><p class="facts"><span class="tag">Green chile</span> <b>On the menu:</b> green chile, breakfast burritos, chile rellenos</p><p class="note">Seasonal weekend cafe inside an Aurora garden center, open September and October for green chile, breakfast burritos and chile rellenos.</p><p class="link"><a href="https://nicksgardencenter.com/" rel="noopener nofollow">nicksgardencenter.com</a></p></li></ol></section>
+<section id="honors"><h2>MICHELIN &amp; James Beard in Aurora</h2><p class="sub">Honored by the MICHELIN Guide Colorado 2026 or the James Beard Foundation (2023–26); an honor is a fact, not a score. Statewide: <a href="/colorado-eats/colorado-michelin-james-beard.html">85 Colorado MICHELIN and James Beard restaurants</a>.</p><ol class="places"><li id="annette-80010"><h3>Annette</h3><p class="where">2501 Dallas St, Aurora</p><p class="facts"><span class="tag tag-mi">Bib Gourmand</span></p></li><li id="d-n-d-80010"><h3>Dân Dã</h3><p class="where">9945 E Colfax Ave, Aurora</p><p class="facts"><span class="tag tag-mi">MICHELIN Recommended</span></p></li><li id="traveling-mercies-80010"><h3>Traveling Mercies</h3><p class="where">2501 Dallas Street Unit #311, Aurora</p><p class="facts"><span class="tag tag-jb">James Beard semifinalist</span></p><p class="fine">James Beard: Best New Bar semifinalist 2025</p></li><li id="molino-chido-80010"><h3>Molino Chido</h3><p class="where">2501 Dallas Street Suite 140, Aurora</p><p class="fine">James Beard: Outstanding Restaurateur semifinalist 2026 (Tommy Lee)</p></li></ol></section>
+<section id="brewpubs"><h2>Brewpubs in Aurora</h2><p class="sub">Only places in Aurora: places with a Colorado Brew Pub or Distillery Pub license on the state's list of September 24, 2026. Statewide: <a href="/colorado-eats/colorado-brewpubs.html">234 licensed Colorado brewpubs</a>.</p><ol class="places"><li id="a-bit-twisted-brewery-bbq-80014"><h3>A Bit Twisted Brewery &amp; BBQ</h3><p class="where">3095 S Peoria St, Aurora</p><p class="facts"><span class="tag">Brewpub</span></p><p class="link"><a href="https://twistedbrewpub.com/" rel="noopener nofollow">twistedbrewpub.com</a></p></li><li id="cheluna-brewing-company-80010"><h3>Cheluna Brewing Company</h3><p class="where">2501 Dallas St #148, Aurora</p><p class="facts"><span class="tag">Brewpub</span></p><p class="link"><a href="https://www.cheluna.com/" rel="noopener nofollow">cheluna.com</a></p></li><li id="six-capital-brewing-80013"><h3>Six Capital Brewing</h3><p class="where">16701 E Iliff Ave, Aurora</p><p class="facts"><span class="tag">Brewpub</span></p><p class="link"><a href="https://sixcapitalbrewing.com/" rel="noopener nofollow">sixcapitalbrewing.com</a></p></li></ol></section>
+<section id="cuisines"><h2>What Aurora eats</h2><p class="sub">The kinds of places Aurora has most of, out of 811, counted from open map listings and Colorado's license records.</p><table><thead><tr><th scope="col">Kind of place</th><th scope="col" class="n">Places</th></tr></thead><tbody><tr><td>Mexican</td><td class="n">140</td></tr><tr><td>Bar &amp; Pub</td><td class="n">83</td></tr><tr><td>Bakery &amp; Sweets</td><td class="n">75</td></tr><tr><td>Burgers</td><td class="n">66</td></tr><tr><td>Coffee &amp; Café</td><td class="n">59</td></tr><tr><td>Pizza</td><td class="n">45</td></tr><tr><td>Chicken &amp; Wings</td><td class="n">38</td></tr><tr><td>Sandwiches &amp; Deli</td><td class="n">38</td></tr><tr><td>Chinese</td><td class="n">37</td></tr><tr><td>Japanese &amp; Sushi</td><td class="n">26</td></tr></tbody></table></section>
+<section id="more"><h2>Other Colorado city pages</h2><ul class="cities"><li><a href="/colorado-eats/cities/denver.html">Denver</a></li><li><a href="/colorado-eats/cities/colorado-springs.html">Colorado Springs</a></li><li><a href="/colorado-eats/cities/aurora.html" aria-current="page">Aurora</a></li><li><a href="/colorado-eats/cities/fort-collins.html">Fort Collins</a></li><li><a href="/colorado-eats/cities/boulder.html">Boulder</a></li><li><a href="/colorado-eats/cities/pueblo.html">Pueblo</a></li><li><a href="/colorado-eats/cities/lakewood.html">Lakewood</a></li><li><a href="/colorado-eats/cities/longmont.html">Longmont</a></li><li><a href="/colorado-eats/cities/greeley.html">Greeley</a></li><li><a href="/colorado-eats/cities/golden.html">Golden</a></li><li><a href="/colorado-eats/cities/grand-junction.html">Grand Junction</a></li><li><a href="/colorado-eats/cities/durango.html">Durango</a></li><li><a href="/colorado-eats/cities/aspen.html">Aspen</a></li><li><a href="/colorado-eats/cities/breckenridge.html">Breckenridge</a></li><li><a href="/colorado-eats/cities/steamboat-springs.html">Steamboat Springs</a></li><li><a href="/colorado-eats/cities/vail.html">Vail</a></li></ul><p class="fine"><a href="/colorado-eats/cities/">The city index, with what each page covers</a></p></section>
   </main>
   <footer>
     <nav aria-label="Footer">
@@ -246,10 +287,10 @@
       <a href="/colorado-eats/cities/">Cities and towns</a>
       <a href="/colorado-eats/privacy.html">Privacy policy</a>
       <a href="/colorado-eats/terms.html">Terms of use</a>
-      <a href="mailto:work-with-nick@gmail.com">Email us</a>
+      <a href="mailto:nick@eatsranked.com">Email us</a>
     </nav>
     <p>Place data: hand-checked research by Colorado Eats (fall 2026); Overture Maps Foundation places (CDLA Permissive 2.0) and addresses (open address sources under permissive licenses, docs.overturemaps.org/attribution); © OpenStreetMap contributors (ODbL); U.S. Census Bureau Geocoder (public domain); Colorado Department of Revenue liquor licenses and Boulder County Public Health inspections (data.colorado.gov, public domain); City and County of Denver Open Data. Not affiliated with or endorsed by any restaurant, team, chain or government agency, the MICHELIN Guide or the James Beard Foundation. MICHELIN and the MICHELIN Guide are trademarks of Michelin; James Beard Foundation and James Beard Award are trademarks of the James Beard Foundation. Places open and close, so check before you go.</p>
-    <p>© 2026 Colorado Eats.</p>
+    <p>© 2026 Colorado Eats. Part of <a href="https://eatsranked.com/">Eats Ranked</a>, restaurant apps state by state.</p>
   </footer>
 </div>
 <script>

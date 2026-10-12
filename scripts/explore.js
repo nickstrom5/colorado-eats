@@ -1,8 +1,8 @@
 // Colorado Eats web app: the iPhone app's guides, search, filters, map and place details, in the browser.
-// Ported from wi-eats/scripts/explore.js; keep its guide rules in step with ColoradoEats/Models/Guide.swift.
+// Keep its guide rules in step with ColoradoEats/Models/Guide.swift.
 // Same data file as the app (split into core + detail by scripts/make-site.py). No cookies, no trackers;
-// saved places and the last guide live in this browser's localStorage only (keys start with coeats-, because Connecticut Eats,
-// on the same github.io origin, uses ce-).
+// saved places and the last guide live in this browser's localStorage only, under a prefix unique to this site (coeats-),
+// because other sites share this github.io origin. The privacy page names every key written here.
 // The page runs under a strict Content-Security-Policy (hash-pinned inline script and style): never add inline event
 // handlers or inline style attributes to the HTML built here; set properties from code instead.
 (() => {
@@ -126,6 +126,8 @@
     return 3958.8 * 2 * Math.asin(Math.sqrt(h));
   };
   const milesText = (m) => (m < 10 ? m.toFixed(1) : Math.round(m)) + " mi";
+  // Colorado's box, with a little room across the border: outside it, distances still sort the list, but the map stays on the state
+  const inColorado = (pt) => pt.la > 36.7 && pt.la < 41.3 && pt.lo > -109.4 && pt.lo < -101.7;
 
   function order() {
     const g = GUIDES[st.g];
@@ -199,7 +201,6 @@
     const filters = [st.town && `in ${st.town}`, st.cuisine && st.cuisine, st.chains && "no chains"].filter(Boolean);
     $("#ex-count").textContent = `${current.length.toLocaleString()} ${current.length === 1 ? "place" : "places"} · ${SORT_LABEL[o]}` + (filters.length ? ` · ${filters.join(", ")}` : "");
     $("#ex-clear").hidden = !filters.length;
-    $("#ex-locate").hidden = Boolean(here);
     if (view === "list") renderList(o); else drawMap();
     saveHash();
   }
@@ -214,7 +215,7 @@
     }
     ol.innerHTML = current.slice(0, shown).map((p, i) => {
       const m = metric(p, o);
-      const rank = g.ranked ? `<span class="ex-rank${i < 3 ? " top" : ""}" aria-label="Rank ${i + 1}">${i + 1}</span>` : "";
+      const rank = g.ranked ? `<span class="ex-rank${i < 3 ? " top" : ""}" role="img" aria-label="Rank ${i + 1}">${i + 1}</span>` : "";
       const where = st.g === "inspections" ? [p.a, p.c].filter(Boolean).join(", ") : [p.c, p.cu].filter(Boolean).join(" · ");
       const big = st.g === "inspections" && m ? `<span class="ex-res ex-res-${resCls(p.ir)}">${esc(m[0])}</span>` : m ? `<b>${esc(m[0])}</b>` : "";
       return `<li><button class="ex-row" data-i="${esc(p.i)}">${rank}<span class="ex-main"><b>${esc(p.n)}</b><span class="ex-town">${esc(where)}</span><span class="ex-chips">${chips(p, 4)}</span></span>${m ? `<span class="ex-metric">${big}<small>${esc(m[1])}</small></span>` : ""}</button></li>`;
@@ -255,9 +256,10 @@
   const phone = matchMedia("(max-width: 600px)");
   let listAtPush = null;   // the list's URL state when a place was opened with pushState (Back then closes the panel)
 
-  // on phones the panel is a bottom sheet over the page: a modal dialog, with everything behind it inert
+  // the panel is a modal dialog at every width (a bottom sheet on phones, a side sheet that covers Near me and List/Map on wider
+  // screens): role and aria-modal while it's open, everything behind it inert, and a press outside it closes it
   function panelMode() {
-    const panel = $("#ex-panel"), open = !panel.hidden, modal = open && phone.matches;
+    const panel = $("#ex-panel"), open = !panel.hidden, modal = open;
     if (modal) { panel.setAttribute("role", "dialog"); panel.setAttribute("aria-modal", "true"); }
     else { panel.removeAttribute("role"); panel.removeAttribute("aria-modal"); }
     const behind = [...document.querySelectorAll("body > .skip, .wrap > header, .wrap > nav, .wrap > footer, #main > *")].filter((el) => el !== panel);
@@ -398,6 +400,7 @@
     for (const co of SHAPES.counties || []) { c.beginPath(); eachRing(co.c, ring); c.stroke(); }
     const pts = current.filter((p) => p.la != null);
     const r = Math.max(2.2, Math.min(5, 1.6 + cam.k / 120));
+    let inView = 0;
     for (const classic of [false, true]) {
       c.fillStyle = classic ? "#ffd700" : "#002868";
       c.strokeStyle = "#002868"; c.lineWidth = 1;
@@ -405,10 +408,13 @@
         if (Boolean((p.hc && p.g & (CHILE | GAME | SKIDINING)) || p.g & BREWPUB || p.mi) !== classic) continue;
         const [x, y] = X(p.lo, p.la);
         if (x < -5 || y < -5 || x > w + 5 || y > h + 5) continue;
+        inView++;
         c.beginPath(); c.arc(x, y, classic ? r + 1 : r, 0, 6.2832); c.fill(); if (classic) c.stroke();
       }
     }
-    $("#ex-maphint").textContent = pts.length ? `${pts.length.toLocaleString()} ${pts.length === 1 ? "place" : "places"} · tap a dot` : "No places to show";
+    $("#ex-maphint").textContent = !pts.length ? "No places to show"
+      : inView ? `${pts.length.toLocaleString()} ${pts.length === 1 ? "place" : "places"} · tap a dot`
+      : `None of the ${pts.length.toLocaleString()} ${pts.length === 1 ? "place is" : "places are"} in view. Zoom out with −`;
   }
 
   function nearestDot(px, py) {
@@ -535,12 +541,18 @@
     $("#ex-locmsg").textContent = "Finding you…";
     navigator.geolocation.getCurrentPosition((pos) => {
       here = { la: pos.coords.latitude, lo: pos.coords.longitude };
-      $("#ex-locmsg").textContent = "Sorted by distance from you. Your location stays in this browser.";
+      const inside = inColorado(here);
+      $("#ex-locmsg").textContent = inside ? "Sorted by distance from you. Your location stays in this browser."
+        : "You're outside Colorado, so the map stays on the state. Places are sorted by distance from where you are; your location stays in this browser.";
       st.sort = GUIDES[st.g].sorts.includes("nearest") ? "nearest" : st.sort;
-      if (view === "map") centerOn(here);
+      if (view === "map" && inside) centerOn(here);
       shown = 100; render();
-    }, () => { $("#ex-locmsg").textContent = "Location is off for this site. Allow it in your browser settings to sort by distance."; },
-    { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 });
+    }, (err) => {
+      $("#ex-locmsg").textContent = err && err.code === 1
+        ? "Location is off for this site. Allow it in your browser settings to sort by distance."
+        : "Couldn't get your location just now. Try Near me again in a moment.";
+    },
+    { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 });   // a fresh fix on every tap: one from earlier can be a drive away
   }
 
   function setView(v) {
@@ -578,6 +590,8 @@
     $("#ex-list").addEventListener("click", (e) => { const b = e.target.closest(".ex-row"); if (b && P[+b.dataset.i]) openPlace(P[+b.dataset.i]); });
     for (const ev of ["pointerover", "focusin"]) $("#ex-list").addEventListener(ev, () => loadDetail(), { once: true });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && st.p) closePlace(); });
+    // the page behind the open panel is inert, so a press there would do nothing: it closes the panel instead
+    document.addEventListener("pointerdown", (e) => { const panel = $("#ex-panel"); if (st.p && !panel.hidden && !panel.contains(e.target)) closePlace(); });
     window.addEventListener("popstate", fromURL);
     window.addEventListener("hashchange", fromURL);
     phone.addEventListener?.("change", panelMode);

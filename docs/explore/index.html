@@ -2,7 +2,7 @@
 <html lang="en" data-base="/colorado-eats">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-hlO8MIuxCWHhJShIw8yBs/wFvEC46+0n/v3v5S6n7CM=' 'sha256-BgJmbaINEQUFu7virxVOdfOaikMdCK8nl/GiBpr6iOc='; style-src 'sha256-y09C+q/t8gax8nDKASaRPZcxZXWN/HhmL6shzGtOqDE='; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-25gECqe9im//+w3WYbXwDrxOBCIWpR2HOrGIZBRRuYE=' 'sha256-BgJmbaINEQUFu7virxVOdfOaikMdCK8nl/GiBpr6iOc='; style-src 'sha256-oJNfHcyLZ8pv8AGI1whG3KYuWgd3raYOiWGqgVosz58='; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Search Colorado Restaurants, Green Chile &amp; Brewpubs</title>
 <meta name="description" content="Search 15,716 Colorado restaurants by name, town, street or dish, and map 47 hand-checked green chile spots and 234 licensed brewpubs in your browser.">
@@ -160,6 +160,7 @@
   .ex-row1 input[type=search] { flex: 1; min-width: 0; font: 16px/1.3 system-ui, sans-serif; font-family: inherit; padding: 10px 12px; border: 2px solid var(--green); border-radius: 12px; background: var(--surface); color: var(--ink); }
   .ex-row2 { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; font-size: 14px; }
   .ex-row2 select { font: 14px system-ui, sans-serif; font-family: inherit; padding: 6px 8px; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); color: var(--ink); max-width: 46vw; }
+  @media (max-width: 600px) { .ex-row2 select { font-size: 16px; } }   /* iOS Safari zooms the page into any input or select under 16px */
   .ex-view { margin-left: auto; display: flex; gap: 4px; }
   #ex-count { margin: 8px 0 0; font-size: 14px; color: var(--muted); }
   #ex-sub { margin: 4px 0 0; font-size: 14px; color: var(--ink2); }
@@ -215,6 +216,52 @@
 <script type="application/ld+json">
 {
  "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "Organization",
+   "@id": "https://nickstrom5.github.io/colorado-eats/#org",
+   "name": "Colorado Eats",
+   "url": "https://nickstrom5.github.io/colorado-eats/",
+   "logo": {
+    "@type": "ImageObject",
+    "url": "https://nickstrom5.github.io/colorado-eats/icon-512.png",
+    "width": 512,
+    "height": 512
+   },
+   "email": "nick@eatsranked.com",
+   "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer support",
+    "email": "nick@eatsranked.com",
+    "availableLanguage": "en"
+   },
+   "parentOrganization": {
+    "@type": "Organization",
+    "@id": "https://eatsranked.com/#organization",
+    "name": "Eats Ranked",
+    "url": "https://eatsranked.com/"
+   }
+  },
+  {
+   "@type": "WebSite",
+   "@id": "https://nickstrom5.github.io/colorado-eats/#website",
+   "name": "Colorado Eats",
+   "alternateName": [
+    "CO Eats",
+    "Colorado Eats app"
+   ],
+   "url": "https://nickstrom5.github.io/colorado-eats/",
+   "inLanguage": "en",
+   "publisher": {
+    "@id": "https://nickstrom5.github.io/colorado-eats/#org"
+   }
+  }
+ ]
+}
+</script>
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
  "@type": "WebApplication",
  "name": "Colorado Eats web app",
  "url": "https://nickstrom5.github.io/colorado-eats/explore/",
@@ -228,10 +275,10 @@
   "priceCurrency": "USD"
  },
  "publisher": {
-  "@type": "Organization",
-  "@id": "https://nickstrom5.github.io/colorado-eats/#org",
-  "name": "Colorado Eats",
-  "url": "https://nickstrom5.github.io/colorado-eats/"
+  "@id": "https://nickstrom5.github.io/colorado-eats/#org"
+ },
+ "isPartOf": {
+  "@id": "https://nickstrom5.github.io/colorado-eats/#website"
  }
 }
 </script>
@@ -274,10 +321,10 @@
   <section class="ex-hero">
     <p class="kicker">Colorado Eats · on the web</p>
     <h1>Search Colorado restaurants</h1>
-    <p class="sub">15,716 restaurants, cafés, bars and bakeries, with 47 hand-checked green chile spots, 234 licensed brewpubs, 46 ski-town restaurants and Boulder County's recorded inspection results. The same data as the iPhone and iPad app, which is coming soon. Nothing about you is stored anywhere but this browser.</p>
+    <p class="sub">Look up 15,716 Colorado restaurants, cafés, bars and bakeries by name, town, street, zip or dish, or open a list: 47 green chile spots and 46 ski-town restaurants we checked by hand, 234 brewpubs on the state's license list, and Boulder County's recorded inspection results. It runs on the app's own data, and what you save stays in this browser.</p>
   </section>
   <p id="ex-loading" hidden>Loading the restaurant list…</p>
-  <noscript><p>The search needs JavaScript. The guides work without it: <a href="/colorado-eats/colorado-green-chile.html">green chile</a>, <a href="/colorado-eats/colorado-brewpubs.html">brewpubs</a>, <a href="/colorado-eats/colorado-ski-town-restaurants.html">ski towns</a>, <a href="/colorado-eats/boulder-county-restaurant-inspections.html">Boulder County inspections</a>.</p></noscript>
+  <noscript><p>Search runs on JavaScript. The lists are plain pages, though: <a href="/colorado-eats/colorado-green-chile.html">green chile</a>, <a href="/colorado-eats/colorado-brewpubs.html">brewpubs</a>, <a href="/colorado-eats/colorado-ski-town-restaurants.html">ski towns</a>, <a href="/colorado-eats/boulder-county-restaurant-inspections.html">Boulder County inspections</a>.</p></noscript>
   <div id="ex-app" hidden>
     <div class="ex-controls">
       <div class="ex-guides" role="group" aria-label="Guides"><button type="button" data-g="greenchile" aria-pressed="false">Green chile</button><button type="button" data-g="brewpubs" aria-pressed="false">Brewpubs</button><button type="button" data-g="ski" aria-pressed="false">Ski towns</button><button type="button" data-g="game" aria-pressed="false">Game &amp; steak</button><button type="button" data-g="honors" aria-pressed="false">MICHELIN &amp; James Beard</button><button type="button" data-g="oldest" aria-pressed="false">Oldest</button><button type="button" data-g="inspections" aria-pressed="false">Inspections</button><button type="button" data-g="all" aria-pressed="false">All restaurants</button><button type="button" data-g="saved" aria-pressed="false">Saved</button></div>
@@ -300,7 +347,7 @@
     </div>
     <div id="ex-listwrap"><ol id="ex-list" class="ex-list"></ol><button type="button" id="ex-more" class="ex-small" hidden></button></div>
     <div id="ex-mapwrap" hidden>
-      <canvas id="ex-map" aria-label="Map of Colorado with a dot for each place in the list. The list view has the same places."></canvas>
+      <canvas id="ex-map" role="img" aria-label="Map of Colorado with a dot for each place in the list. The list view has the same places."></canvas>
       <div class="ex-zoom"><button type="button" id="ex-zin" aria-label="Zoom in">+</button><button type="button" id="ex-zout" aria-label="Zoom out">−</button></div>
       <p id="ex-maphint"></p>
     </div>
@@ -309,10 +356,10 @@
   </main>
 <script>
 // Colorado Eats web app: the iPhone app's guides, search, filters, map and place details, in the browser.
-// Ported from wi-eats/scripts/explore.js; keep its guide rules in step with ColoradoEats/Models/Guide.swift.
+// Keep its guide rules in step with ColoradoEats/Models/Guide.swift.
 // Same data file as the app (split into core + detail by scripts/make-site.py). No cookies, no trackers;
-// saved places and the last guide live in this browser's localStorage only (keys start with coeats-, because Connecticut Eats,
-// on the same github.io origin, uses ce-).
+// saved places and the last guide live in this browser's localStorage only, under a prefix unique to this site (coeats-),
+// because other sites share this github.io origin. The privacy page names every key written here.
 // The page runs under a strict Content-Security-Policy (hash-pinned inline script and style): never add inline event
 // handlers or inline style attributes to the HTML built here; set properties from code instead.
 (() => {
@@ -436,6 +483,8 @@
     return 3958.8 * 2 * Math.asin(Math.sqrt(h));
   };
   const milesText = (m) => (m < 10 ? m.toFixed(1) : Math.round(m)) + " mi";
+  // Colorado's box, with a little room across the border: outside it, distances still sort the list, but the map stays on the state
+  const inColorado = (pt) => pt.la > 36.7 && pt.la < 41.3 && pt.lo > -109.4 && pt.lo < -101.7;
 
   function order() {
     const g = GUIDES[st.g];
@@ -509,7 +558,6 @@
     const filters = [st.town && `in ${st.town}`, st.cuisine && st.cuisine, st.chains && "no chains"].filter(Boolean);
     $("#ex-count").textContent = `${current.length.toLocaleString()} ${current.length === 1 ? "place" : "places"} · ${SORT_LABEL[o]}` + (filters.length ? ` · ${filters.join(", ")}` : "");
     $("#ex-clear").hidden = !filters.length;
-    $("#ex-locate").hidden = Boolean(here);
     if (view === "list") renderList(o); else drawMap();
     saveHash();
   }
@@ -524,7 +572,7 @@
     }
     ol.innerHTML = current.slice(0, shown).map((p, i) => {
       const m = metric(p, o);
-      const rank = g.ranked ? `<span class="ex-rank${i < 3 ? " top" : ""}" aria-label="Rank ${i + 1}">${i + 1}</span>` : "";
+      const rank = g.ranked ? `<span class="ex-rank${i < 3 ? " top" : ""}" role="img" aria-label="Rank ${i + 1}">${i + 1}</span>` : "";
       const where = st.g === "inspections" ? [p.a, p.c].filter(Boolean).join(", ") : [p.c, p.cu].filter(Boolean).join(" · ");
       const big = st.g === "inspections" && m ? `<span class="ex-res ex-res-${resCls(p.ir)}">${esc(m[0])}</span>` : m ? `<b>${esc(m[0])}</b>` : "";
       return `<li><button class="ex-row" data-i="${esc(p.i)}">${rank}<span class="ex-main"><b>${esc(p.n)}</b><span class="ex-town">${esc(where)}</span><span class="ex-chips">${chips(p, 4)}</span></span>${m ? `<span class="ex-metric">${big}<small>${esc(m[1])}</small></span>` : ""}</button></li>`;
@@ -565,9 +613,10 @@
   const phone = matchMedia("(max-width: 600px)");
   let listAtPush = null;   // the list's URL state when a place was opened with pushState (Back then closes the panel)
 
-  // on phones the panel is a bottom sheet over the page: a modal dialog, with everything behind it inert
+  // the panel is a modal dialog at every width (a bottom sheet on phones, a side sheet that covers Near me and List/Map on wider
+  // screens): role and aria-modal while it's open, everything behind it inert, and a press outside it closes it
   function panelMode() {
-    const panel = $("#ex-panel"), open = !panel.hidden, modal = open && phone.matches;
+    const panel = $("#ex-panel"), open = !panel.hidden, modal = open;
     if (modal) { panel.setAttribute("role", "dialog"); panel.setAttribute("aria-modal", "true"); }
     else { panel.removeAttribute("role"); panel.removeAttribute("aria-modal"); }
     const behind = [...document.querySelectorAll("body > .skip, .wrap > header, .wrap > nav, .wrap > footer, #main > *")].filter((el) => el !== panel);
@@ -708,6 +757,7 @@
     for (const co of SHAPES.counties || []) { c.beginPath(); eachRing(co.c, ring); c.stroke(); }
     const pts = current.filter((p) => p.la != null);
     const r = Math.max(2.2, Math.min(5, 1.6 + cam.k / 120));
+    let inView = 0;
     for (const classic of [false, true]) {
       c.fillStyle = classic ? "#ffd700" : "#002868";
       c.strokeStyle = "#002868"; c.lineWidth = 1;
@@ -715,10 +765,13 @@
         if (Boolean((p.hc && p.g & (CHILE | GAME | SKIDINING)) || p.g & BREWPUB || p.mi) !== classic) continue;
         const [x, y] = X(p.lo, p.la);
         if (x < -5 || y < -5 || x > w + 5 || y > h + 5) continue;
+        inView++;
         c.beginPath(); c.arc(x, y, classic ? r + 1 : r, 0, 6.2832); c.fill(); if (classic) c.stroke();
       }
     }
-    $("#ex-maphint").textContent = pts.length ? `${pts.length.toLocaleString()} ${pts.length === 1 ? "place" : "places"} · tap a dot` : "No places to show";
+    $("#ex-maphint").textContent = !pts.length ? "No places to show"
+      : inView ? `${pts.length.toLocaleString()} ${pts.length === 1 ? "place" : "places"} · tap a dot`
+      : `None of the ${pts.length.toLocaleString()} ${pts.length === 1 ? "place is" : "places are"} in view. Zoom out with −`;
   }
 
   function nearestDot(px, py) {
@@ -845,12 +898,18 @@
     $("#ex-locmsg").textContent = "Finding you…";
     navigator.geolocation.getCurrentPosition((pos) => {
       here = { la: pos.coords.latitude, lo: pos.coords.longitude };
-      $("#ex-locmsg").textContent = "Sorted by distance from you. Your location stays in this browser.";
+      const inside = inColorado(here);
+      $("#ex-locmsg").textContent = inside ? "Sorted by distance from you. Your location stays in this browser."
+        : "You're outside Colorado, so the map stays on the state. Places are sorted by distance from where you are; your location stays in this browser.";
       st.sort = GUIDES[st.g].sorts.includes("nearest") ? "nearest" : st.sort;
-      if (view === "map") centerOn(here);
+      if (view === "map" && inside) centerOn(here);
       shown = 100; render();
-    }, () => { $("#ex-locmsg").textContent = "Location is off for this site. Allow it in your browser settings to sort by distance."; },
-    { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 });
+    }, (err) => {
+      $("#ex-locmsg").textContent = err && err.code === 1
+        ? "Location is off for this site. Allow it in your browser settings to sort by distance."
+        : "Couldn't get your location just now. Try Near me again in a moment.";
+    },
+    { enableHighAccuracy: false, timeout: 10000, maximumAge: 0 });   // a fresh fix on every tap: one from earlier can be a drive away
   }
 
   function setView(v) {
@@ -888,6 +947,8 @@
     $("#ex-list").addEventListener("click", (e) => { const b = e.target.closest(".ex-row"); if (b && P[+b.dataset.i]) openPlace(P[+b.dataset.i]); });
     for (const ev of ["pointerover", "focusin"]) $("#ex-list").addEventListener(ev, () => loadDetail(), { once: true });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && st.p) closePlace(); });
+    // the page behind the open panel is inert, so a press there would do nothing: it closes the panel instead
+    document.addEventListener("pointerdown", (e) => { const panel = $("#ex-panel"); if (st.p && !panel.hidden && !panel.contains(e.target)) closePlace(); });
     window.addEventListener("popstate", fromURL);
     window.addEventListener("hashchange", fromURL);
     phone.addEventListener?.("change", panelMode);
@@ -925,10 +986,10 @@
       <a href="/colorado-eats/cities/">Cities and towns</a>
       <a href="/colorado-eats/privacy.html">Privacy policy</a>
       <a href="/colorado-eats/terms.html">Terms of use</a>
-      <a href="mailto:work-with-nick@gmail.com">Email us</a>
+      <a href="mailto:nick@eatsranked.com">Email us</a>
     </nav>
     <p>Place data: hand-checked research by Colorado Eats (fall 2026); Overture Maps Foundation places (CDLA Permissive 2.0) and addresses (open address sources under permissive licenses, docs.overturemaps.org/attribution); © OpenStreetMap contributors (ODbL); U.S. Census Bureau Geocoder (public domain); Colorado Department of Revenue liquor licenses and Boulder County Public Health inspections (data.colorado.gov, public domain); City and County of Denver Open Data. Not affiliated with or endorsed by any restaurant, team, chain or government agency, the MICHELIN Guide or the James Beard Foundation. MICHELIN and the MICHELIN Guide are trademarks of Michelin; James Beard Foundation and James Beard Award are trademarks of the James Beard Foundation. Places open and close, so check before you go.</p>
-    <p>© 2026 Colorado Eats.</p>
+    <p>© 2026 Colorado Eats. Part of <a href="https://eatsranked.com/">Eats Ranked</a>, restaurant apps state by state.</p>
   </footer>
 </div>
 <script>
