@@ -341,7 +341,7 @@
     const store_url = safeUrl(window.APP_STORE_URL);   // set in the page footer script once the App Store listing exists
     html += store_url
       ? `<p class="ex-app">Save it on your phone: <a href="${esc(store_url)}" rel="noopener">get the free iPhone app</a></p>`
-      : `<p class="ex-app">The iPhone app is coming soon. <a href="${BASE}/#download">Get early access</a></p>`;
+      : `<p class="ex-app">The iPhone app is coming soon. <a href="${BASE}/#download">Ask for early access</a></p>`;
     panel.innerHTML = html;
     panel.dataset.id = p.id;
     panel.hidden = false;

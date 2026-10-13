@@ -485,7 +485,7 @@ def crumbs(trail):
     return f'<nav class="crumbs" aria-label="Breadcrumb"><ol>{items}</ol></nav>', ld
 
 
-def store_button(label="Get early access"):
+def store_button(label="Ask for early access"):
     # A plain mailto button until launch: no Apple logo (Apple's marketing rules allow it only in the official badge). When
     # APP_STORE_URL is set in page() below, swap this for Apple's "Download on the App Store" badge artwork.
     return (f'<a class="btn store-btn" href="mailto:{EMAIL}?subject=Colorado%20Eats%20early%20access&amp;body=Send%20me%20the%20TestFlight%20link.">'
@@ -593,7 +593,7 @@ def page(path, title, desc, body, lds=(), robots="index,follow,max-image-preview
 </div>
 <script>
   // Once the App Store listing exists, paste its URL here (looks like https://apps.apple.com/app/id123456789).
-  // Every button switches from "Get early access" to "Download on the App Store" automatically (then use Apple's badge artwork,
+  // Every button switches from "Ask for early access" to "Download on the App Store" automatically (then use Apple's badge artwork,
   // see store_button() in scripts/make-site.py). Also fill in the apple-itunes-app meta tag in <head> on every page, and put the
   // MobileApplication "offers" back in the landing page's JSON-LD (re-run scripts/make-site.py after editing it there).
   var APP_STORE_URL = "";

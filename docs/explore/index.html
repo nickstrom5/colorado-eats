@@ -2,7 +2,7 @@
 <html lang="en" data-base="/colorado-eats">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-j0wGnjbi4StgMMxacn1G/8jXbm5CA9SsmKwOsmYiucc=' 'sha256-BgJmbaINEQUFu7virxVOdfOaikMdCK8nl/GiBpr6iOc='; style-src 'sha256-mNTHoqucGOgCL8nU+2tV8lhiZJiIbWiQ8i8Sosp856Y='; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-/lBSQE8ptpXPJUG39qx2hXDl/C6SB+YHCnrz9DlkC9E=' 'sha256-YfPxYBJDc639ac4gHFGjFpJLVatKf6JcrBZeF/tuACM='; style-src 'sha256-mNTHoqucGOgCL8nU+2tV8lhiZJiIbWiQ8i8Sosp856Y='; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Search Colorado Restaurants, Green Chile &amp; Brewpubs</title>
 <meta name="description" content="Search 15,716 Colorado restaurants by name, town, street or dish, and map 47 hand-checked green chile spots and 234 licensed brewpubs in your browser.">
@@ -702,7 +702,7 @@
     const store_url = safeUrl(window.APP_STORE_URL);   // set in the page footer script once the App Store listing exists
     html += store_url
       ? `<p class="ex-app">Save it on your phone: <a href="${esc(store_url)}" rel="noopener">get the free iPhone app</a></p>`
-      : `<p class="ex-app">The iPhone app is coming soon. <a href="${BASE}/#download">Get early access</a></p>`;
+      : `<p class="ex-app">The iPhone app is coming soon. <a href="${BASE}/#download">Ask for early access</a></p>`;
     panel.innerHTML = html;
     panel.dataset.id = p.id;
     panel.hidden = false;
@@ -1015,7 +1015,7 @@
 </div>
 <script>
   // Once the App Store listing exists, paste its URL here (looks like https://apps.apple.com/app/id123456789).
-  // Every button switches from "Get early access" to "Download on the App Store" automatically (then use Apple's badge artwork,
+  // Every button switches from "Ask for early access" to "Download on the App Store" automatically (then use Apple's badge artwork,
   // see store_button() in scripts/make-site.py). Also fill in the apple-itunes-app meta tag in <head> on every page, and put the
   // MobileApplication "offers" back in the landing page's JSON-LD (re-run scripts/make-site.py after editing it there).
   var APP_STORE_URL = "";
