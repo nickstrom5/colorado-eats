@@ -119,6 +119,56 @@ def safe_url(u):
     return ""
 
 
+# Websites the site never links (pipeline/website_blocklist.json: hacked, expired, a directory or another business's site), until
+# the app data's own link check drops them. A "domain" entry covers the domain and every subdomain; a "url" entry only that URL (one
+# site on a shared host). Only the link goes, never the place: it shows like any place without a website, on the pages and in the
+# web app's data. New entries need no code change; scripts/qa-site.py fails if any of them appears anywhere in docs/ (or if the
+# list is missing or empty).
+BLOCKLIST_PATH = f"{ROOT}/pipeline/website_blocklist.json"
+BLOCKLIST = json.load(open(BLOCKLIST_PATH, encoding="utf-8"))
+assert isinstance(BLOCKLIST, list) and BLOCKLIST, f"{BLOCKLIST_PATH} is empty"
+BLOCKED_DROPPED = Counter()
+URL_PARTS = re.compile(r"^[a-z][a-z0-9+.-]*://(?:[^/?#@]*@)?([^/?#:]*)(?::\d*)?([^?#]*)(?:\?([^#]*))?", re.I)
+
+
+def _host(h):
+    return h.strip().lower().rstrip(".").removeprefix("www.")
+
+
+def _block_key(b):
+    """What an entry blocks, normalized: ("domain", "example.com") or ("url", host, path, query or None)."""
+    kind = b.get("match", "domain")
+    if kind == "url":
+        m = URL_PARTS.match(str(b.get("url") or "").strip())
+        assert m and "." in m[1], f"{BLOCKLIST_PATH}: a \"url\" entry needs an http(s) url: {b}"
+        return ("url", _host(m[1]), m[2].rstrip("/"), m[3] or None)
+    assert kind == "domain", f"{BLOCKLIST_PATH}: \"match\" must be \"domain\" or \"url\": {b}"
+    d = _host(re.sub(r"^[a-z]+://", "", str(b.get("domain") or "").strip(), flags=re.I).split("/")[0])
+    assert re.fullmatch(r"[a-z0-9-]+(?:\.[a-z0-9-]+)+", d), f"{BLOCKLIST_PATH}: not a domain name: {b}"
+    return ("domain", d)
+
+
+BLOCK_KEYS = [(_block_key(b), b) for b in BLOCKLIST]
+
+
+def blocked_site(w):
+    """The blocklist entry that covers website `w` (already through safe_url), or None."""
+    m = URL_PARTS.match(w or "")
+    if not m:
+        return None
+    host, path, query = _host(m[1]), m[2].rstrip("/"), m[3]
+    for key, b in BLOCK_KEYS:
+        if key[0] == "domain" and (host == key[1] or host.endswith("." + key[1])):
+            return b
+        if key[0] == "url" and host == key[1] and path == key[2] and (key[3] is None or query == key[3]):
+            return b
+    return None
+
+
+def block_label(b):
+    return b.get("url") or b["domain"]
+
+
 class P:
     """One place, with the same meaning the app gives each field (ColoradoEats/Models/Place.swift)."""
 
@@ -141,6 +191,9 @@ class P:
         self.season = r.get("seas") or ""
         self.note = r.get("note") or ""
         self.site = safe_url(r.get("w"))
+        if self.site and blocked_site(self.site):
+            BLOCKED_DROPPED[block_label(blocked_site(self.site))] += 1   # counted once per place; the web-app split below drops it too
+            self.site = ""
         self.jbf = r.get("jbf") or ""
         self.h = r.get("h") or 0
         self.mi = r.get("mi") if r.get("mi") in range(1, len(MI)) else 0
@@ -1181,7 +1234,7 @@ for p, r in zip(PLACES, D["places"]):
     d = {k: r[k] for k in ("ph", "w", "note", "dish", "seas", "fn", "jbf", "lic", "liq") if r.get(k)}
     if "w" in d:
         d["w"] = safe_url(d["w"])
-        if not d["w"]:
+        if not d["w"] or blocked_site(d["w"]):   # pipeline/website_blocklist.json: the place stays, its link goes
             del d["w"]
     if i: d["in"] = i
     detail.append(d or None)
@@ -1210,6 +1263,9 @@ EXPLORE_CSS = """
   #ex-count { margin: 8px 0 0; font-size: 14px; color: var(--muted); }
   #ex-sub { margin: 4px 0 0; font-size: 14px; color: var(--ink2); }
   #ex-locmsg { font-size: 13px; color: var(--muted); margin: 4px 0 0; }
+  #ex-wider { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 8px 0 0; font-size: 15px; color: var(--ink2); }
+  #ex-all { min-height: 44px; border: 2px solid var(--green); background: var(--surface); color: var(--green); border-radius: 999px; padding: 8px 14px; font: 650 15px/1.2 system-ui, sans-serif; font-family: inherit; cursor: pointer; }
+  #ex-all:hover { background: var(--green); color: var(--on-green); }
   .ex-list { list-style: none; padding: 0; margin: 10px 0; }
   .ex-list li + li { border-top: 1px solid var(--rule); }
   .ex-row { width: 100%; display: flex; gap: 12px; align-items: center; text-align: left; background: none; border: 0; padding: 12px 4px; cursor: pointer; color: var(--ink); font: inherit; }
@@ -1290,7 +1346,7 @@ body = f"""{nav}
       <div class="ex-guides" role="group" aria-label="Guides">{guide_buttons}</div>
       <div class="ex-row1">
         <label class="skip" for="ex-q">Search</label>
-        <input id="ex-q" type="search" placeholder="Name, town, street, zip or dish" autocomplete="off" enterkeyhint="search">
+        <input id="ex-q" type="search" placeholder="Name, town, street or dish" autocomplete="off" enterkeyhint="search">
         <button type="button" id="ex-locate" class="ex-small">Near me</button>
       </div>
       <div class="ex-row2">
@@ -1303,6 +1359,7 @@ body = f"""{nav}
       </div>
       <p id="ex-sub"></p>
       <p id="ex-count" aria-live="polite"></p>
+      <p id="ex-wider" aria-live="polite" hidden></p>
       <p id="ex-locmsg"></p>
     </div>
     <div id="ex-listwrap"><ol id="ex-list" class="ex-list"></ol><button type="button" id="ex-more" class="ex-small" hidden></button></div>
@@ -1567,3 +1624,6 @@ if noindexed:
     print("noindex (fewer than 5 listed places, left out of the sitemap):", ", ".join(noindexed))
 print(f"restaurants {N_REST:,} in {N_TOWNS} towns | green chile {len(CHILE_L)} | brewpubs {len(BREW_L)} (hid {N_BREW_DROPPED} duplicate license holders) | "
       f"ski {len(SKI_L)} | game {len(GAME_L)} | honors {len(HON_L)} | oldest {len(OLD_L)} | Boulder County inspections {len(INS_L)}")
+print(f"website links left out ({os.path.relpath(BLOCKLIST_PATH, ROOT)}, {len(BLOCKLIST)} entries):",
+      ", ".join(f"{k} ×{n}" for k, n in sorted(BLOCKED_DROPPED.items())) or "none",
+      "| entries matching nothing:", ", ".join(block_label(b) for b in BLOCKLIST if block_label(b) not in BLOCKED_DROPPED) or "none")

@@ -1,0 +1,29 @@
+[
+ {
+  "domain": "go-colorado.com",
+  "match": "domain",
+  "place": "Marion's of the Rockies (Idaho Springs)",
+  "reason": "directory, not the place's site: www.go-colorado.com/Marions-Of-The-Rockies is a Go-Colorado travel directory listing",
+  "severity": "P3",
+  "evidence": "$SP/results/link-scan.json (parked_or_wrong); $SP/work/colorado-r3/evidence/go-colorado.com-Marions-Of-The-Rockies.html (fetched 2026-10-12: 200, Go-Colorado 'Places To Go' directory page)",
+  "found": "2026-10-12"
+ },
+ {
+  "domain": "bouldercork.com",
+  "match": "domain",
+  "place": "Boulder Cork (Boulder)",
+  "reason": "injected hidden links: off-screen blocks: Russian Pin-Up casino copy (pinupcasinoslots.online), pharmacy links farmaciaonlinesinreceta.com, apotheekzonderrecept.com/kamagra, dating spam lovezoid.com",
+  "severity": "P0",
+  "evidence": "$SP/work/link-scan/evidence/co/bouldercork.com.html",
+  "found": "2026-10-12"
+ },
+ {
+  "domain": "frontporchdenver.com",
+  "match": "domain",
+  "place": "The Front Porch (Denver)",
+  "reason": "injected hidden links: off-screen (left:-8930px) link to loansonlineusa.net (payday loans)",
+  "severity": "P0",
+  "evidence": "$SP/work/link-scan/evidence/co/frontporchdenver.com.html",
+  "found": "2026-10-12"
+ }
+]

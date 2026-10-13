@@ -2,7 +2,7 @@
 <html lang="en" data-base="/colorado-eats">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-25gECqe9im//+w3WYbXwDrxOBCIWpR2HOrGIZBRRuYE=' 'sha256-BgJmbaINEQUFu7virxVOdfOaikMdCK8nl/GiBpr6iOc='; style-src 'sha256-oJNfHcyLZ8pv8AGI1whG3KYuWgd3raYOiWGqgVosz58='; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-QL7nrIs4Iaa1dbJ34uJZj2QCHyvNjufQwZ0sdGB+MNA=' 'sha256-BgJmbaINEQUFu7virxVOdfOaikMdCK8nl/GiBpr6iOc='; style-src 'sha256-mNTHoqucGOgCL8nU+2tV8lhiZJiIbWiQ8i8Sosp856Y='; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Search Colorado Restaurants, Green Chile &amp; Brewpubs</title>
 <meta name="description" content="Search 15,716 Colorado restaurants by name, town, street or dish, and map 47 hand-checked green chile spots and 234 licensed brewpubs in your browser.">
@@ -165,6 +165,9 @@
   #ex-count { margin: 8px 0 0; font-size: 14px; color: var(--muted); }
   #ex-sub { margin: 4px 0 0; font-size: 14px; color: var(--ink2); }
   #ex-locmsg { font-size: 13px; color: var(--muted); margin: 4px 0 0; }
+  #ex-wider { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 8px 0 0; font-size: 15px; color: var(--ink2); }
+  #ex-all { min-height: 44px; border: 2px solid var(--green); background: var(--surface); color: var(--green); border-radius: 999px; padding: 8px 14px; font: 650 15px/1.2 system-ui, sans-serif; font-family: inherit; cursor: pointer; }
+  #ex-all:hover { background: var(--green); color: var(--on-green); }
   .ex-list { list-style: none; padding: 0; margin: 10px 0; }
   .ex-list li + li { border-top: 1px solid var(--rule); }
   .ex-row { width: 100%; display: flex; gap: 12px; align-items: center; text-align: left; background: none; border: 0; padding: 12px 4px; cursor: pointer; color: var(--ink); font: inherit; }
@@ -330,7 +333,7 @@
       <div class="ex-guides" role="group" aria-label="Guides"><button type="button" data-g="greenchile" aria-pressed="false">Green chile</button><button type="button" data-g="brewpubs" aria-pressed="false">Brewpubs</button><button type="button" data-g="ski" aria-pressed="false">Ski towns</button><button type="button" data-g="game" aria-pressed="false">Game &amp; steak</button><button type="button" data-g="honors" aria-pressed="false">MICHELIN &amp; James Beard</button><button type="button" data-g="oldest" aria-pressed="false">Oldest</button><button type="button" data-g="inspections" aria-pressed="false">Inspections</button><button type="button" data-g="all" aria-pressed="false">All restaurants</button><button type="button" data-g="saved" aria-pressed="false">Saved</button></div>
       <div class="ex-row1">
         <label class="skip" for="ex-q">Search</label>
-        <input id="ex-q" type="search" placeholder="Name, town, street, zip or dish" autocomplete="off" enterkeyhint="search">
+        <input id="ex-q" type="search" placeholder="Name, town, street or dish" autocomplete="off" enterkeyhint="search">
         <button type="button" id="ex-locate" class="ex-small">Near me</button>
       </div>
       <div class="ex-row2">
@@ -343,6 +346,7 @@
       </div>
       <p id="ex-sub"></p>
       <p id="ex-count" aria-live="polite"></p>
+      <p id="ex-wider" aria-live="polite" hidden></p>
       <p id="ex-locmsg"></p>
     </div>
     <div id="ex-listwrap"><ol id="ex-list" class="ex-list"></ol><button type="button" id="ex-more" class="ex-small" hidden></button></div>
@@ -558,15 +562,32 @@
     const filters = [st.town && `in ${st.town}`, st.cuisine && st.cuisine, st.chains && "no chains"].filter(Boolean);
     $("#ex-count").textContent = `${current.length.toLocaleString()} ${current.length === 1 ? "place" : "places"} · ${SORT_LABEL[o]}` + (filters.length ? ` · ${filters.join(", ")}` : "");
     $("#ex-clear").hidden = !filters.length;
+    widerOffer(g);
     if (view === "list") renderList(o); else drawMap();
     saveHash();
+  }
+
+  // a search that finds nothing or only a few places in this guide, when the rest of the state answers it (a famous place that
+  // isn't on the list, say): offer All restaurants with the same words and filters, rather than a dead end (ME-V08 / WI-V-03)
+  const FEW = 5;
+  function widerOffer(g) {
+    const box = $("#ex-wider"), q = parse(st.q);
+    const n = st.g !== "all" && !qEmpty(q) && current.length < FEW ? P.filter((p) => !p.v && allows(p) && matches(p, q)).length : 0;
+    box.hidden = n <= current.length;
+    if (box.hidden) { box.textContent = ""; return; }
+    box.innerHTML = `${current.length ? `Only ${esc(current.length)} in ${esc(g.title)}.` : `Nothing in ${esc(g.title)} matches that.`} `
+      + `<button type="button" id="ex-all">Search all restaurants (${esc(n.toLocaleString())} ${n === 1 ? "match" : "matches"})</button>`;
+    $("#ex-all").onclick = () => {
+      st.g = "all"; st.sort = ""; shown = 100; render();
+      (view === "list" ? $(".ex-row") : $("#ex-q"))?.focus();   // the button is gone: keyboard users land on the first result
+    };
   }
 
   function renderList(o) {
     const ol = $("#ex-list");
     const g = GUIDES[st.g];
     if (!current.length) {
-      ol.innerHTML = `<li class="ex-empty">${st.g === "saved" ? "Nothing saved yet. Open a place and tap Save to keep it here, in this browser." : "No places match. Try fewer words or clear the filters."}</li>`;
+      ol.innerHTML = !$("#ex-wider").hidden ? "" : `<li class="ex-empty">${st.g === "saved" ? "Nothing saved yet. Open a place and tap Save to keep it here, in this browser." : "No places match. Try fewer words or clear the filters."}</li>`;
       $("#ex-more").hidden = true;
       return;
     }

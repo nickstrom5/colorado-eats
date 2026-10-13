@@ -201,15 +201,32 @@
     const filters = [st.town && `in ${st.town}`, st.cuisine && st.cuisine, st.chains && "no chains"].filter(Boolean);
     $("#ex-count").textContent = `${current.length.toLocaleString()} ${current.length === 1 ? "place" : "places"} · ${SORT_LABEL[o]}` + (filters.length ? ` · ${filters.join(", ")}` : "");
     $("#ex-clear").hidden = !filters.length;
+    widerOffer(g);
     if (view === "list") renderList(o); else drawMap();
     saveHash();
+  }
+
+  // a search that finds nothing or only a few places in this guide, when the rest of the state answers it (a famous place that
+  // isn't on the list, say): offer All restaurants with the same words and filters, rather than a dead end (ME-V08 / WI-V-03)
+  const FEW = 5;
+  function widerOffer(g) {
+    const box = $("#ex-wider"), q = parse(st.q);
+    const n = st.g !== "all" && !qEmpty(q) && current.length < FEW ? P.filter((p) => !p.v && allows(p) && matches(p, q)).length : 0;
+    box.hidden = n <= current.length;
+    if (box.hidden) { box.textContent = ""; return; }
+    box.innerHTML = `${current.length ? `Only ${esc(current.length)} in ${esc(g.title)}.` : `Nothing in ${esc(g.title)} matches that.`} `
+      + `<button type="button" id="ex-all">Search all restaurants (${esc(n.toLocaleString())} ${n === 1 ? "match" : "matches"})</button>`;
+    $("#ex-all").onclick = () => {
+      st.g = "all"; st.sort = ""; shown = 100; render();
+      (view === "list" ? $(".ex-row") : $("#ex-q"))?.focus();   // the button is gone: keyboard users land on the first result
+    };
   }
 
   function renderList(o) {
     const ol = $("#ex-list");
     const g = GUIDES[st.g];
     if (!current.length) {
-      ol.innerHTML = `<li class="ex-empty">${st.g === "saved" ? "Nothing saved yet. Open a place and tap Save to keep it here, in this browser." : "No places match. Try fewer words or clear the filters."}</li>`;
+      ol.innerHTML = !$("#ex-wider").hidden ? "" : `<li class="ex-empty">${st.g === "saved" ? "Nothing saved yet. Open a place and tap Save to keep it here, in this browser." : "No places match. Try fewer words or clear the filters."}</li>`;
       $("#ex-more").hidden = true;
       return;
     }

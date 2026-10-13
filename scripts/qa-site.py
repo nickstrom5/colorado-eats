@@ -8,11 +8,15 @@ Static (no browser):
 - JSON-LD parses; ItemList items point to an anchor on the same page; no aggregateRating/review; no empty streetAddress
 - the web app keeps its localStorage under "coeats-" (Connecticut Eats uses "ce-" on the same origin)
 - the store button carries no Apple logo; no letter-grade CSS; one place per brewpub license in the published data
+- no website on pipeline/website_blocklist.json (hacked, expired, directory or another business's) anywhere in docs/, in any
+  case, www., http(s) or subdomain form; a missing or empty blocklist fails (check_blocklist)
 Browser (Playwright, channel="chrome"): no horizontal scroll, no console errors, no CSP violations, no broken internal links or
 images; the web app loads, searches ("pueblo slopper" finds only slopper places), opens a place, Back closes it, the phone panel is
 a modal dialog, a hostile #g= doesn't break it, and saved places use the coeats- prefix. Also (bugs found in sibling web apps):
 phone inputs and selects >= 16px, the open place a labelled modal dialog at every width (Back/Forward/Escape/press outside), bad
 localStorage values don't stop the app, no "Nearest" without a location, and Near me asks for a fresh fix on every tap.
+Round 3: the search placeholder fits the box at 375px (scrollWidth <= clientWidth with its words as the value), and a search that
+finds nothing or a few in a guide offers "Search all restaurants (N matches)", which lists them with the same words.
 
 Usage: .venv/bin/python scripts/qa-site.py            (serves docs/ itself on a free localhost port; exits 1 on any problem)
        .venv/bin/python scripts/qa-site.py --static   (static checks only, a few seconds)
@@ -399,7 +403,74 @@ def static_checks():
                 problems.append(f"data: website {w!r} for {core['cols']['n'][i]!r} isn't http(s)")
     except (OSError, ValueError, KeyError) as ex:
         problems.append(f"data: couldn't read core/detail.json ({ex})")
+    check_blocklist(problems)
     return problems, len(pages)
+
+
+# Websites the site never links (hacked, expired, a directory or another business's site): pipeline/website_blocklist.json, which
+# scripts/make-site.py drops from every page and data file. QA_BLOCKLIST points at another copy (used to mutation-test this check).
+BLOCKLIST = os.environ.get("QA_BLOCKLIST") or os.path.join(ROOT, "pipeline", "website_blocklist.json")
+BINARY = (".png", ".jpg", ".jpeg", ".webp", ".avif", ".gif", ".ico", ".pdf", ".woff", ".woff2", ".mp4", ".mov", ".zip")
+
+
+def blocked_patterns(entries):
+    """One case-insensitive pattern per blocklist entry. A "domain" entry (the default) matches the domain and every subdomain,
+    www. included, with or without a scheme; a "url" entry matches that URL with http or https, with or without www. and the
+    trailing slash, and nothing else on its (shared) host. Returns (patterns, problems with the entries themselves)."""
+    out, bad = [], []
+    for n, b in enumerate(entries):
+        kind = b.get("match", "domain") if isinstance(b, dict) else None
+        if kind == "url":
+            u = urllib.parse.urlsplit(str(b.get("url") or "").strip())
+            host = (u.hostname or "").lower().removeprefix("www.")
+            if u.scheme not in ("http", "https") or "." not in host:
+                bad.append(f"entry {n} ({b.get('place')}): a \"url\" entry needs an http(s) \"url\", got {b.get('url')!r}")
+                continue
+            path = re.escape(u.path.rstrip("/")) + (r"\?" + re.escape(u.query) if u.query else "")
+            out.append((b, re.compile(rf"(?<![\w.-])(?:www\.)?{re.escape(host)}{path}/?(?=$|[\"'<>\s?#)\\,&])", re.I)))
+        elif kind == "domain":
+            d = re.sub(r"^[a-z]+://", "", str(b.get("domain") or "").strip().lower()).split("/")[0].rstrip(".").removeprefix("www.")
+            if not re.fullmatch(r"[a-z0-9-]+(?:\.[a-z0-9-]+)+", d):
+                bad.append(f"entry {n} ({b.get('place')}): \"domain\" {b.get('domain')!r} isn't a domain name")
+                continue
+            out.append((b, re.compile(rf"(?<![\w-])(?:[\w-]+\.)*{re.escape(d)}(?![\w-])", re.I)))
+        else:
+            bad.append(f"entry {n}: \"match\" must be \"domain\" or \"url\", got {kind!r} in {str(b)[:80]}")
+    return out, bad
+
+
+def check_blocklist(problems):
+    """No blocklisted website anywhere in docs/: pages, JSON-LD, the web app's data files, the sitemap, any text file. A missing,
+    unreadable or empty blocklist fails too, so this check can never pass by having nothing to look for."""
+    name = os.path.relpath(BLOCKLIST, ROOT)
+    try:
+        entries = json.load(open(BLOCKLIST, encoding="utf-8"))
+    except FileNotFoundError:
+        problems.append(f"{name} is missing: the site has no list of websites it must never link")
+        return
+    except ValueError as ex:
+        problems.append(f"{name} isn't valid JSON ({ex})")
+        return
+    if not isinstance(entries, list) or not entries:
+        problems.append(f"{name} is empty (or not a list): the blocklist check would pass with nothing to look for")
+        return
+    pats, bad = blocked_patterns(entries)
+    problems += [f"{name}: {x}" for x in bad]
+    scanned = 0
+    for d, _, files in os.walk(DOCS):
+        for x in sorted(files):
+            if x.lower().endswith(BINARY):
+                continue
+            scanned += 1
+            raw = open(os.path.join(d, x), encoding="utf-8", errors="replace").read()
+            text = html.unescape(raw.replace("\\/", "/"))   # JSON's escaped slashes and HTML entities read as the URL they are
+            for b, pat in pats:
+                hits = pat.findall(text)
+                if hits:
+                    problems.append(f"{os.path.relpath(os.path.join(d, x), DOCS)}: links a blocklisted website ({b.get('severity')}, "
+                                    f"{str(b.get('reason'))[:60]}): {len(hits)} × {b.get('url') or b.get('domain')} ({b.get('place')})")
+    if not scanned:
+        problems.append(f"blocklist check: no files to scan in {DOCS}")
 
 
 class Quiet(http.server.SimpleHTTPRequestHandler):
@@ -437,6 +508,21 @@ def expected_slopper_hits():
     C = core["cols"]
     return sum(1 for i in range(len(C["id"])) if C["hc"][i] == 1 and (C["g"][i] or 0) & 1 and C["v"][i] != 1
                and " slopper" in norm(" ".join(str(x) for x in (C["n"][i], C["dish"][i], C["a"][i]) if x)))
+
+
+WIDER_PROBE = "casa bonita"   # a famous place no guide lists (Lakewood): a first visit's search for it starts in Green Chile
+WIDER_FEW = "santiagos"       # one hand-checked Santiago's on the Green Chile list, dozens of the chain statewide
+
+
+def wider_probe_problems():
+    """The probe must be a real listing that the opening guide (Green Chile: hand-checked + the green chile tag) doesn't list."""
+    C = json.load(open(os.path.join(DOCS, "data", "core.json")))["cols"]
+    hits = [i for i in range(len(C["id"])) if norm(C["n"][i]) == f" {WIDER_PROBE} " and C["v"][i] != 1]
+    if not hits:
+        return [f"explore: the probe {WIDER_PROBE!r} is no longer in the data; pick another famous place that no guide lists"]
+    if any(C["hc"][i] == 1 and (C["g"][i] or 0) & 1 for i in hits):
+        return [f"explore: {WIDER_PROBE!r} is now on the Green Chile list; pick another famous place that no guide lists"]
+    return []
 
 
 CSP_PROBE = """window.__csp = []; document.addEventListener("securitypolicyviolation",
@@ -530,6 +616,12 @@ def browser_checks(problems):
                 small = page.evaluate("""[...document.querySelectorAll('#ex-q, .ex-controls select')].map(e => [e.id, parseFloat(getComputedStyle(e).fontSize)]).filter(x => !(x[1] >= 16))""")
                 if small:
                     problems.append(f"explore @{width}: inputs under 16px make iOS Safari zoom on focus: {small}")
+            # the search box's placeholder isn't cut off (California's read "…zip or d" at 375px): with its own words as the value,
+            # the box doesn't scroll (a search box also keeps room for its clear button, so this leaves a margin); 16px or more
+            ph = page.evaluate("""(() => { const i = document.querySelector('#ex-q'), v = i.value; i.value = i.placeholder;
+                const r = [i.placeholder, i.scrollWidth, i.clientWidth, parseFloat(getComputedStyle(i, '::placeholder').fontSize)]; i.value = v; return r; })()""")
+            if not ph[0] or ph[1] > ph[2] or ph[3] < 16:
+                problems.append(f"explore @{width}: the search placeholder {ph[0]!r} is cut off or small (scrollWidth {ph[1]} > clientWidth {ph[2]}, {ph[3]}px)")
             # the open place is a labelled modal dialog at every width (on wide screens the side sheet covers Near me and List/Map):
             # the page behind is inert and focus is inside; Back closes it, Forward reopens it with the search kept, Escape closes it and
             # returns focus to its row, and a press outside it closes it
@@ -561,6 +653,53 @@ def browser_checks(problems):
             page.wait_for_timeout(500)
             if page.locator("#ex-panel").is_visible():
                 problems.append(f"explore @{width}: a press outside the open place (on the inert page) didn't close it")
+            # ---- a search inside a guide that the rest of the state answers (ME-V08 / WI-V-03): a first visit opens on Green Chile, where
+            # "casa bonita" finds nothing, so the page offers "Search all restaurants (N matches)", and one press lists it, N places,
+            # with the same words and focus on the first result. Then a search that finds a few in the guide offers the same.
+            problems += [f"{p} @{width}" for p in wider_probe_problems()]
+            wider = page.get_by_role("button", name=re.compile(r"^Search all restaurants \(\d[\d,]* match(?:es)?\)$"))
+            page.evaluate("localStorage.clear()")
+            page.goto(ex, wait_until="networkidle")
+            page.reload(wait_until="networkidle")
+            page.wait_for_selector(".ex-row", timeout=20000)
+            opening = page.evaluate("new URLSearchParams(location.hash.slice(1)).get('g')")
+            search.fill(WIDER_PROBE)
+            page.wait_for_timeout(500)
+            if opening != "greenchile":
+                problems.append(f"explore @{width}: a first visit opened on {opening!r}, not Green Chile")
+            elif page.locator(".ex-row").count():
+                problems.append(f"explore @{width}: {WIDER_PROBE!r} is listed in Green Chile, so it can't test the way out of an empty guide search")
+            elif wider.count() != 1 or not wider.is_visible():
+                problems.append(f"explore @{width}: {WIDER_PROBE!r} finds nothing in Green Chile and offers no 'Search all restaurants (N matches)' button "
+                                f"(the page says {page.locator('#ex-list').inner_text()[:80]!r})")
+            else:
+                promised = int(re.search(r"\((\d[\d,]*)", wider.inner_text()).group(1).replace(",", ""))
+                wider.click()
+                page.wait_for_timeout(500)
+                h = page.evaluate("Object.fromEntries(new URLSearchParams(location.hash.slice(1)))")
+                names = page.locator(".ex-row .ex-main > b").all_inner_texts()
+                listed = int(re.match(r"[\d,]+", page.locator("#ex-count").inner_text()).group(0).replace(",", ""))
+                focus_first = page.evaluate("document.activeElement === document.querySelector('.ex-row')")
+                if h.get("g") != "all" or h.get("q") != WIDER_PROBE or norm(names[0] if names else "") != f" {WIDER_PROBE} " or listed != promised or not focus_first:
+                    problems.append(f"explore @{width}: 'Search all restaurants' didn't list {WIDER_PROBE!r} first in All restaurants with the same words "
+                                    f"(hash {h}, first rows {names[:3]}, {listed} listed vs {promised} promised, focus on the first row: {focus_first})")
+                if wider.count():
+                    problems.append(f"explore @{width}: the 'Search all restaurants' button is still there in All restaurants")
+            page.goto(ex + "#g=greenchile&q=" + urllib.parse.quote(WIDER_FEW), wait_until="networkidle")
+            page.reload(wait_until="networkidle")
+            page.wait_for_timeout(700)
+            few = page.locator(".ex-row").count()
+            if not 0 < few < 5:
+                problems.append(f"explore @{width}: {WIDER_FEW!r} lists {few} in Green Chile; pick a search that finds one to four there")
+            elif wider.count() != 1:
+                problems.append(f"explore @{width}: {WIDER_FEW!r} finds only {few} in Green Chile and offers no 'Search all restaurants' button")
+            else:
+                promised = int(re.search(r"\((\d[\d,]*)", wider.inner_text()).group(1).replace(",", ""))
+                wider.click()
+                page.wait_for_timeout(500)
+                listed = int(re.match(r"[\d,]+", page.locator("#ex-count").inner_text()).group(0).replace(",", ""))
+                if promised <= few or listed != promised:
+                    problems.append(f"explore @{width}: {WIDER_FEW!r}: the button promised {promised} matches (the guide had {few}) and All restaurants lists {listed}")
             # bad values under this site's keys (any page on the shared github.io origin can write them) don't stop the app
             for key, bad in (("saved", '{"x":1}'), ("saved", "not json"), ("saved", "[null, 5, {}]"), ("guide", '{"x":1}'), ("guide", '"__proto__"')):
                 errors.clear()
