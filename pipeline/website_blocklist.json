@@ -124,5 +124,221 @@
     "severity": "P2",
     "evidence": "$SP/work/link-scan/evidence/co/losgallitos.com.html",
     "found": "2026-10-12"
+  },
+  {
+    "domain": "einprositfrisco.com",
+    "match": "domain",
+    "place": "Ein Prosit (Frisco)",
+    "reason": "domain taken over: whole site is \"Pinco AZ\" Azerbaijani casino",
+    "severity": "P0",
+    "evidence": "$SP/work/link-scan/evidence/co/einprositfrisco.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "mexicanrestaurantcoloradosprings.com",
+    "match": "domain",
+    "place": "Los Volcanes Authentic Mexican Restaurant (Colorado Springs)",
+    "reason": "domain taken over: whole site is \"GC99\" Indonesian slot site",
+    "severity": "P0",
+    "evidence": "$SP/work/link-scan/evidence/co/mexicanrestaurantcoloradosprings.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "taqueriachapalajalisco.com",
+    "match": "domain",
+    "place": "Taqueria Chapala (Lakewood)",
+    "reason": "domain taken over: site is now an Indonesian page promoting \"KENZO188\" with a hidden link alternatif",
+    "severity": "P0",
+    "evidence": "$SP/work/link-scan/evidence/co/taqueriachapalajalisco.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "lacostamexicanfood.com",
+    "match": "domain",
+    "place": "La Costa Mexican Restaurant (Aurora)",
+    "reason": "no site: \"SITE NOT FOUND: this site is not published\"",
+    "severity": "P2",
+    "evidence": "$SP/work/link-scan/evidence/co/lacostamexicanfood.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "hongsgardenbayfield.com",
+    "match": "domain",
+    "place": "Hong's Garden Chinese Restaurant (Bayfield)",
+    "reason": "expired: \"Squarespace - Website Expired\"",
+    "severity": "P2",
+    "evidence": "$SP/work/link-scan/evidence/co/hongsgardenbayfield.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "coloradodumplings.com",
+    "match": "domain",
+    "place": "Colorado Dumplings (Longmont)",
+    "reason": "expired: \"Squarespace - Website Expired\"",
+    "severity": "P2",
+    "evidence": "$SP/work/link-scan/evidence/co/coloradodumplings.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "bartnyetis.com",
+    "match": "domain",
+    "place": "Bart & Yetis (Vail)",
+    "reason": "injected spam text: injected paragraph about ordering \"generic Cialis online\" (website-pace.net) in the page accordion",
+    "severity": "P0",
+    "evidence": "$SP/work/link-scan/evidence/co/bartnyetis.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "senormiguelsrestaurant.com",
+    "match": "domain",
+    "place": "Senor Miguels (Aurora)",
+    "reason": "domain taken over: whole site is \"RAJACUAN\" Indonesian gaming site",
+    "severity": "P0",
+    "evidence": "$SP/work/link-scan/evidence/co/senormiguelsrestaurant.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "bhojanic.com",
+    "match": "domain",
+    "place": "Bhojanic Social Club (Evergreen)",
+    "reason": "another business: Bhojanic, Atlanta, GA (for Bhojanic Social Club, Evergreen, CO)",
+    "severity": "P2",
+    "evidence": "$SP/work/link-scan/evidence/co/bhojanic.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "moosestrinidad.com",
+    "match": "domain",
+    "place": "Moose's (Trinidad)",
+    "reason": "suspended: redirects to Network Solutions' WHOIS-suspension page (domain suspended)",
+    "severity": "P2",
+    "evidence": "$SP/work/link-scan/evidence/co/moosestrinidad.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "anheuser-busch.com",
+    "match": "domain",
+    "place": "Anheuser Busch (Fort Collins)",
+    "reason": "another business (auto, not hand-checked): the site's addresses are in MO and it names neither the city nor the state of Anheuser Busch (Fort Collins)",
+    "severity": "P2",
+    "evidence": "$SP/work/link-scan/evidence/co/anheuser-busch.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "brakemansburgers.com",
+    "match": "domain",
+    "place": "Brakeman's Burgers; The Depot (Colorado Springs)",
+    "reason": "expired, suspended or no site (auto, not hand-checked): parked: sorry, the website has been stopped website not found sorry, please confirm that this domain name has been bound to your website. power by aapanel (the free, efficient and secure hosting contr",
+    "severity": "P2",
+    "evidence": "$SP/work/link-scan/evidence/co/brakemansburgers.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "mingsdynastyco.com",
+    "match": "domain",
+    "place": "Ming's Dynasty (Glendale)",
+    "reason": "another business (auto, not hand-checked): the site's addresses are in CA and it names neither the city nor the state of Ming's Dynasty (Glendale)",
+    "severity": "P2",
+    "evidence": "$SP/work/link-scan/evidence/co/mingsdynastyco.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "lasmargaritas.com",
+    "match": "domain",
+    "place": "Las Margaritas (Glenwood Springs)",
+    "reason": "another business (auto, not hand-checked): the site's addresses are in Canada and it names neither the city nor the state of Las Margaritas (Glenwood Springs)",
+    "severity": "P2",
+    "evidence": "$SP/work/link-scan/evidence/co/lasmargaritas.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "scriptedbarandkitchen.com",
+    "match": "domain",
+    "place": "Scripted Bar & Kitchen (Loveland)",
+    "reason": "another business (auto, not hand-checked): the site's addresses are in CA and it names neither the city nor the state of Scripted Bar & Kitchen (Loveland)",
+    "severity": "P2",
+    "evidence": "$SP/work/link-scan/evidence/co/scriptedbarandkitchen.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "thirstybear.com",
+    "match": "domain",
+    "place": "The Thirsty Bear (Lakewood)",
+    "reason": "another business (auto, not hand-checked): the site's addresses are in CA and it names neither the city nor the state of The Thirsty Bear (Lakewood)",
+    "severity": "P2",
+    "evidence": "$SP/work/link-scan/evidence/co/thirstybear.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "starvinarvins.com",
+    "match": "domain",
+    "place": "Starvin' Arvin's (Montrose)",
+    "reason": "another business (auto, not hand-checked): the site's addresses are in WV and it names neither the city nor the state of Starvin' Arvin's (Montrose)",
+    "severity": "P2",
+    "evidence": "$SP/work/link-scan/evidence/co/starvinarvins.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "polloazado.com",
+    "match": "domain",
+    "place": "Pollo Azado (Grand Junction)",
+    "reason": "domain does not resolve: domain is not registered (NXDOMAIN) (checked with dig @1.1.1.1)",
+    "severity": "P2",
+    "evidence": null,
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "taqueriasanmiguel.com",
+    "match": "domain",
+    "place": "Taqueria San Miguel (Fort Morgan)",
+    "reason": "another business (auto, not hand-checked): the site's addresses are in CA and it names neither the city nor the state of Taqueria San Miguel (Fort Morgan)",
+    "severity": "P2",
+    "evidence": "$SP/work/link-scan/evidence/co/taqueriasanmiguel.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "riversidecafe.com",
+    "match": "domain",
+    "place": "Riverside Cafe (Wray)",
+    "reason": "another business (auto, not hand-checked): the site's addresses are in FL and it names neither the city nor the state of Riverside Cafe (Wray)",
+    "severity": "P2",
+    "evidence": "$SP/work/link-scan/evidence/co/riversidecafe.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "kumascorner.com",
+    "match": "domain",
+    "place": "Kuma's Corner (Denver)",
+    "reason": "another business (auto, not hand-checked): the site's addresses are in IL, IN and it names neither the city nor the state of Kuma's Corner (Denver)",
+    "severity": "P2",
+    "evidence": "$SP/work/link-scan/evidence/co/kumascorner.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "cafesplanet.com",
+    "match": "domain",
+    "place": "Maggies Kitchen (Ouray)",
+    "reason": "listing farm or directory, not the place's own site: auto-generated restaurant listing pages ('<name> - <city> - Full Menu, Reviews, Photos'), not the place's own site",
+    "severity": "P3",
+    "evidence": null,
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "mybistro.online",
+    "match": "domain",
+    "place": "gyroX (Idaho Springs)",
+    "reason": "listing farm or directory, not the place's own site: auto-generated restaurant listing pages ('<name> - <city> - Full Menu, Reviews, Photos'), not the place's own site",
+    "severity": "P3",
+    "evidence": null,
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "cyrusramsey.com",
+    "match": "domain",
+    "place": "Lindo Jalisco (Alamosa)",
+    "reason": "listing farm or directory, not the place's own site: food blog/directory place pages, not the place's own site",
+    "severity": "P3",
+    "evidence": null,
+    "found": "2026-10-12"
   }
 ]
