@@ -8,6 +8,9 @@ Three products share this folder and one data pipeline (built 2026-10-05 from th
   SwiftUI, iOS 18+.
 - **The website** in `docs/` (GitHub Pages): https://nickstrom5.github.io/colorado-eats/ until Nick's Cloudflare `CNAME colorado → nickstrom5.github.io`
   (DNS only) resolves; then `CO_DOMAIN=colorado.eatsranked.com` for `scripts/make-site.py` (it writes `docs/CNAME`).
+- Copy decisions (Nick, 2026-10-13, family-wide): the web app's middle tier is "High-confidence listing", never "Confirmed listing";
+  only Nick's internal TestFlight group exists, so the site never promises a TestFlight invite or link (early-access copy ends at an
+  ask; the button's mailto body may ask). `qa-site.py` fails on either (`label_and_promise_checks`).
 
 Nick's calls (2026-10-05): the name above, the flat Pueblo green chile icon (`scripts/make-brand.swift`; it replaced a Palisade peach on 2026-10-06: "something more local to CO", and flat, not glossy; redrawn 2026-10-09 in the shared Eats Ranked icon style Nick approved, same food and colours, lying level with no ridge, snow, shine or tilt: `../state-prompts/ICON-STYLE.md`; the site's header logo and SVG favicon are `LOGO` in `scripts/make-site.py`), the Colorado flag palette (blue #002868, red #BF0A30,
 gold #FFD700 only as a fill under blue text). Light mode only in the app.

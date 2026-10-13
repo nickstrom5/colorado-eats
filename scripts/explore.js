@@ -244,7 +244,7 @@
 
   // ---------------------------------------------------------------- place panel
   const JUR = { 1: "City and County of Denver business licenses", 2: "Boulder County Public Health inspection records", 3: "Colorado liquor licenses" };
-  const TIER = { 2: "On an official record", 1: "Confirmed listing", 0: "Listing only" };
+  const TIER = { 2: "On an official record", 1: "High-confidence listing", 0: "Listing only" };
 
   function rate(p) {
     const src = SOURCES[p.s] || "meta";

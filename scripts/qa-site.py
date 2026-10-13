@@ -10,6 +10,8 @@ Static (no browser):
 - the store button carries no Apple logo; no letter-grade CSS; one place per brewpub license in the published data
 - no website on pipeline/website_blocklist.json (hacked, expired, directory or another business's) anywhere in docs/, in any
   case, www., http(s) or subdomain form; a missing or empty blocklist fails (check_blocklist)
+- no "Confirmed listing" anywhere in docs/ (the label is "High-confidence listing"), and nothing promises or offers a TestFlight
+  invite or link (label_and_promise_checks; Nick, 2026-10-13)
 Browser (Playwright, channel="chrome"): no horizontal scroll, no console errors, no CSP violations, no broken internal links or
 images; the web app loads, searches ("pueblo slopper" finds only slopper places), opens a place, Back closes it, the phone panel is
 a modal dialog, a hostile #g= doesn't break it, and saved places use the coeats- prefix. Also (bugs found in sibling web apps):
@@ -404,7 +406,33 @@ def static_checks():
     except (OSError, ValueError, KeyError) as ex:
         problems.append(f"data: couldn't read core/detail.json ({ex})")
     check_blocklist(problems)
+    label_and_promise_checks(problems)
     return problems, len(pages)
+
+
+# Nick, 2026-10-13 (family-wide): the web app's middle tier is a "High-confidence listing", never a "Confirmed listing"; and since only
+# his internal TestFlight group exists, the site never promises or offers a TestFlight invite or link: the early-access copy ends at an ask.
+OLD_LABEL = re.compile(r"confirmed\s+listing", re.I)
+PROMISES = [re.compile(r"\b(?:we|you)(?:\\?['’]ll|\s+will)\b[^.!?]{0,60}?(?:invit\w*|testflight(?:\s+(?:invit\w*|links?))?|\bbeta\b)", re.I),  # "we'll email you a TestFlight invite"
+            re.compile(r"\btestflight\s+(?:invit\w*|links?)\b", re.I)]                                           # "the button asks for a TestFlight invite"
+
+
+def label_and_promise_checks(problems):
+    """No "Confirmed listing" (any case) in any file in docs/, the web app's script and data included; and nothing a visitor reads
+    (page text, meta descriptions, alt and aria text, JSON-LD, the web app's strings) promises or offers a TestFlight invite or link.
+    A mailto: link whose body asks for access is fine, so mailto hrefs are left out of the promise check."""
+    for f in glob.glob(os.path.join(DOCS, "**", "*"), recursive=True):
+        if not (os.path.isfile(f) and f.rsplit(".", 1)[-1] in ("html", "json", "xml", "txt", "webmanifest", "svg", "js", "css", "md")):
+            continue
+        s = open(f, encoding="utf-8", errors="replace").read()
+        m = OLD_LABEL.search(s)
+        if m:
+            problems.append(f"{rel(f)}: says {m.group(0)!r} (the label is 'High-confidence listing')")
+        raw = html.unescape(re.sub(r'href="mailto:[^"]*"', 'href=""', s))
+        found = [m.group(0) for text in (raw, re.sub(r"<[^>]+>", " ", raw))   # as written, and with inline tags out of the way
+                 for rx in PROMISES for m in [rx.search(text)] if m]
+        if found:
+            problems.append(f"{rel(f)}: promises a TestFlight invite or link: {' '.join(found[0].split())!r}")
 
 
 # Websites the site never links (hacked, expired, a directory or another business's site): pipeline/website_blocklist.json, which

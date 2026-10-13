@@ -42,7 +42,7 @@ BRAND = "Colorado Eats"
 TAGLINE = "Green chile & brewpub guide"
 EMAIL = "nick@eatsranked.com"   # Nick, 2026-10-12: the site's contact (Cloudflare Email Routing); the app and the listing switch in its next build
 PUBLISHED = "2026-10-05"        # the site's first publication (Article datePublished)
-SITE_REV = "2026-10-12"         # the last change to this generator's own copy or code: bump it when you change the words
+SITE_REV = "2026-10-13"         # the last change to this generator's own copy or code: bump it when you change the words
 POLICY_UPDATED = "2026-10-12"   # privacy policy and terms: bump only when their text changes
 CHECKED = "fall 2026"
 
@@ -1500,7 +1500,7 @@ body = f"""  <main id="main">
 
   <section id="download" class="final">
     <h2>Take the lists over the pass</h2>
-    <p class="sub">Free for iPhone and iPad, with the App Store release in the works. Want it sooner? Ask for early access and we'll email you a TestFlight invite.</p>
+    <p class="sub">Free for iPhone and iPad, with the App Store release in the works. Want it sooner? Ask for early access.</p>
     <div class="cta-row">{store_button()}</div>
   </section>
   </main>"""
