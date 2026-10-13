@@ -79,5 +79,50 @@
     "severity": "P2",
     "evidence": "$SP/work/link-scan/evidence/co/noirhookahlounge.com.html",
     "found": "2026-10-12"
+  },
+  {
+    "domain": "sourdoughandco.com",
+    "match": "domain",
+    "place": "Sourdough & Co (Colorado Springs)",
+    "reason": "injected hidden links: off-screen (position:fixed top:-25995px) casino links roulettinocasino.es, ninewin.es on every location page",
+    "severity": "P0",
+    "evidence": "$SP/work/link-scan/evidence/co/sourdoughandco.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "theroostlongmont.com",
+    "match": "domain",
+    "place": "The Roost (Longmont)",
+    "reason": "injected hidden links: off-screen (left:-11287px) link to ljekarnasplit.com (Croatian pharmacy)",
+    "severity": "P0",
+    "evidence": "$SP/work/link-scan/evidence/co/theroostlongmont.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "303ramen.com",
+    "match": "domain",
+    "place": "303 Ramen (Arvada)",
+    "reason": "injected hidden links: font-size:0 block of random shop links all labelled \"Ramen\" (pilosaleltd.com, tiffanycoshop.com, omitages.com...)",
+    "severity": "P0",
+    "evidence": "$SP/work/link-scan/evidence/co/303ramen.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "chimneypark.com",
+    "match": "domain",
+    "place": "Chimney Park Restaurant & Bar; Chimney Park (Windsor)",
+    "reason": "injected hidden links: off-screen (left:-7566px) links: dutch-accent.nl \"beste online casino\", quibigames.com \"non gamstop casino\"",
+    "severity": "P0",
+    "evidence": "$SP/work/link-scan/evidence/co/chimneypark.com.html",
+    "found": "2026-10-12"
+  },
+  {
+    "domain": "losgallitos.com",
+    "match": "domain",
+    "place": "Los Gallitos (Commerce City)",
+    "reason": "another business: Los Gallitos Mexican folkloric dance group, Houston (for the Commerce City restaurant)",
+    "severity": "P2",
+    "evidence": "$SP/work/link-scan/evidence/co/losgallitos.com.html",
+    "found": "2026-10-12"
   }
 ]
