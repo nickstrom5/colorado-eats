@@ -268,6 +268,13 @@ final class ColoradoEatsTests: XCTestCase {
         XCTAssertFalse(m.places.contains { $0.name == "GQue BBQ" && $0.city == "Westminster" && $0.inspection != nil },
                        "a food truck's event inspection in Boulder County isn't the Westminster restaurant's")
         XCTAssertEqual(DataGuards.nonRestaurants(m.places), [], "no nail salon, senior home, gun store or gas station among the restaurants")
+        // pipeline/website_blocklist.json (hacked, taken-over and wrong-business sites, confirmed by hand): read from the repo, so a
+        // new entry is covered without a code change
+        let blocklist = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("pipeline/website_blocklist.json")
+        let entries = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(contentsOf: blocklist)) as? [[String: Any]])
+        XCTAssertFalse(entries.isEmpty)
+        XCTAssertEqual(DataGuards.blocklisted(m.places, entries), [], "no blocklisted website in the app's data")
         // QA gap round: Coma carried Pony M Cake's inspection at their shared address, matched through the fragment "M" that
         // deleting the accent in "Méxican" left behind
         XCTAssertFalse(m.places.contains { $0.name == "Coma M\u{00E9}xican Grill" && $0.inspection?.p == 100 },
@@ -284,7 +291,7 @@ final class ColoradoEatsTests: XCTestCase {
         let counties = try XCTUnwrap(file["counties"] as? [String])
         cities.append("Fris")
         // six ordinary visible places, each broken one way
-        let idx = places.indices.filter { places[$0]["v"] == nil }.prefix(8).map { $0 }
+        let idx = places.indices.filter { places[$0]["v"] == nil }.prefix(9).map { $0 }
         places[idx[0]]["w"] = "https://www.yelp.com/biz/some-place"
         places[idx[1]]["w"] = "https://www.westword.com/restaurants/a-story-123"
         places[idx[2]]["a"] = "490 South Colorado Boulevard"
@@ -294,6 +301,7 @@ final class ColoradoEatsTests: XCTestCase {
         places[idx[6]]["co"] = try XCTUnwrap(counties.firstIndex(of: "Denver"))
         places[idx[6]]["in"] = ["r": 0, "p": 4, "d": "2026-05-01", "n": 1, "rr": 0, "cl": 0, "h": [["d": "2026-05-01", "r": 0, "p": 4, "t": "Routine"]]]
         places[idx[7]]["n"] = "Tipsy Nails & Spa"
+        places[idx[8]]["w"] = "https://www.bouldercork.com/menu"
         file["places"] = places
         file["cities"] = cities
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("places-broken.json")
@@ -313,6 +321,7 @@ final class ColoradoEatsTests: XCTestCase {
         caught(DataGuards.lapsedExpiries(m.places, listDate: m.liquorUpdated), 5, "a 2014 expiry")
         caught(DataGuards.inspectionsOutsideBoulderCounty(m.places), 6, "a Denver place with an inspection")
         caught(DataGuards.nonRestaurants(m.places), 7, "a nail salon shown as a restaurant")
+        caught(DataGuards.blocklisted(m.places, [["domain": "bouldercork.com", "match": "domain"]]), 8, "a blocklisted (hacked) website")
     }
 }
 
@@ -373,6 +382,28 @@ enum DataGuards {
     static func nonRestaurants(_ places: [Place]) -> [String] {
         places.filter { !$0.isVenue && $0.name.range(of: nonRestaurantNames, options: [.regularExpression, .caseInsensitive]) != nil }
             .map { "\($0.name) [\($0.id)]" }
+    }
+
+    /// websites on the hand-checked blocklist: a "domain" entry covers the domain and its subdomains, a "url" entry that page only
+    static func blocklisted(_ places: [Place], _ entries: [[String: Any]]) -> [String] {
+        func host(_ s: String) -> String {
+            var h = s.lowercased()
+            if h.hasPrefix("www.") { h.removeFirst(4) }
+            return h
+        }
+        return places.compactMap { p in
+            guard let w = p.website, let h = w.host.map(host) else { return nil }
+            let hit = entries.contains { e in
+                if (e["match"] as? String ?? "domain") == "domain", let d = (e["domain"] as? String).map(host) {
+                    return h == d || h.hasSuffix("." + d)
+                }
+                if let u = (e["url"] as? String).flatMap(URL.init(string:)), let uh = u.host.map(host) {
+                    return h == uh && w.path.trimmingCharacters(in: CharacterSet(charactersIn: "/")) == u.path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+                }
+                return false
+            }
+            return hit ? "\(p.name) [\(p.id)]: \(w.absoluteString)" : nil
+        }
     }
 
     /// only Boulder County publishes inspections, so a result anywhere else came from another business's record

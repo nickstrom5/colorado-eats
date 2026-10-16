@@ -1,14 +1,14 @@
 {
- "generated": "2026-10-13",
+ "generated": "2026-10-16",
  "domain": "https://nickstrom5.github.io/colorado-eats",
  "restaurants": 15716,
  "towns": 308,
  "counties": 64,
- "green_chile": 47,
+ "green_chile": 46,
  "brewpubs": 234,
  "brewpub_duplicates_hidden": 0,
  "ski_town": 46,
- "game": 39,
+ "game": 37,
  "honors": 85,
  "michelin": {
   "1 MICHELIN Star": 9,
@@ -17,8 +17,8 @@
   "Bib Gourmand": 13
  },
  "james_beard": 37,
- "oldest": 30,
- "pueblo_green_chile": 10,
+ "oldest": 29,
+ "pueblo_green_chile": 9,
  "sloppers": 6,
  "boulder_county_inspections": 340,
  "inspections_through": "2026-07-21",
@@ -65,10 +65,10 @@
    "brewpubs_near": 9,
    "ski_near": 0,
    "honors": 0,
-   "game_near": 3,
+   "game_near": 2,
    "oldest": 2,
    "inspections": 0,
-   "listed": 13,
+   "listed": 12,
    "indexed": true
   },
   "Boulder": {
@@ -85,14 +85,14 @@
   },
   "Pueblo": {
    "restaurants": 352,
-   "green_chile_near": 9,
+   "green_chile_near": 8,
    "brewpubs_near": 4,
    "ski_near": 0,
    "honors": 0,
    "game_near": 0,
    "oldest": 1,
    "inspections": 0,
-   "listed": 13,
+   "listed": 12,
    "indexed": true
   },
   "Lakewood": {
@@ -209,7 +209,7 @@
    "brewpubs_near": 1,
    "ski_near": 8,
    "honors": 2,
-   "game_near": 3,
+   "game_near": 2,
    "oldest": 1,
    "inspections": 0,
    "listed": 10,

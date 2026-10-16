@@ -27,12 +27,21 @@ gold #FFD700 only as a fill under blue text). Light mode only in the app.
   with a 2025–26 source). Brewpubs = an active state Brew Pub or Distillery Pub license. "Opened" means at this address.
 - Website links: `pipeline/check_websites.py` (polite, honest UA, resumable). Re-run it before each submission, then rebuild with `CO_APP=1`.
 - Places the research finds closed go in `data/research/closed.json` or `data/research/app/closed_*.json` with a source.
+- Research sources: `pipeline/check_sources.py` robots-checks every cited host (ClaudeBot, Claude-User, anthropic-ai, bot checks;
+  cache `data/research/source_hosts.json`, 7 days) and must report 0 unusable before a release; `check_sources.py <url>` before
+  anyone fetches a new source. `colorado.py` never uses a blocked-host source: a guide entry with none left (or `"recheck": true`)
+  waits. The 2026-10-16 check found 168 cited URLs on hosts that block Claude (5280.com, westword.com, cpr.org, coloradosun.com,
+  summitdaily.com, kdvr.com, yelp.com, yahoo.com, vail.com, …); they were removed (`data/research/removed_sources.json`), 19 records
+  re-sourced, and claims with no usable source left were cut (The 10th's game tag, Blackbelly's masa, El Taco's founding year).
+- `pipeline/website_blocklist.json` (hacked, taken-over and wrong-business sites from the 2026-10-12 sweep) applies to the app export
+  too (`site_blocked` in `colorado.py`), not only the site; a unit test reads the file and fails if a listed site is in the bundle.
 
 ## Rebuild
 ```bash
 .venv/bin/python pipeline/fetch_overture.py && .venv/bin/python pipeline/fetch_extras.py     # Overture places, outlines, address points
 .venv/bin/python pipeline/fetch_denver.py                                                      # Denver licenses (+ curl the data.colorado.gov sets, see 12-sources)
 cd pipeline && ../.venv/bin/python listings.py && ../.venv/bin/python geocode_official.py && ../.venv/bin/python geocode_census.py
+../.venv/bin/python check_sources.py    # every research source's host vs robots.txt and bot checks (must be 0 unusable)
 ../.venv/bin/python calibrate.py && ../.venv/bin/python colorado.py && CO_APP=1 ../.venv/bin/python colorado.py && cd ..
 cp data/app/places.json ColoradoEats/Resources/ && .venv/bin/python scripts/make-site.py && .venv/bin/python scripts/qa-site.py
 ```

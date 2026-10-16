@@ -1,8 +1,8 @@
 # App Store listing (ASO)
 
 Numbers here must match `site-numbers.json`, which `scripts/make-site.py` rewrites from the data on every run. Current (2026-10-07 build, after the first QA round):
-47 green chile spots, 234 brewpubs (of the state's 252 Brew Pub and Distillery Pub licenses), 46 ski-town restaurants, 39 game & steakhouses,
-85 MICHELIN & James Beard honorees (all 63 MICHELIN Guide Colorado 2026 restaurants), 30 founding years, 340 Boulder County inspection
+46 green chile spots, 234 brewpubs (of the state's 252 Brew Pub and Distillery Pub licenses), 46 ski-town restaurants, 37 game & steakhouses,
+85 MICHELIN & James Beard honorees (all 63 MICHELIN Guide Colorado 2026 restaurants), 29 founding years, 340 Boulder County inspection
 results, 15,716 restaurants in 308 towns. Update this file after a data refresh.
 
 ## Name (30 max)
@@ -22,10 +22,10 @@ keyword field, so "springs" in keywords plus "colorado" in the name matches "col
 - No "michelin", "james beard", "best", "top" or "#1" (Guideline 2.3.7). Plurals are unnecessary.
 
 ## Promotional text (170 max, editable any time without review)
-`47 green chile spots, 46 ski-town restaurants and the oldest places, checked by hand, plus 234 licensed brewpubs and 15,000+ Colorado restaurants.` (146)
+`46 green chile spots, 46 ski-town restaurants and the oldest places, checked by hand, plus 234 licensed brewpubs and 15,000+ Colorado restaurants.` (146)
 
 Chile season (switch in mid-August, when the roasters come out):
-`Chile roasting season: 47 Colorado green chile spots checked by hand, from smothered burritos to Pueblo sloppers, sorted by how close they are to you.` (150)
+`Chile roasting season: 46 Colorado green chile spots checked by hand, from smothered burritos to Pueblo sloppers, sorted by how close they are to you.` (150)
 
 ## Description
 The first three lines show before "more", so they carry the pitch.
@@ -33,7 +33,7 @@ The first three lines show before "more", so they carry the pitch.
 ```
 Colorado's restaurants, and the green chile worth the drive.
 
-Colorado Eats is a free guide to eating in Colorado: 47 green chile spots, 46 ski-town restaurants and the state's oldest places we checked by hand, 234 brewpubs from the state's license list, and 15,716 restaurants, cafés, bars and bakeries in 308 towns. No account, no ads.
+Colorado Eats is a free guide to eating in Colorado: 46 green chile spots, 46 ski-town restaurants and the state's oldest places we checked by hand, 234 brewpubs from the state's license list, and 15,716 restaurants, cafés, bars and bakeries in 308 towns. No account, no ads.
 
 COLORADO GUIDES
 • Green Chile: smothered burritos, breakfast burritos, Pueblo sloppers and chile by the bowl, with what's on each menu.

@@ -27,7 +27,7 @@ Thank you. Here is the information requested.
 
 1. Screen recording from an iPhone on the latest iOS: attached, from launch. There is no account, login, user-generated or paid content.
 
-2. Purpose and audience: Colorado Eats is a free guide to restaurants in Colorado. Its focus is the state's food: 47 green chile spots, 46 ski-town restaurants, 39 game and steak places and the state's oldest restaurants, each checked by hand in fall 2026 against a 2025 or 2026 source (the restaurant's own website or menu, or local news); 234 brewpubs matched to the state's Brew Pub and Distillery Pub licenses; and the MICHELIN Guide Colorado 2026 and James Beard honorees, as facts. It also lists 15,716 restaurants, cafés, bars and bakeries statewide. It is for Colorado residents and visitors deciding where to eat. No ads, account or tracking.
+2. Purpose and audience: Colorado Eats is a free guide to restaurants in Colorado. Its focus is the state's food: 46 green chile spots, 46 ski-town restaurants, 37 game and steak places and the state's oldest restaurants, each checked by hand in fall 2026 against a 2025 or 2026 source (the restaurant's own website or menu, or local news); 234 brewpubs matched to the state's Brew Pub and Distillery Pub licenses; and the MICHELIN Guide Colorado 2026 and James Beard honorees, as facts. It also lists 15,716 restaurants, cafés, bars and bakeries statewide. It is for Colorado residents and visitors deciding where to eat. No ads, account or tracking.
 
 3. How to use it (no login, no setup, no sample files needed):
 - Home → any guide (Green Chile, Brewpubs, Ski Town Dining, Game & Steakhouses, MICHELIN & James Beard, Oldest Places, Inspections, Near Me) → tap a place.
@@ -64,7 +64,7 @@ comparison with the other state apps. If Apple still asks for one app, the fallb
 Thank you for the review. Colorado Eats is not a repackaged copy of another app. It is a guide built for Colorado, from Colorado's own
 sources:
 - Its guides are Colorado's food traditions, each place checked by hand against a 2025 or 2026 source: green chile and Pueblo sloppers
-  (47 places), ski-town dining in Aspen, Vail, Breckenridge, Telluride and Steamboat (46), game and steakhouses (39), and the state's
+  (46 places), ski-town dining in Aspen, Vail, Breckenridge, Telluride and Steamboat (46), game and steakhouses (37), and the state's
   oldest restaurants.
 - Its Brewpubs guide is built from the State of Colorado's Brew Pub and Distillery Pub liquor licenses (234 places), and it shows
   Boulder County Public Health's official inspection results as recorded. No other Colorado health department publishes results in

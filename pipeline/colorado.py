@@ -11,7 +11,7 @@ official, and licensed restaurants and bars the map data doesn't have are added 
 shown with their official result (Pass / Re-Inspection Required / Closure), never a grade of ours.
 Ratings, reviews and price level (web only): Google, Sep 2021 snapshot (UCSD Google Local).
 """
-import os, re, sys, json, math, hashlib, unicodedata, collections, glob
+import os, re, sys, json, math, hashlib, unicodedata, collections, glob, urllib.parse
 import numpy as np, pandas as pd
 from shapely.geometry import shape, Point
 from shapely.prepared import prep
@@ -249,6 +249,26 @@ def load_curated():
 CUR = load_curated()
 
 
+# A source on a host that blocks us (robots.txt disallows ClaudeBot, Claude-User or anthropic-ai, or a bot check) is never used:
+# pipeline/check_sources.py checks every cited host and caches the answers in data/research/source_hosts.json (ported from ny-eats,
+# 2026-10-16: 54 cited URLs on 15 hosts were blocked, among them westword.com, 5280.com and cpr.org)
+SOURCE_HOSTS = json.load(open(f"{DATA}/research/source_hosts.json")) if os.path.exists(f"{DATA}/research/source_hosts.json") else {}
+UNCHECKED_HOSTS, NO_SOURCE = set(), []
+
+
+def usable(urls):
+    from check_sources import why_not, host, API_HOSTS
+    out = []
+    for u in urls or []:
+        if host(u) in API_HOSTS:
+            out.append(u)
+        elif host(u) not in SOURCE_HOSTS:
+            UNCHECKED_HOSTS.add(host(u)); out.append(u)
+        elif why_not(SOURCE_HOSTS, u) is None:
+            out.append(u)
+    return out
+
+
 def load_research():
     """data/research/app/*.json: hand-checked green chile, game and steakhouses, ski-town dining and oldest places
     (facts only, each with a 2025-26 source). An entry for a place already in CUR adds its kinds and notes there."""
@@ -259,6 +279,9 @@ def load_research():
         for e in json.load(open(f)):
             if e.get("open") is False or not e.get("name"):
                 continue
+            ok_src = usable(e.get("sources"))
+            if not ok_src or e.get("recheck"):   # a guide entry needs a 2025-26 source we may use; it waits until it has one
+                NO_SOURCE.append(f"{e['name']} ({e.get('city') or ''})"); continue
             key = (norm_name(e["name"]), (canon_city(e.get("city")) or "").lower())
             c = by.get(key)
             if c is None:
@@ -268,7 +291,7 @@ def load_research():
                 by[key] = c; out.append(c)
             c["tags"] = list(dict.fromkeys((c.get("tags") or []) + [k.lower() for k in (e.get("kinds") or [])]))
             c["dishes"] = list(dict.fromkeys((c.get("dishes") or []) + (e.get("dishes") or [])))
-            c["rsources"] = list(dict.fromkeys((c.get("rsources") or []) + (e.get("sources") or [])))
+            c["rsources"] = list(dict.fromkeys((c.get("rsources") or []) + ok_src))
             for k in ("note", "website", "seasonal", "founded_note", "evidence_date", "display"):
                 c[k] = c.get(k) or e.get(k)
             if not c.get("founded") and e.get("founded"):
@@ -281,6 +304,11 @@ CLOSED = []
 for f in [f"{DATA}/research/closed.json"] + sorted(glob.glob(f"{DATA}/research/app/closed_*.json")):
     if os.path.exists(f):
         CLOSED += json.load(open(f))
+# a closure still applies while its source waits to be replaced (showing a place we know closed is the worse error), but it's listed
+closed_unsourced = [c["name"] for c in CLOSED if not usable(c.get("sources"))]
+print("research entries waiting for a source we may use:", len(NO_SOURCE), NO_SOURCE[:20],
+      "| closures whose only sources are blocked:", closed_unsourced, "| cited hosts never checked (run check_sources.py):",
+      sorted(UNCHECKED_HOSTS)[:8])
 print("verified places: honors", sum(1 for c in CUR if not c.get("research_only")), "+ research-only", sum(1 for c in CUR if c.get("research_only")),
       "| verified closed:", len(CLOSED))
 
@@ -1371,6 +1399,26 @@ def clean_url(u):
 LIQ_UPDATED = "2026-09-24"
 
 
+# pipeline/website_blocklist.json (hacked, taken-over, parked or wrong-business sites, confirmed by hand in the 2026-10-12 sweep):
+# the place stays, its link goes, in the app as on the site (scripts/make-site.py applies the same list)
+WEB_BLOCK = json.load(open(f"{ROOT}/pipeline/website_blocklist.json", encoding="utf-8"))
+
+
+def site_blocked(w):
+    pr = urllib.parse.urlsplit(w if "//" in w else "https://" + w)
+    host, path = pr.netloc.lower().rstrip(".").removeprefix("www."), pr.path.rstrip("/")
+    for b in WEB_BLOCK:
+        if b.get("match", "domain") == "domain":
+            d = re.sub(r"^[a-z]+://", "", str(b.get("domain") or "").lower()).split("/")[0].removeprefix("www.")
+            if d and (host == d or host.endswith("." + d)):
+                return True
+        else:
+            bu = urllib.parse.urlsplit(str(b.get("url") or ""))
+            if host == bu.netloc.lower().removeprefix("www.") and path == bu.path.rstrip("/") and (not bu.query or pr.query == bu.query):
+                return True
+    return False
+
+
 def lic_list(ix):
     out = []
     for j in ix:
@@ -1440,8 +1488,10 @@ if APP:
                     c_[k_].append(v_)
             # only links pipeline/check_websites.py verified (2xx, same site, names the place and its town, address or phone, no
             # news/directory/spam/parked page); unchecked ones wait. A site that now answers on https ships as https.
-            if LINKS is not None and LINKS.get(w_, {}).get("ok"):
+            if LINKS is not None and LINKS.get(w_, {}).get("ok") and not site_blocked(LINKS[w_].get("ship") or w_):
                 p["w"] = LINKS[w_].get("ship") or w_
+            elif LINKS is not None and LINKS.get(w_, {}).get("ok"):
+                link_drops["on pipeline/website_blocklist.json"] += 1
             else:
                 link_drops[(LINKS or {}).get(w_, {}).get("why", "not checked yet")] += 1
         if isinstance(x.get("phone"), str) and x.phone: p["ph"] = x.phone
