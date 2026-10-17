@@ -328,6 +328,15 @@ enum DayFormat {
         return cal.date(from: DateComponents(year: parts[0], month: parts[1], day: parts[2]))
     }
 
+    /// Today on this phone, written the way the data writes a day ("2026-10-31"): the phone's own zone, and gregorian whatever
+    /// calendar the reader uses, so it compares with the data's dates as strings
+    static func today(_ now: Date = Date()) -> String {
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = .current
+        let c = cal.dateComponents([.year, .month, .day], from: now)
+        return String(format: "%04d-%02d-%02d", c.year ?? 0, c.month ?? 0, c.day ?? 0)
+    }
+
     /// "Jun 16, 2026" (in the reader's language); anything that isn't a date is shown as it is
     static func text(_ s: String?) -> String? {
         guard let s else { return nil }

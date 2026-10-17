@@ -224,9 +224,10 @@ struct PlaceDetailView: View {
     }
 
     /// A license on the state's active list stays valid while its renewal is pending, so only a date on or after the list's own
-    /// date is shown (the pipeline already leaves the others out; an older data file had them).
+    /// date is shown (the pipeline already leaves the others out; an older data file had them). A past date reads as a lapsed
+    /// license, so one before today on the phone is left out too: the bundled list only gets older.
     private func expires(_ l: LicenseRecord) -> String? {
-        guard let exp = l.exp, exp >= model.liquorUpdated, let text = DayFormat.text(exp) else { return nil }
+        guard let exp = l.exp, exp >= model.liquorUpdated, exp >= DayFormat.today(), let text = DayFormat.text(exp) else { return nil }
         return "expires " + text
     }
 

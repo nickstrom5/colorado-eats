@@ -27,6 +27,8 @@
   const num = (x) => (x == null || x === "" || !Number.isFinite(Number(x)) ? null : Number(x));
   const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const fmtDate = (s) => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(s ?? "")); return m ? `${MONTHS[+m[2] - 1]} ${+m[3]}, ${m[1]}` : String(s ?? ""); };
+  // the visitor's own calendar day, written the way the data writes one ("2026-10-31"), so the two compare as strings
+  const today = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; };
   // Boulder County's September 2025 records-system move stamped hundreds of inspections 2025-09-03: not an inspection date, so
   // never shown as one. Missing dates (the pipeline nulls those) read "not published" and sort after dated inspections.
   const MIGRATION_DAY = "2025-09-03";
@@ -331,8 +333,8 @@
         + `<p class="ex-fine">${esc(TIERS)} Source: Boulder County Public Health on data.colorado.gov. These are the county's recorded results, not a grade of ours; one inspection is a snapshot of one day.</p>`);
     }
     const lics = Array.isArray(d.lic) ? d.lic : [];
-    // a past expiry date reads like a lapsed license, so only a date still ahead is shown
-    const lic = lics.map((l) => kv(l.src, [l.type, l.id, l.exp && String(l.exp) >= String(GENERATED) && "expires " + fmtDate(l.exp)].filter(Boolean).join(" · "))).join("");
+    // a past expiry date reads like a lapsed license, so only a date still ahead (of the data and of the visitor's day) is shown
+    const lic = lics.map((l) => kv(l.src, [l.type, l.id, l.exp && String(l.exp) >= String(GENERATED) && String(l.exp) >= today() && "expires " + fmtDate(l.exp)].filter(Boolean).join(" · "))).join("");
     const liquorLic = lics.some((l) => /liquor/i.test(String(l.src)));
     html += section("Official records", lic + kv("Serves alcohol", d.liq ? `Yes · ${d.liq} license` : liquorLic ? "" : "Not matched to a state liquor license (unknown)")
       + `<p class="ex-fine">${lic || d.in ? "From the City and County of Denver's active business licenses, the State of Colorado's active liquor licenses and Boulder County's inspections." : "No Denver license, state liquor license or Boulder County inspection record matched this place. Most Colorado counties don't publish their records in bulk, so a missing record means unknown, not unlicensed."}</p>`);
