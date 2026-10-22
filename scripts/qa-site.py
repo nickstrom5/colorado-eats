@@ -538,6 +538,40 @@ def expected_slopper_hits():
                and " slopper" in norm(" ".join(str(x) for x in (C["n"][i], C["dish"][i], C["a"][i]) if x)))
 
 
+def expected_bib():
+    """Bib Gourmand places (MICHELIN level 2) the web app's box should list, non-restaurants left out like the app."""
+    C = json.load(open(os.path.join(DOCS, "data", "core.json")))["cols"]
+    return sum(1 for i in range(len(C["id"])) if C["mi"][i] == 2 and C["v"][i] != 1)
+
+
+def bib_problems(page, ex, width):
+    """The Bib Gourmand box keeps every Bib Gourmand and nothing else: the count is core.json's, every row says Bib Gourmand,
+    and unticking it brings the whole guide back."""
+    want, out = expected_bib(), []
+    if not want:
+        return [f"explore @{width}: core.json has no Bib Gourmand (mi 2) places"]
+    page.goto(ex + "#g=all&bib=1", wait_until="networkidle")
+    page.reload(wait_until="networkidle")
+    page.wait_for_function("document.querySelectorAll('.ex-row').length > 0", timeout=20000)
+    box = page.locator("#ex-bibwrap")
+    if not box.is_visible() or box.inner_text().strip() != f"Bib Gourmand ({want:,})" or not page.locator("#ex-bib").is_checked():
+        out.append(f"explore @{width}: the Bib Gourmand box isn't shown ticked as 'Bib Gourmand ({want:,})' ({box.inner_text().strip()!r})")
+    count = page.locator("#ex-count").inner_text()
+    if not count.startswith(f"{want:,} place"):
+        out.append(f"explore @{width}: Bib Gourmand lists {count!r}, expected the {want} in core.json")
+    tags = page.evaluate("[...document.querySelectorAll('.ex-row')].map(r => [...r.querySelectorAll('.tag-mi')].map(t => t.textContent).join('|'))")
+    if len(tags) != min(want, 100):
+        out.append(f"explore @{width}: Bib Gourmand shows {len(tags)} rows, expected {min(want, 100)}")
+    wrong = [t for t in tags if t != "Bib Gourmand"]
+    if wrong:
+        out.append(f"explore @{width}: Bib Gourmand lists places that aren't Bib Gourmands: {wrong[:3]}")
+    page.locator("#ex-bib").uncheck()
+    page.wait_for_timeout(300)
+    if page.locator("#ex-count").inner_text().startswith(f"{want:,} place"):
+        out.append(f"explore @{width}: unticking Bib Gourmand didn't bring the whole guide back")
+    return out
+
+
 WIDER_PROBE = "casa bonita"   # a famous place no guide lists (Lakewood): a first visit's search for it starts in Green Chile
 WIDER_FEW = "santiagos"       # one hand-checked Santiago's on the Green Chile list, dozens of the chain statewide
 
@@ -801,6 +835,7 @@ def browser_checks(problems):
             page.wait_for_timeout(500)
             if "Nearest" in page.locator("#ex-count").inner_text():
                 problems.append(f"explore @{width}: says 'Nearest' after a location timeout ({page.locator('#ex-count').inner_text()!r})")
+            problems += bib_problems(page, ex, width)
             # ---- aria-label only where it counts (a span, div, p or canvas needs a role for it to be read)
             page.goto(ex + "#g=oldest", wait_until="networkidle")
             page.reload(wait_until="networkidle")

@@ -32,6 +32,13 @@ struct FiltersSheet: View {
                 } footer: {
                     Text("Confirmed = on an official record (a Denver business license, a state liquor license or a Boulder County inspection), a high-confidence map listing, or hand-checked by us. Non-restaurants are gas-station counters, stadium and airport stands, corporate cafeterias, candy shops and delivery-only brands.")
                 }
+                // a fact from the MICHELIN Guide, not a rating; shown only when the data has Bib Gourmand places (below the
+                // Show switches, so the half-height sheet keeps those in view)
+                if model.bibCount > 0 {
+                    Section("MICHELIN Guide") {
+                        Toggle("Bib Gourmand (\(model.bibCount.formatted()))", isOn: $model.filters.bibGourmand)
+                    }
+                }
                 if model.filters.activeCount > 0 {
                     Section { Button("Clear all filters", role: .destructive) { model.filters = Filters() } }
                 }

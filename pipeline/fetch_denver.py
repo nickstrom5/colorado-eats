@@ -2,7 +2,7 @@
 -> data/raw/official/denver_licenses.json. Only the food and liquor license types. Polite: one request at a time, honest UA."""
 import json, os, time, urllib.parse, requests
 B = "https://services1.arcgis.com/zdB7qR0BtYrg0Xpl/arcgis/rest/services/ODC_active_business_licenses/FeatureServer/42/query"
-UA = {"User-Agent": "COEatsResearch/1.0 (work-with-nick@gmail.com)"}
+UA = {"User-Agent": "COEatsResearch/1.0 (nick@eatsranked.com)"}
 TYPES = ("Retail Food", "Combined License", "Liquor", "Retail Food - Commissary")
 where = "LICENSE_TYPE IN (" + ",".join(f"'{t}'" for t in TYPES) + ")"
 rows, off = [], 0

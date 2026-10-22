@@ -25,6 +25,14 @@ gold #FFD700 only as a fill under blue text). Light mode only in the app.
 - Every other county's inspections are search-only portals (several bot-protected): never scrape them. Bulk extracts or CORA requests need Nick's yes.
 - The Green Chile, Game & Steakhouses and Ski Town Dining guides list only **hand-checked** places (`hc`, research in `data/research/app/*.json`
   with a 2025–26 source). Brewpubs = an active state Brew Pub or Distillery Pub license. "Opened" means at this address.
+- Hijacked pages (QA 2026-10-19, P1 #4; ported 2026-10-21): `check_websites.py` runs `pipeline/injection.py`, Wisconsin's detector, on every
+  page (planted casino, betting, adult, pharma and link-farm links, visible, hidden or off-screen; other-language gambling text; parked
+  and default pages). Keep it identical to `../wi-eats/pipeline/injection.py`; `test_injection.py` must pass. `--recheck-ok` fetches every
+  passing page again before each submission (resumable: pages re-checked in the last 2 days are skipped), `--retry-transient` re-fetches
+  429s and connection errors afterwards, and `CHECK_WORKERS=4` slows a run (Squarespace rate-limits across all our concurrent checkers).
+- Tracking tags: the app export strips `ref=google`, `referrer=google_food_ordering`, `cn_channel`, `utm_*`, `fbclid`, Yext `cid=RF:YXT…`
+  and similar from every outbound link (`pipeline/tracking_params.py`, the same in every state; store ids and locations stay). The site
+  reads the app export, and a unit test fails if a tracked link is bundled (QA 2026-10-19, P1 #13).
 - Website links: `pipeline/check_websites.py` (polite, honest UA, resumable). Re-run it before each submission, then rebuild with `CO_APP=1`.
 - Places the research finds closed go in `data/research/closed.json` or `data/research/app/closed_*.json` with a source.
 - Research sources: `pipeline/check_sources.py` robots-checks every cited host (ClaudeBot, Claude-User, anthropic-ai, bot checks;
@@ -108,4 +116,4 @@ cp data/app/places.json ColoradoEats/Resources/ && .venv/bin/python scripts/make
 Creating the public repo `nickstrom5/colorado-eats`, pushing, Pages, anything in App Store Connect, uploads, emails, Open Records requests.
 Never submit for review or accept agreements. Public commits: `git -c user.name="Nick Soderstrom" -c user.email="329204362+nickstrom5@users.noreply.github.com" commit`.
 Only `docs/`, the app source and scripts go public: never `data/`, `site/` (Google-derived) or scraped files (see `.gitignore`).
-Support email: work-with-nick@gmail.com.
+Support email: nick@eatsranked.com (Nick, 2026-10-12), everywhere: site, app, listing, review reply, pipeline user agents. A unit test fails on "gmail.com" in the app's source.

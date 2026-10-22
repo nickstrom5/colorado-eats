@@ -20,6 +20,7 @@ from common import (norm_name, nice, name_sim, cuisine, FOOD_COST, MARGIN, MARGI
                     canon_city, town_key, FOODCAT)
 from brands import brand_of
 import official
+import tracking_params   # outbound links lose their tracking tags (QA 2026-10-19, P1 #13)
 from listings_util import official_match, _close_words
 from official import street_key, street_nums
 
@@ -29,6 +30,7 @@ GOOD_SOURCES = {"meta", "AllThePlaces", "DAC"}
 BASE = {1: 600_000, 2: 1_000_000, 3: 2_200_000, 4: 3_500_000}   # typical yearly sales by price tier (same as Chicago)
 B_FIT = 0.764   # review-volume exponent fit on Chicago's published sales (chi-eats meta.model.b)
 import datetime
+
 TODAY = datetime.date.today().isoformat()
 SKI_TOWNS = {"Aspen", "Snowmass Village", "Vail", "Avon", "Beaver Creek", "Edwards", "Minturn", "Breckenridge", "Frisco", "Dillon",
              "Silverthorne", "Keystone", "Copper Mountain", "Steamboat Springs", "Telluride", "Mountain Village", "Crested Butte",
@@ -1516,6 +1518,9 @@ if APP:
         seen_ids.add(p["id"])
         places.append(p)
     print("website links dropped:", sum(link_drops.values()), link_drops.most_common(8), "| empty numbers dropped:", dict(nan_keys))
+    # tracking tags (ref=google, utm_*, cn_channel …) off every outbound link; the store's own parameters stay (tracking_params.py)
+    tp_changes = tracking_params.scrub(places)
+    print("tracking parameters stripped from links:", sum(tp_changes.values()), dict(tp_changes))
     json.dump(link_cands, open(f"{CO}/website_candidates.json", "w"), indent=0, ensure_ascii=False)
     calib_app = json.load(open(f"{CO}/calibration_app.json"))
     out = {"v": 1, **meta_common, "cities": CITIES, "cuisines": CUIS, "brands": BRANDS, "count": len(places), "count_restaurants": int(len(nv)),

@@ -51,7 +51,7 @@ Thank you. Here is the information requested.
 
 6. Regulated or protected material: the app is not in a regulated industry and includes no protected third-party material. The data is open-licensed or public record, credited on the About tab. Ratings, hours and photos are shown only inside Apple's own place card through MapKit, under Apple's terms; the app stores no ratings or reviews. Boulder County inspection results are shown exactly as the county recorded them (Pass, Re-Inspection Required or Closure), with no grade of our own. Honors are stated as facts, with trademark notices. Website links were checked before release (each must be the restaurant's own page), and strip clubs and other adult venues are excluded by name, address and category. The app is independent and not affiliated with any restaurant, agency, the MICHELIN Guide or the James Beard Foundation.
 
-Support: work-with-nick@gmail.com
+Support: nick@eatsranked.com
 ```
 
 ## If App Review cites Guideline 4.3(a) (Resolution Center only; never in the Notes)
