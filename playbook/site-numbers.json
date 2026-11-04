@@ -1,7 +1,7 @@
 {
- "generated": "2026-10-21",
+ "generated": "2026-11-03",
  "domain": "https://nickstrom5.github.io/colorado-eats",
- "restaurants": 15716,
+ "restaurants": 15682,
  "towns": 308,
  "counties": 64,
  "green_chile": 46,
@@ -24,7 +24,7 @@
  "inspections_through": "2026-07-21",
  "cities": {
   "Denver": {
-   "restaurants": 2900,
+   "restaurants": 2895,
    "green_chile_near": 21,
    "brewpubs_near": 44,
    "ski_near": 0,
@@ -48,7 +48,7 @@
    "indexed": true
   },
   "Aurora": {
-   "restaurants": 811,
+   "restaurants": 806,
    "green_chile_near": 1,
    "brewpubs_near": 3,
    "ski_near": 0,
@@ -60,7 +60,7 @@
    "indexed": true
   },
   "Fort Collins": {
-   "restaurants": 526,
+   "restaurants": 524,
    "green_chile_near": 1,
    "brewpubs_near": 9,
    "ski_near": 0,
@@ -96,7 +96,7 @@
    "indexed": true
   },
   "Lakewood": {
-   "restaurants": 402,
+   "restaurants": 399,
    "green_chile_near": 1,
    "brewpubs_near": 0,
    "ski_near": 0,
@@ -132,7 +132,7 @@
    "indexed": false
   },
   "Golden": {
-   "restaurants": 161,
+   "restaurants": 158,
    "green_chile_near": 2,
    "brewpubs_near": 2,
    "ski_near": 0,
@@ -144,7 +144,7 @@
    "indexed": false
   },
   "Grand Junction": {
-   "restaurants": 262,
+   "restaurants": 260,
    "green_chile_near": 0,
    "brewpubs_near": 7,
    "ski_near": 0,
@@ -156,7 +156,7 @@
    "indexed": true
   },
   "Durango": {
-   "restaurants": 168,
+   "restaurants": 167,
    "green_chile_near": 3,
    "brewpubs_near": 4,
    "ski_near": 5,

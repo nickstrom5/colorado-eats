@@ -291,7 +291,7 @@ final class ColoradoEatsTests: XCTestCase {
         let counties = try XCTUnwrap(file["counties"] as? [String])
         cities.append("Fris")
         // six ordinary visible places, each broken one way
-        let idx = places.indices.filter { places[$0]["v"] == nil }.prefix(9).map { $0 }
+        let idx = places.indices.filter { places[$0]["v"] == nil }.prefix(10).map { $0 }
         places[idx[0]]["w"] = "https://www.yelp.com/biz/some-place"
         places[idx[1]]["w"] = "https://www.westword.com/restaurants/a-story-123"
         places[idx[2]]["a"] = "490 South Colorado Boulevard"
@@ -302,6 +302,7 @@ final class ColoradoEatsTests: XCTestCase {
         places[idx[6]]["in"] = ["r": 0, "p": 4, "d": "2026-05-01", "n": 1, "rr": 0, "cl": 0, "h": [["d": "2026-05-01", "r": 0, "p": 4, "t": "Routine"]]]
         places[idx[7]]["n"] = "Tipsy Nails & Spa"
         places[idx[8]]["w"] = "https://www.bouldercork.com/menu"
+        places[idx[9]]["n"] = "The Meltdown"
         file["places"] = places
         file["cities"] = cities
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("places-broken.json")
@@ -322,6 +323,7 @@ final class ColoradoEatsTests: XCTestCase {
         caught(DataGuards.inspectionsOutsideBoulderCounty(m.places), 6, "a Denver place with an inspection")
         caught(DataGuards.nonRestaurants(m.places), 7, "a nail salon shown as a restaurant")
         caught(DataGuards.blocklisted(m.places, [["domain": "bouldercork.com", "match": "domain"]]), 8, "a blocklisted (hacked) website")
+        caught(DataGuards.nonRestaurants(m.places), 9, "a Denny's delivery-only brand shown as a restaurant (QA 2026-10-29)")
     }
 }
 
@@ -377,7 +379,8 @@ enum DataGuards {
 
     /// businesses that hold a beer-and-wine license but aren't places to eat (QA gap round: nail bars, senior homes, a gun store,
     /// gas stations), among the places shown by default
-    static let nonRestaurantNames = #"\bnails?\b|\bsenior\b|assisted living|\bguns?\b|firearms|petroleum|\bsinclair\b|living spaces"#
+    /// and delivery-only brands cooked in another restaurant's kitchen: Denny's The Meltdown, The Burger Den and Banda Burrito (QA 2026-10-29)
+    static let nonRestaurantNames = #"\bnails?\b|\bsenior\b|assisted living|\bguns?\b|firearms|petroleum|\bsinclair\b|living spaces|^(?:the )?(?:meltdown|burger den)$|banda burrito|tenderfix|pardon my cheesesteak|neighborhood wings"#
 
     static func nonRestaurants(_ places: [Place]) -> [String] {
         places.filter { !$0.isVenue && $0.name.range(of: nonRestaurantNames, options: [.regularExpression, .caseInsensitive]) != nil }
