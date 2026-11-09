@@ -1,10 +1,10 @@
 {
- "generated": "2026-11-03",
+ "generated": "2026-11-09",
  "domain": "https://nickstrom5.github.io/colorado-eats",
- "restaurants": 15682,
+ "restaurants": 15691,
  "towns": 308,
  "counties": 64,
- "green_chile": 46,
+ "green_chile": 45,
  "brewpubs": 234,
  "brewpub_duplicates_hidden": 0,
  "ski_town": 46,
@@ -24,7 +24,7 @@
  "inspections_through": "2026-07-21",
  "cities": {
   "Denver": {
-   "restaurants": 2895,
+   "restaurants": 2904,
    "green_chile_near": 21,
    "brewpubs_near": 44,
    "ski_near": 0,
@@ -193,7 +193,7 @@
   },
   "Steamboat Springs": {
    "restaurants": 131,
-   "green_chile_near": 1,
+   "green_chile_near": 0,
    "brewpubs_near": 3,
    "ski_near": 3,
    "honors": 0,
