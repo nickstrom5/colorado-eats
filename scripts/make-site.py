@@ -346,7 +346,7 @@ CSS = """
     --green: #002868; --green2: #1c3f86; --on-green: #fff; --gold: #ffd700; --goldsoft: #fff1a6; --red: #bf0a30;
     --focus: #002868;
     --radius: 16px;
-    --display: "Avenir Next Condensed", "HelveticaNeue-CondensedBold", "Arial Narrow", system-ui, sans-serif;
+    --display: "Avenir Next Condensed", "HelveticaNeue-CondensedBold", "Arial Narrow", system-ui, sans-serif; --head-font: "National Park", "Avenir Next Condensed", "HelveticaNeue-CondensedBold", "Arial Narrow", system-ui, sans-serif;
   }
   @media (prefers-color-scheme: dark) {
     :root { --bg: #0d1424; --surface: #141d31; --surface2: #1b2640; --rule: #2a3654; --ink: #eef1f8; --ink2: #cfd6e6; --muted: #9aa6bf; --green: #a9c1ff; --green2: #8aa8f0; --on-green: #0d1424; --red: #ff6b86; --focus: #ffd700; }
@@ -362,14 +362,14 @@ CSS = """
   .skip:focus { left: 8px; top: 8px; }
   .wrap { max-width: 760px; margin: 0 auto; padding: 0 20px; }
   header.site { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 0; border-bottom: 4px solid var(--gold); box-shadow: 0 3px 0 var(--red); }
-  .logo { display: flex; align-items: center; gap: 10px; font: 800 22px/1 var(--display); text-transform: uppercase; letter-spacing: .01em; color: var(--green); text-decoration: none; }
+  .logo { display: flex; align-items: center; gap: 10px; font: 800 19px/1 var(--head-font); text-transform: uppercase; letter-spacing: .01em; color: var(--green); text-decoration: none; }
   header.site nav { display: flex; flex-wrap: wrap; gap: 4px 16px; justify-content: flex-end; }
   header.site nav a { color: var(--ink2); text-decoration: none; font-size: 15px; }
   header.site nav a:hover { color: var(--green); text-decoration: underline; }
-  h1, h2 { font-family: var(--display); font-weight: 800; color: var(--green); letter-spacing: -.005em; }
-  h1 { font-size: clamp(36px, 7.5vw, 56px); line-height: 1.02; margin: 0 0 16px; text-transform: uppercase; }
+  h1, h2 { font-family: var(--head-font); font-weight: 800; color: var(--green); letter-spacing: -.005em; }
+  h1 { font-size: clamp(30px, 9.38vw, 55px); line-height: 1.02; margin: 0 0 16px; text-transform: uppercase; text-wrap: balance; }
   .kicker { font: 700 15px/1.4 -apple-system, system-ui, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
-  h2 { font-size: 32px; line-height: 1.1; margin: 0 0 10px; }
+  h2 { font-size: 28px; line-height: 1.1; margin: 0 0 10px; }
   h3 { font-size: 18px; margin: 0; line-height: 1.3; }
   .lede { font-size: 19px; color: var(--ink2); margin: 0 0 26px; }
   .hero { padding: 44px 0 28px; }
@@ -457,6 +457,16 @@ CSS = """
   }
 """
 
+# The headline face: National Park (SIL Open Font License, in docs/fonts/OFL-National-Park.txt). It is the site's one web font and it is served from this
+# site, so pages still load nothing from anyone else. The big headline, the section headings, card titles and the site name use it
+# (--head-font); numbers and badges keep the condensed system faces (--display).
+CSS = "".join(f'  @font-face {{ font-family: "National Park"; src: url("{BASE}/fonts/{_f}") format("woff2"); font-weight: 800; font-style: normal; font-display: swap; unicode-range: {_r}; }}\n'
+              for _f, _r in (
+                  ("national-park-vietnamese.woff2", "U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB"),
+                  ("national-park-latin-ext.woff2", "U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF"),
+                  ("national-park-latin.woff2", "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD"),
+              )) + CSS
+
 
 ORG_ID, SITE_ID = f"{DOMAIN}/#org", f"{DOMAIN}/#website"
 HUB = "https://eatsranked.com/"
@@ -507,7 +517,7 @@ def csp_for(doc):
     return ("default-src 'none'; "
             f"script-src {' '.join(sha256_src(s) for s in scripts) or chr(39) + 'none' + chr(39)}; "
             f"style-src {' '.join(sha256_src(s) for s in styles) or chr(39) + 'none' + chr(39)}; "
-            "img-src 'self' data:; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'")
+            "img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'")
 
 
 CSP_SLOT = "__CSP__"
@@ -554,6 +564,7 @@ def page(path, title, desc, body, lds=(), robots="index,follow,max-image-preview
 <link rel="icon" type="image/svg+xml" href="{FAVICON}">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="preload" href="/fonts/national-park-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="manifest" href="/site.webmanifest">
 <style>{CSS}{extra_css}</style>
 {ld}
@@ -1248,7 +1259,7 @@ json.dump(json.load(open(f"{ROOT}/data/co/co_shapes.json")), open(f"{DOCS}/data/
 EXPLORE_CSS = """
   [hidden] { display: none !important; }
   .ex-hero { padding: 28px 0 8px; }
-  .ex-hero h1 { font-size: clamp(30px, 6vw, 44px); }
+  .ex-hero h1 { font-size: clamp(30px, 9.38vw, 39px); }
   .ex-controls { background: var(--bg); padding: 10px 0 8px; border-bottom: 1px solid var(--rule); }
   .ex-guides { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
   @media (min-width: 601px) { .ex-guides { flex-wrap: wrap; overflow: visible; } }
@@ -1294,7 +1305,7 @@ EXPLORE_CSS = """
   @media (max-width: 600px) { .ex-panel { top: auto; height: 86vh; border-left: 0; border-top: 4px solid var(--gold); border-radius: 18px 18px 0 0; } }
   .ex-close { position: sticky; top: 0; float: right; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--rule); background: var(--surface); font-size: 24px; line-height: 1; cursor: pointer; color: var(--ink); }
   .ex-kicker { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .1em; color: var(--green2); }
-  .ex-panel h2 { font-size: 34px; margin: 4px 0 6px; text-transform: uppercase; }
+  .ex-panel h2 { font-size: 30px; margin: 4px 0 6px; text-transform: uppercase; }
   .ex-addr, .ex-dist { margin: 0 0 4px; color: var(--ink2); font-size: 15px; }
   .ex-actions { margin: 14px 0 8px; display: grid; gap: 8px; }
   .ex-apple { justify-content: center; }
