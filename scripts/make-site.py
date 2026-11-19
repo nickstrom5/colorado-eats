@@ -26,7 +26,6 @@ import json
 import math
 import os
 import re
-import struct
 from collections import Counter, defaultdict
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -42,9 +41,19 @@ BRAND = "Colorado Eats"
 TAGLINE = "Green chile & brewpub guide"
 EMAIL = "nick@eatsranked.com"   # Nick, 2026-10-12: the site's contact (Cloudflare Email Routing); the app and the listing switch in its next build
 PUBLISHED = "2026-10-05"        # the site's first publication (Article datePublished)
-SITE_REV = "2026-10-13"         # the last change to this generator's own copy or code: bump it when you change the words
-POLICY_UPDATED = "2026-10-12"   # privacy policy and terms: bump only when their text changes
-PRIVACY_UPDATED = "2026-10-26"   # the privacy policy alone: the app's data updates (OTA-DATA.md)
+SITE_REV = "2026-11-19"         # the last change to this generator's own copy or code: bump it when you change the words
+POLICY_UPDATED = "2026-11-19"   # privacy policy and terms: bump only when their text changes
+PRIVACY_UPDATED = "2026-11-19"  # the privacy policy alone (11-19: the app is Eats Ranked, with its own policy on the hub)
+# The app. This site is the Colorado guide on the web. On iPhone and iPad the same guide is inside Eats Ranked, the one app that
+# carries the state guides; there is no Colorado-only app. Pages link the hub's app section, which shows the App Store badge once
+# there is one, so nothing here links the App Store or needs Apple's artwork. Until Eats Ranked is approved the copy says
+# "coming soon"; on the day it is, set APP_LIVE = True and rebuild. Never "download" or "get" before then.
+APP_URL = "https://eatsranked.com/#app"
+APP_PRIVACY_URL = "https://eatsranked.com/privacy.html"
+APP_LIVE = False
+APP_WHEN = "free on the App Store" if APP_LIVE else "coming soon to the App Store"
+APP_LINK = f'<a href="{APP_URL}" rel="noopener">Eats Ranked for iPhone and iPad</a>'
+APP_NOTE = f"Free website. Also in {APP_LINK}, {APP_WHEN}."      # the line under a page's opening paragraph
 CHECKED = "fall 2026"
 
 D = json.load(open(f"{ROOT}/data/app/places.json"))
@@ -311,12 +320,6 @@ def slug(s):
     return re.sub(r"[^a-z0-9]+", "-", s.lower().replace("'", "")).strip("-")
 
 
-def png_size(path):
-    with open(path, "rb") as f:
-        head = f.read(24)
-    return struct.unpack(">II", head[16:24])
-
-
 def join_words(xs, conj="and"):
     xs = [x for x in xs if x]
     if len(xs) <= 1:
@@ -389,10 +392,6 @@ CSS = """
   .step { display: flex; gap: 14px; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 18px; }
   .step .n { flex: 0 0 32px; height: 32px; border-radius: 50%; background: var(--gold); color: #0f1b33; font-weight: 800; display: grid; place-items: center; }
   .step p { margin: 4px 0 0; color: var(--ink2); }
-  .shots { display: flex; gap: 14px; overflow-x: auto; margin: 0 -20px; padding: 4px 20px 14px; scroll-snap-type: x proximity; list-style: none; }
-  .shots li { flex: 0 0 auto; width: 210px; scroll-snap-align: start; }
-  .shots img { display: block; width: 210px; height: auto; border-radius: 24px; border: 1px solid var(--rule); background: var(--surface2); }
-  .shots p { font-size: 14px; color: var(--muted); margin: 8px 2px 0; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .card { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 18px; }
   .card p { margin: 6px 0 0; color: var(--ink2); }
@@ -477,7 +476,7 @@ BASE_LD = {"@context": "https://schema.org", "@graph": [
      "logo": {"@type": "ImageObject", "url": f"{DOMAIN}/icon-512.png", "width": 512, "height": 512}, "email": EMAIL,
      "contactPoint": {"@type": "ContactPoint", "contactType": "customer support", "email": EMAIL, "availableLanguage": "en"},
      "parentOrganization": {"@type": "Organization", "@id": HUB + "#organization", "name": "Eats Ranked", "url": HUB}},
-    {"@type": "WebSite", "@id": SITE_ID, "name": BRAND, "alternateName": ["CO Eats", "Colorado Eats app"], "url": f"{DOMAIN}/",
+    {"@type": "WebSite", "@id": SITE_ID, "name": BRAND, "alternateName": ["CO Eats"], "url": f"{DOMAIN}/",
      "inLanguage": "en", "publisher": {"@id": ORG_ID}}]}
 
 
@@ -494,16 +493,6 @@ def crumbs(trail):
     ld = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
         {"@type": "ListItem", "position": i + 1, "name": n, "item": DOMAIN + u} for i, (n, u) in enumerate(trail)]}
     return f'<nav class="crumbs" aria-label="Breadcrumb"><ol>{items}</ol></nav>', ld
-
-
-def store_button(label="Ask for early access"):
-    # A plain mailto button until launch: no Apple logo (Apple's marketing rules allow it only in the official badge). When
-    # APP_STORE_URL is set in page() below, swap this for Apple's "Download on the App Store" badge artwork.
-    return (f'<a class="btn store-btn" href="mailto:{EMAIL}?subject=Colorado%20Eats%20early%20access&amp;body=Send%20me%20the%20TestFlight%20link.">'
-            f'<span class="store-label">{label}</span></a>')
-
-
-STORE_NOTE = "Free for iPhone and iPad. App Store release in the works."
 
 
 def sha256_src(s):
@@ -545,9 +534,6 @@ def page(path, title, desc, body, lds=(), robots="index,follow,max-image-preview
 <meta name="description" content="{e(desc)}">
 {canon}<meta name="robots" content="{robots}">
 <meta name="theme-color" content="#002868">
-<!-- Smart App Banner: once the App Store Connect record exists, replace APP_ID with the numeric Apple ID and uncomment.
-<meta name="apple-itunes-app" content="app-id=APP_ID">
--->
 <meta property="og:title" content="{e(title)}">
 <meta property="og:description" content="{e(desc)}">
 {og_url}<meta property="og:type" content="{og_type}">
@@ -585,7 +571,7 @@ def page(path, title, desc, body, lds=(), robots="index,follow,max-image-preview
 {body}
   <footer>
     <nav aria-label="Footer">
-      <a href="/">{BRAND} app</a>
+      <a href="/">{BRAND} home</a>
       <a href="/explore/">Search Colorado restaurants</a>
       <a href="/colorado-green-chile.html">Colorado green chile</a>
       <a href="/colorado-brewpubs.html">Colorado brewpubs</a>
@@ -595,26 +581,15 @@ def page(path, title, desc, body, lds=(), robots="index,follow,max-image-preview
       <a href="/colorado-oldest-restaurants.html">Oldest restaurants</a>
       <a href="/{INS_PATH}">Boulder County inspections</a>
       <a href="/cities/">Cities and towns</a>
+      <a href="{APP_URL}" rel="noopener">Eats Ranked app</a>
       <a href="/privacy.html">Privacy policy</a>
       <a href="/terms.html">Terms of use</a>
       <a href="mailto:{EMAIL}">Email us</a>
     </nav>
     <p>{SOURCES_LINE}</p>
-    <p>© 2026 {BRAND}. Part of <a href="{HUB}">Eats Ranked</a>, restaurant apps state by state.</p>
+    <p>© 2026 {BRAND}. Part of <a href="{HUB}">Eats Ranked</a>, free restaurant guides state by state.</p>
   </footer>
 </div>
-<script>
-  // Once the App Store listing exists, paste its URL here (looks like https://apps.apple.com/app/id123456789).
-  // Every button switches from "Ask for early access" to "Download on the App Store" automatically (then use Apple's badge artwork,
-  // see store_button() in scripts/make-site.py). Also fill in the apple-itunes-app meta tag in <head> on every page, and put the
-  // MobileApplication "offers" back in the landing page's JSON-LD (re-run scripts/make-site.py after editing it there).
-  var APP_STORE_URL = "";
-  if (APP_STORE_URL) {{
-    document.querySelectorAll(".store-btn").forEach(function (b) {{ b.href = APP_STORE_URL; b.rel = "noopener"; }});
-    document.querySelectorAll(".store-label").forEach(function (l) {{ l.textContent = "Download on the App Store"; }});
-    document.querySelectorAll(".store-note").forEach(function (n) {{ n.textContent = "Free for iPhone and iPad."; }});
-  }}
-</script>
 </body>
 </html>
 """
@@ -813,7 +788,7 @@ def guide_page(path, h1, kicker, title_opts, desc_opts, lede, about_html, places
     <p class="kicker">{kicker}</p>
     <h1>{e(h1)}</h1>
     <p class="lede">{lede}</p>
-    <div class="cta-row">{store_button()}<span class="pill store-note">{STORE_NOTE}</span></div>
+    <div class="cta-row"><span class="pill">{APP_NOTE}</span></div>
   </section>
   <section id="about">
     {about_html}
@@ -845,7 +820,7 @@ guide_page("colorado-green-chile.html", "Colorado green chile guide", f"{BRAND} 
     <h2>What's on the list</h2>
     <p>{N_PUEBLO_CHILE:,} of the {len(CHILE_L):,} are in Pueblo County, and {N_SLOPPER:,} serve a slopper. The dishes we found most often: {e(top_dish)}.</p>
     <p>Our method: a place got on only if a 2025 or 2026 menu page or a dated local news story shows green chile on its menu. We skipped places with no current source, a dead website, or green chile in a single passing mention. Review sites played no part, and the list runs by region and town rather than by anyone's score. Menus change, so call before you drive across town for a bowl.</p>
-    <p>On an iPhone, {BRAND} puts these spots in order of distance and opens each one's Apple Maps card for hours, photos and directions.</p>""",
+    <p>In the <a href="/explore/">web search</a>, Near me puts these spots in order of distance, and each one links to Apple Maps for hours, photos and directions.</p>""",
            CHILE_L, "green chile spot", "green chile spots", "Colorado green chile restaurants")
 
 # ---------------------------------------------------------------- brewpubs
@@ -1109,7 +1084,7 @@ def city_desc(c, info, secs):
     ex1 = [x for x in (" Checked in " + CHECKED + "." if any(s[0] in ("gc", "sk", "gm") for s in secs) else "",
                        f" Brewpub licenses as of {hmonth(LIQUOR_DATE)}." if any(s[0] == "bp" for s in secs) else "",
                        f" Inspection records through {hmonth(INS_THROUGH)}." if any(s[0] == "insp" for s in secs) else "",
-                       " Free iPhone app coming soon.") if x]
+                       " Free on the web, no sign-in.") if x]
     extras = [""] + ex1 + [a + b for i, a in enumerate(ex1) for b in ex1[i + 1:]]
 
     def gen():
@@ -1120,7 +1095,7 @@ def city_desc(c, info, secs):
                     for x in extras:
                         yield f"{lead}: {J}{tail}.{x}"
         for tail in tails:   # a town with none of the guides' places: what it eats
-            for x in extras + [f" Free Colorado restaurant guide for iPhone and iPad, coming soon."]:
+            for x in extras + [f" Free Colorado restaurant guide on the web, with no ads or login."]:
                 yield f"Restaurants in {c}, Colorado: the kinds of places {c} eats at most{tail}.{x}"
     return fit(list(dict.fromkeys(s.replace("..", ".") for s in gen())), 140, 160, c + " description")
 
@@ -1155,7 +1130,7 @@ for c in CITY_PAGES:
     if insp:
         notes.append(f"Inspection results are Boulder County Public Health's records through {e(hdate(INS_THROUGH))}.")
     lede = ((f"{area}: {e(join_words(counts))}. " if counts else "") + " ".join(notes) + ("" if not notes else " ")
-            + f"{BRAND} knows {n_town:,} restaurants, cafés, bars and bakeries in {e(c)}: search them on the web, or sort them by distance in the app.")
+            + f"{BRAND} knows {n_town:,} restaurants, cafés, bars and bakeries in {e(c)}: search them on the web, closest first once you share your location.")
     metro_note = (f'<p class="fine">These lists stay inside {e(c)}. For {e(metro)}, {miles(CENTER[c], CENTER[metro]):.0f} miles away, see the '
                   f'<a href="{city_url(metro)}">{e(metro)} page</a>.</p>') if metro else ""
     parts = [f"""{nav}
@@ -1164,7 +1139,7 @@ for c in CITY_PAGES:
     <p class="kicker">{BRAND} · {e(c)}, Colorado</p>
     <h1>{e(h1)}</h1>
     <p class="lede">{lede}</p>
-    <div class="cta-row">{store_button()}<span class="pill store-note">{STORE_NOTE}</span></div>
+    <div class="cta-row"><span class="pill">{APP_NOTE}</span></div>
     {metro_note}
   </section>"""]
 
@@ -1349,11 +1324,11 @@ body = f"""{nav}
   <section class="ex-hero">
     <p class="kicker">{BRAND} · on the web</p>
     <h1>Search Colorado restaurants</h1>
-    <p class="sub">Look up {N_REST:,} Colorado restaurants, cafés, bars and bakeries by name, town, street, zip or dish, or open a list: {len(CHILE_L)} green chile spots and {len(SKI_L)} ski-town restaurants we checked by hand, {len(BREW_L)} brewpubs on the state's license list, and Boulder County's recorded inspection results. It runs on the app's own data, and what you save stays in this browser.</p>
+    <p class="sub">Look up {N_REST:,} Colorado restaurants, cafés, bars and bakeries by name, town, street, zip or dish, or open a list: {len(CHILE_L)} green chile spots and {len(SKI_L)} ski-town restaurants we checked by hand, {len(BREW_L)} brewpubs on the state's license list, and Boulder County's recorded inspection results. What you save stays in this browser.</p>
   </section>
   <p id="ex-loading" hidden>Loading the restaurant list…</p>
   <noscript><p>Search runs on JavaScript. The lists are plain pages, though: <a href="/colorado-green-chile.html">green chile</a>, <a href="/colorado-brewpubs.html">brewpubs</a>, <a href="/colorado-ski-town-restaurants.html">ski towns</a>, <a href="/{INS_PATH}">Boulder County inspections</a>.</p></noscript>
-  <div id="ex-app" hidden>
+  <div id="ex-app" hidden{' data-applive="1"' if APP_LIVE else ""}>
     <div class="ex-controls">
       <div class="ex-guides" role="group" aria-label="Guides">{guide_buttons}</div>
       <div class="ex-row1">
@@ -1394,67 +1369,35 @@ webapp_ld = {"@context": "https://schema.org", "@type": "WebApplication", "name"
 page("explore/index.html", title, desc, body, [webapp_ld, bc], extra_css=EXPLORE_CSS, og_type="website")
 
 # ---------------------------------------------------------------- landing page
-shots = [("home", "Colorado Eats home screen: Green Chile, Brewpubs, Ski Town Dining, Game & Steakhouses, MICHELIN & James Beard, Oldest Places and Inspections guides, with a search box for Colorado restaurants.", "Seven Colorado lists and a search box."),
-         ("greenchile", "The hand-checked Green Chile list in Colorado Eats, sorted by distance from downtown Denver.", "Green chile, closest first."),
-         ("detail", "The Buckhorn Exchange in Denver in Colorado Eats: address, a button for ratings, hours and photos in Apple Maps, bison and elk on the menu, open since 1893.", "A place: menu notes, founding year, Apple Maps card."),
-         ("map", "Colorado Eats map of Colorado with pins for green chile spots.", "The whole state, one list at a time."),
-         ("honors", "MICHELIN & James Beard list in Colorado Eats.", "MICHELIN Guide Colorado and James Beard honors.")]
-shot_html = []
-for i, (name, alt, cap) in enumerate(shots):
-    png = f"{DOCS}/img/screen-{name}.png"
-    if not os.path.exists(png):
-        continue
-    w, h = png_size(png)
-    lazy = ' loading="lazy"' if i > 1 else ""
-    webp = os.path.exists(f"{DOCS}/img/screen-{name}.webp")
-    src = (f'<source srcset="/img/screen-{name}.webp" type="image/webp">' if webp else "")
-    shot_html.append(f'<li><picture>{src}<img src="/img/screen-{name}.png" alt="{e(alt)}" width="{w}" height="{h}"{lazy} decoding="async"></picture><p>{e(cap)}</p></li>')
-
 checked_lists = ["green chile", "game and steakhouse", "ski-town"] + (["oldest"] if OLD_ALL_HC else [])
-faq = [   # Colorado's own questions (the 4.3(a) rule: each state app has its own copy); keep answers to facts the pages back up
-    ("Does Colorado Eats cost anything?", "Not a cent. Colorado Eats has no ads, no purchases and no sign-up. It runs on iPhone and iPad only (no Android build for now) and reaches the App Store soon; the web search is live already."),
-    ("What's a slopper, and where can I get one?", f"A Pueblo dish: a hamburger in a bowl, smothered in green chile. {plural(N_SLOPPER, 'place')} on the green chile list {'serves' if N_SLOPPER == 1 else 'serve'} one, and {N_PUEBLO_CHILE} of the list's {len(CHILE_L)} are in Pueblo County. Search \"slopper\" in the app or on the web to see them."
+faq = [   # Colorado's own questions; keep answers to facts the pages back up
+    ("Does Colorado Eats cost anything?", f"Not a cent. Colorado Eats has no ads, no purchases and no sign-up. It's a website, so it works in any browser, on any phone or computer. The same guide is in Eats Ranked for iPhone and iPad, {APP_WHEN}."),
+    ("What's a slopper, and where can I get one?", f"A Pueblo dish: a hamburger in a bowl, smothered in green chile. {plural(N_SLOPPER, 'place')} on the green chile list {'serves' if N_SLOPPER == 1 else 'serve'} one, and {N_PUEBLO_CHILE} of the list's {len(CHILE_L)} are in Pueblo County. Search \"slopper\" on the web to see them."
      if N_SLOPPER else f"A Pueblo dish: a hamburger in a bowl, smothered in green chile. {N_PUEBLO_CHILE} of the {len(CHILE_L)} places on the green chile list are in Pueblo County."),
     ("Is a brewpub the same as a brewery taproom?", f"Not in Colorado's licensing. A Brew Pub license is for a restaurant that brews beer on site and serves it with food (a Distillery Pub license does the same for spirits); a production brewery's taproom holds a manufacturer license and needn't serve food. The brewpub list is the {len(BREW_L)} places matched to those licenses on the state's list of {LIQ}."),
     ("Are ski-town restaurants open in mud season?", "Many close for a few weeks in spring and fall, and on-mountain lodges open only in ski season. The ski-town list notes the seasons places publish, so check before you drive up."),
-    ("Can I see restaurant inspections for my county?", f"Only Boulder County's: it's the one Colorado county that publishes inspection results in bulk. The app and the Boulder County inspections page show each place's latest recorded result from Boulder County Public Health (Pass, Re-Inspection Required or Closure) with its risk points, records through {hdate(INS_THROUGH)}. We never turn them into a grade. Other counties publish one search at a time."),
-    ("Who checked these lists, and why no star ratings?", f"We checked the {join_words(checked_lists)} lists by hand in {CHECKED}, each place against a 2025 or 2026 source such as its own menu page or a dated local news story. Brewpubs come from the state's license list. The rest of the {N_REST:,} places come from Overture Maps' open place data, Denver's business licenses and the state's liquor licenses. We publish no ratings: tap a place and Apple Maps' own card shows Apple's ratings, hours and photos."),
-    ("Does Colorado Eats track where I am?", "No. Location, if you turn it on, only orders the lists by distance, on your iPhone or iPad; we never receive it. On this website, Near me does the same inside your browser."),
-    ("Spotted a closed place, or one that's missing?", f"Tell us at {EMAIL}; the place's name and town are enough. We correct the lists in the next app and site update."),
+    ("Can I see restaurant inspections for my county?", f"Only Boulder County's: it's the one Colorado county that publishes inspection results in bulk. The web search and the Boulder County inspections page show each place's latest recorded result from Boulder County Public Health (Pass, Re-Inspection Required or Closure) with its risk points, records through {hdate(INS_THROUGH)}. We never turn them into a grade. Other counties publish one search at a time."),
+    ("Who checked these lists, and why no star ratings?", f"We checked the {join_words(checked_lists)} lists by hand in {CHECKED}, each place against a 2025 or 2026 source such as its own menu page or a dated local news story. Brewpubs come from the state's license list. The rest of the {N_REST:,} places come from Overture Maps' open place data, Denver's business licenses and the state's liquor licenses. We publish no ratings: in the web search, each place links to Apple Maps for Apple's ratings, hours and photos."),
+    ("Does Colorado Eats track where I am?", "No. Location, if you share it, only orders the lists by distance, and Near me does that inside your browser; we never receive it."),
+    ("Spotted a closed place, or one that's missing?", f"Tell us at {EMAIL}; the place's name and town are enough. We correct the lists in the next update."),
 ]
 faq_html = "".join(f"<details><summary>{e(q)}</summary><p>{e(a)}</p></details>" for q, a in faq)
 faq_ld = {"@context": "https://schema.org", "@type": "FAQPage", "@id": f"{DOMAIN}/#faq",
           "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faq]}
-app_ld = {"@context": "https://schema.org", "@graph": [
-    # No "offers" until the app is on the App Store (put it back with the listing URL: price 0, USD).
-    {"@type": "MobileApplication", "@id": f"{DOMAIN}/#app", "name": "Colorado Eats: Restaurants",
-     "alternateName": ["Colorado Eats", "CO Eats", "Colorado Eats: Green Chile & Brewpub Guide"],
-     "description": f"A free guide to {N_REST:,} Colorado restaurants, with hand-checked lists of {len(CHILE_L)} green chile spots, {len(SKI_L)} ski-town restaurants and the state's oldest places, {len(BREW_L)} licensed brewpubs and the MICHELIN Guide and James Beard honorees. Sort by distance, open Apple Maps' live place card for hours and photos, and save places for your next trip.",
-     "url": f"{DOMAIN}/", "image": f"{DOMAIN}/og.png", "operatingSystem": "iOS, iPadOS", "applicationCategory": "TravelApplication",
-     "applicationSubCategory": "Food & Drink", "inLanguage": "en", "publisher": {"@id": ORG_ID}}]}   # Organization + WebSite: BASE_LD
-if shot_html:
-    app_ld["@graph"][0]["screenshot"] = f"{DOMAIN}/img/screen-home.png"
 title = fit(["Colorado Restaurants, Green Chile & Ski Towns | Colorado Eats", "Colorado Eats: Restaurants, Green Chile & Ski-Town Dining"], 50, 60, "landing title")
-desc = fit([f"Colorado restaurants on your iPhone: {len(CHILE_L)} green chile spots and {len(SKI_L)} ski-town dining rooms we checked, {len(BREW_L)} brewpubs and {N_REST:,} places in all. Free.",
-            f"Colorado restaurants on your iPhone: {len(CHILE_L)} green chile spots and {len(SKI_L)} ski-town restaurants we checked, {len(BREW_L)} licensed brewpubs, and more. Free.",
-            f"Free iPhone and iPad guide to {N_REST:,} Colorado restaurants, with {len(CHILE_L)} hand-checked green chile spots, {len(BREW_L)} brewpubs and ski-town dining."], 140, 160, "landing description")
+desc = fit([f"Colorado restaurants on the web: {len(CHILE_L)} green chile spots and {len(SKI_L)} ski-town dining rooms we checked, {len(BREW_L)} brewpubs and {N_REST:,} places in all. Free, no ads.",
+            f"Colorado restaurants on the web: {len(CHILE_L)} green chile spots and {len(SKI_L)} ski-town restaurants we checked, {len(BREW_L)} licensed brewpubs, and more. Free, no ads.",
+            f"A free guide to {N_REST:,} Colorado restaurants, with {len(CHILE_L)} hand-checked green chile spots, {len(BREW_L)} licensed brewpubs and ski-town dining rooms, no ads."], 140, 160, "landing description")
 city_cards = "".join(f'<li><a href="{city_url(c)}">{e(c)}</a></li>' for c in CITY_PAGES)
-screens = f"""
-  <section id="screens">
-    <h2>What it looks like</h2>
-    <ul class="shots" tabindex="0" aria-label="Colorado Eats app screenshots">
-      {"".join(shot_html)}
-    </ul>
-  </section>""" if shot_html else ""
 ins_card = (f'<a class="card" href="/{INS_PATH}"><h3>Boulder County inspections</h3><p>Latest recorded results for {plural(len(INS_L), "place")}, records through {e(hdate(INS_THROUGH))}.</p></a>'
             if INS_L else "")
 body = f"""  <main id="main">
   <section class="hero">
-    <p class="kicker">Green chile, brewpubs and mountain-town dining · iPhone and iPad</p>
+    <p class="kicker">Green chile, brewpubs and mountain-town dining</p>
     <h1>Colorado restaurants, from {"Pueblo sloppers" if N_SLOPPER else "green chile"} to slopeside lodges</h1>
-    <p class="lede">Where's the closest bowl of green chile? Which pub brews its own beer? Where do you eat in {e(towns_text(ski_towns, 1))} after the last chair? {BRAND} is a free iPhone and iPad guide built around those questions: {len(CHILE_L)} green chile spots and {len(SKI_L)} ski-town restaurants we checked ourselves, {len(BREW_L)} brewpubs from the state's license list, and {N_REST:,} restaurants, cafés, bars and bakeries across {N_TOWNS:,} Colorado towns.</p>
-    <div class="cta-row">{store_button()}<a class="btn btn-ghost" href="/explore/">Search on the web</a><span class="pill store-note">Free, with no ads or sign-in. App Store release coming.</span></div>
-    <ul class="stats" aria-label="What's in the app">
+    <p class="lede">Where's the closest bowl of green chile? Which pub brews its own beer? Where do you eat in {e(towns_text(ski_towns, 1))} after the last chair? {BRAND} is a free guide built around those questions: {len(CHILE_L)} green chile spots and {len(SKI_L)} ski-town restaurants we checked ourselves, {len(BREW_L)} brewpubs from the state's license list, and {N_REST:,} restaurants, cafés, bars and bakeries across {N_TOWNS:,} Colorado towns.</p>
+    <div class="cta-row"><a class="btn" href="/explore/">Search Colorado restaurants</a><span class="pill">Free, with no ads or sign-in. Also in {APP_LINK}, {APP_WHEN}.</span></div>
+    <ul class="stats" aria-label="What's in the guide">
       <li><b>{len(CHILE_L)}</b><span>green chile spots</span></li>
       <li><b>{len(BREW_L)}</b><span>licensed brewpubs</span></li>
       <li><b>{len(HON_L)}</b><span>MICHELIN &amp; James Beard</span></li>
@@ -1464,7 +1407,7 @@ body = f"""  <main id="main">
 
   <section id="what">
     <h2>Green chile first, star ratings never</h2>
-    <p class="sub">Map apps sort by stars and crowds. This one starts from Colorado's own short list: a smothered burrito, a pint brewed behind the bar, dinner in a mountain town, elk or bison on the menu, and a saloon that's been pouring since the mining days. We checked the green chile, ski-town and game lists in {CHECKED} against 2025–26 sources, and the brewpubs are matched to the state's Brew Pub and Distillery Pub license list. Ratings, hours and photos are one tap away, on the place's own Apple Maps card.</p>
+    <p class="sub">Most maps sort by stars and crowds. This one starts from Colorado's own short list: a smothered burrito, a pint brewed behind the bar, dinner in a mountain town, elk or bison on the menu, and a saloon that's been pouring since the mining days. We checked the green chile, ski-town and game lists in {CHECKED} against 2025–26 sources, and the brewpubs are matched to the state's Brew Pub and Distillery Pub license list. Ratings, hours and photos are one tap away, on the place's own Apple Maps card.</p>
   </section>
 
   <section id="how">
@@ -1475,10 +1418,9 @@ body = f"""  <main id="main">
       <li class="step"><div class="n" aria-hidden="true">3</div><div><h3>Head out.</h3><p>Open its Apple Maps card for today's hours and photos, ring the kitchen, pull up directions, or keep it for the next drive over the Divide.</p></div></li>
     </ol>
   </section>
-{screens}
   <section id="guides">
     <h2>Colorado food guides</h2>
-    <p class="sub">Read the app's lists here, no download needed.</p>
+    <p class="sub">Read every list here, no download needed.</p>
     <div class="grid2">
       <a class="card" href="/colorado-green-chile.html"><h3>Colorado green chile guide</h3><p>{plural(len(CHILE_L), "hand-checked place")}{", Pueblo sloppers included" if N_SLOPPER else ""}.</p></a>
       <a class="card" href="/colorado-brewpubs.html"><h3>Colorado brewpubs</h3><p>{plural(len(BREW_L), "place")} with a state Brew Pub or Distillery Pub license.</p></a>
@@ -1498,12 +1440,12 @@ body = f"""  <main id="main">
 
   <section id="pricing">
     <h2>Costs nothing, sells nothing</h2>
-    <p class="sub">{BRAND} costs nothing and has nothing to sell: no ads, no subscription, no in-app purchases, no account to make. The lists ship inside the app, so they open fast and keep working when the signal drops out on a mountain pass.</p>
+    <p class="sub">{BRAND} costs nothing and has nothing to sell: no ads, no subscription, no account to make. The guides and the search are open to anyone with a browser. The Eats Ranked app keeps a state's lists on the phone, so they keep working when the signal drops out on a mountain pass.</p>
   </section>
 
   <section id="privacy">
     <h2>Your green chile habits are nobody's business</h2>
-    <p class="sub">We don't collect a thing. If you turn on location, it orders the lists on your own device and is never sent to us; saved places stay on the device too. No cookies, analytics or trackers here either. <a href="/privacy.html">The privacy policy</a> has the details.</p>
+    <p class="sub">We don't collect a thing. If you share your location, it orders the lists inside your browser and is never sent to us; saved places stay in your browser too. No cookies, analytics or trackers here either. <a href="/privacy.html">The privacy policy</a> has the details.</p>
   </section>
 
   <section id="faq">
@@ -1513,11 +1455,11 @@ body = f"""  <main id="main">
 
   <section id="download" class="final">
     <h2>Take the lists over the pass</h2>
-    <p class="sub">Free for iPhone and iPad, with the App Store release in the works. Want it sooner? Ask for early access.</p>
-    <div class="cta-row">{store_button()}</div>
+    <p class="sub">The lists and the web search are free and open now. The same Colorado guide is in {APP_LINK}, one free app with the state guides inside, {APP_WHEN}.</p>
+    <div class="cta-row"><a class="btn" href="/explore/">Search Colorado restaurants</a><a class="btn btn-ghost" href="{APP_URL}" rel="noopener">About the Eats Ranked app</a></div>
   </section>
   </main>"""
-page("index.html", title, desc, body, [app_ld, faq_ld], og_type="website")
+page("index.html", title, desc, body, [faq_ld], og_type="website")
 
 # ---------------------------------------------------------------- privacy and terms
 nav, bc = crumbs([("Home", "/"), ("Privacy policy", "/privacy.html")])
@@ -1525,20 +1467,9 @@ body = f"""{nav}
   <main id="main" class="legal">
   <section class="hero">
     <h1>Privacy policy</h1>
-    <p class="lede">Short version: the {BRAND} app collects nothing about you, and this website doesn't track you. Last updated {PRIVACY_UPDATED}.</p>
+    <p class="lede">Short version: this website doesn't track you. No account, no analytics, no ads, no cookies. Last updated {PRIVACY_UPDATED}.</p>
   </section>
   <section>
-    <h2>The app</h2>
-    <ul>
-      <li><b>No account, no analytics, no ads.</b> The app has no sign-in, no advertising and no analytics or crash-reporting code. We receive no data from it.</li>
-      <li><b>Location.</b> If you allow it, your location is used on your device to sort places by distance and show where you are on the map. It is never sent to us. You can turn it off in Settings at any time.</li>
-      <li><b>Saved places and filters</b> are stored only on your device and are deleted when you delete the app.</li>
-      <li><b>Apple Maps.</b> When you open a place's ratings, hours and photos, or ask for directions, the app asks Apple Maps for that place. Apple handles that request under <a href="https://www.apple.com/legal/privacy/" rel="noopener">Apple's privacy policy</a>, as it does for any app that shows a map.</li>
-      <li><b>Data updates.</b> When you open the app, it checks this website for newer restaurant data, at most once a day (or an hour later if a check didn't go through), and downloads it when there is some. These requests carry no location or identifiers. GitHub, which hosts this site, may keep standard server logs of them, as it does for any visit here.</li>
-      <li><b>Spotlight.</b> The app adds its hand-checked and honored places to your device's search index so you can find them from Spotlight. That index stays on your device.</li>
-      <li><b>Calls, websites and email</b> you start from a place open in the Phone app, your browser or Mail, and are handled by them.</li>
-    </ul>
-    <p>When the app is on the App Store, its privacy label will be "Data Not Collected".</p>
     <h2>This website</h2>
     <p>The site is static pages hosted on GitHub Pages. It sets no cookies and loads no analytics, fonts or scripts from anyone else.</p>
     <ul>
@@ -1546,16 +1477,18 @@ body = f"""{nav}
       <li><b>Location.</b> If you tap Near me or choose the Nearest sort, your browser asks whether to share your location. If you allow it, the location is used only inside your browser to sort places by distance and is never sent to us or anyone else.</li>
     </ul>
     <p>GitHub may keep standard server logs, such as IP addresses, for security; see <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">GitHub's privacy statement</a>.</p>
+    <h2>The Eats Ranked app</h2>
+    <p>On iPhone and iPad, the Colorado guide is part of the Eats Ranked app, {APP_WHEN}. Eats Ranked has its own privacy policy at <a href="{APP_PRIVACY_URL}" rel="noopener">eatsranked.com/privacy.html</a>. In short, it collects nothing about you. When it downloads or refreshes the Colorado guide it fetches data files from this website, in requests that carry no location and no identifier; GitHub may log them as it does any visit here.</p>
     <h2>Email</h2>
     <p>If you email us, we use your message and address only to reply and to fix the listing you told us about. We don't add you to a mailing list or share your address.</p>
     <h2>Children</h2>
-    <p>The app collects no personal information from anyone, including children.</p>
+    <p>This website collects no personal information from anyone, including children.</p>
     <h2>Changes and contact</h2>
     <p>If this policy changes, the new version will be posted here with a new date. Questions: <a href="mailto:{EMAIL}">{EMAIL}</a>.</p>
   </section>
   </main>"""
-page("privacy.html", "Privacy Policy: Colorado Eats Green Chile & Restaurant App",
-     fit(["The Colorado Eats privacy policy: the app collects no data, keeps your location and saved places on your device, and this website sets no cookies at all."], 140, 160),
+page("privacy.html", "Privacy Policy: Colorado Eats Green Chile & Restaurant Guide",
+     fit(["The Colorado Eats privacy policy: this website collects no data, keeps your location and saved places in your browser, and sets no cookies at all."], 140, 160),
      body, [bc])
 
 nav, bc = crumbs([("Home", "/"), ("Terms of use", "/terms.html")])
@@ -1563,17 +1496,17 @@ body = f"""{nav}
   <main id="main" class="legal">
   <section class="hero">
     <h1>Terms of use</h1>
-    <p class="lede">The plain-language terms for the {BRAND} app and this website. Last updated {POLICY_UPDATED}.</p>
+    <p class="lede">The plain-language terms for {BRAND}, this website. Last updated {POLICY_UPDATED}.</p>
   </section>
   <section>
-    <h2>What the app is</h2>
+    <h2>What {BRAND} is</h2>
     <p>{BRAND} is a free guide to restaurants in Colorado. It is provided as is, for personal use, without charge and without warranties of any kind.</p>
     <h2>Check before you go</h2>
     <p>Restaurants open, close, change their hours and change their menus, and mountain-town places close for part of spring and fall. Dishes, seasons and founding years are what each place or a named source said when we checked in {CHECKED}. We work to keep the lists right, but we can't promise that any listing is current or complete. Call the restaurant before you make the trip.</p>
     <h2>Inspection results</h2>
     <p>The Inspections guide and the Boulder County inspections page show Boulder County Public Health's official result at each place's latest inspection, as published on data.colorado.gov: {e(TIERS)} We show the results as recorded and compute no grade of our own. An inspection is a snapshot of one day, and the published records can lag. For the agency's own records, contact Boulder County Public Health.</p>
     <h2>Other people's content</h2>
-    <p>Ratings, reviews, hours and photos in each place card come from Apple Maps and are Apple's and its providers', under Apple's terms. Restaurant names and trademarks belong to their owners. MICHELIN and the MICHELIN Guide are trademarks of Michelin; James Beard Foundation and James Beard Award are trademarks of the James Beard Foundation. {BRAND} is not affiliated with any restaurant, team, chain, award body or government agency.</p>
+    <p>The web search links each place to Apple Maps; the ratings, reviews, hours and photos there are Apple's and its providers', under Apple's terms. Restaurant names and trademarks belong to their owners. MICHELIN and the MICHELIN Guide are trademarks of Michelin; James Beard Foundation and James Beard Award are trademarks of the James Beard Foundation. {BRAND} is not affiliated with any restaurant, team, chain, award body or government agency.</p>
     <h2>Data sources and licenses</h2>
     <ul>
       <li>Overture Maps Foundation places data, under the Community Data License Agreement, Permissive 2.0; boundaries and water under the Open Database License. © OpenStreetMap contributors, Overture Maps Foundation.</li>
@@ -1588,12 +1521,12 @@ body = f"""{nav}
     <h2>Corrections</h2>
     <p>If a listing is wrong, or you own a restaurant and want something fixed, email <a href="mailto:{EMAIL}">{EMAIL}</a>. We fix mistakes in the next update.</p>
     <h2>Liability</h2>
-    <p>To the extent the law allows, we are not liable for any loss arising from use of the app or site, including a wasted drive to a closed restaurant.</p>
+    <p>To the extent the law allows, we are not liable for any loss arising from use of this site, including a wasted drive to a closed restaurant.</p>
     <h2>Changes</h2>
     <p>We may update these terms; the current version and its date are always on this page. See also the <a href="/privacy.html">privacy policy</a>.</p>
   </section>
   </main>"""
-page("terms.html", "Terms of Use: Colorado Eats Green Chile & Restaurant App",
+page("terms.html", "Terms of Use: Colorado Eats Green Chile & Restaurant Guide",
      fit(["The Colorado Eats terms of use: a free Colorado restaurant guide, provided as is. Check before you go, and see where each listing and result comes from."], 140, 160),
      body, [bc])
 

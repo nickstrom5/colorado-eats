@@ -2,18 +2,15 @@
 <html lang="en" data-base="/colorado-eats">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-YfPxYBJDc639ac4gHFGjFpJLVatKf6JcrBZeF/tuACM='; style-src 'sha256-/Y0+P507ZU77k4ET0vPxM2MK0ImlN5IqKcNEYsYxnkI='; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'none'; style-src 'sha256-j3LCQNR+1Sb7/YjtIR57gZPWvX4UqLQk5HO/MapCg0o='; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Colorado Eats: Restaurants, Green Chile &amp; Ski-Town Dining</title>
-<meta name="description" content="Colorado restaurants on your iPhone: 45 green chile spots and 46 ski-town dining rooms we checked, 234 brewpubs and 15,691 places in all. Free.">
+<meta name="description" content="Colorado restaurants on the web: 45 green chile spots and 46 ski-town dining rooms we checked, 234 brewpubs and 15,691 places in all. Free, no ads.">
 <link rel="canonical" href="https://nickstrom5.github.io/colorado-eats/">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="theme-color" content="#002868">
-<!-- Smart App Banner: once the App Store Connect record exists, replace APP_ID with the numeric Apple ID and uncomment.
-<meta name="apple-itunes-app" content="app-id=APP_ID">
--->
 <meta property="og:title" content="Colorado Eats: Restaurants, Green Chile &amp; Ski-Town Dining">
-<meta property="og:description" content="Colorado restaurants on your iPhone: 45 green chile spots and 46 ski-town dining rooms we checked, 234 brewpubs and 15,691 places in all. Free.">
+<meta property="og:description" content="Colorado restaurants on the web: 45 green chile spots and 46 ski-town dining rooms we checked, 234 brewpubs and 15,691 places in all. Free, no ads.">
 <meta property="og:url" content="https://nickstrom5.github.io/colorado-eats/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Colorado Eats">
@@ -24,7 +21,7 @@
 <meta property="og:image:alt" content="Colorado Eats: Green chile &amp; brewpub guide. Colorado restaurants, with hand-checked green chile, ski-town dining and the state&#x27;s oldest places.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Colorado Eats: Restaurants, Green Chile &amp; Ski-Town Dining">
-<meta name="twitter:description" content="Colorado restaurants on your iPhone: 45 green chile spots and 46 ski-town dining rooms we checked, 234 brewpubs and 15,691 places in all. Free.">
+<meta name="twitter:description" content="Colorado restaurants on the web: 45 green chile spots and 46 ski-town dining rooms we checked, 234 brewpubs and 15,691 places in all. Free, no ads.">
 <meta name="twitter:image" content="https://nickstrom5.github.io/colorado-eats/og.png">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CclipPath id='co-pod'%3E%3Cpath d='M16.6 22.1 C27.5 22.1 40.0 23.2 54.5 37.6 A2.94 2.94 0 0 1 51.8 42.6 C38.0 39.7 35.8 47.7 16.6 47.7 C11.5 47.7 8.6 43.1 8.6 34.9 C8.6 26.8 11.5 22.1 16.6 22.1Z'/%3E%3C/clipPath%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%23002868'/%3E%3Cpath d='M16.6 22.1 C27.5 22.1 40.0 23.2 54.5 37.6 A2.94 2.94 0 0 1 51.8 42.6 C38.0 39.7 35.8 47.7 16.6 47.7 C11.5 47.7 8.6 43.1 8.6 34.9 C8.6 26.8 11.5 22.1 16.6 22.1Z' fill='%234E9A2E'/%3E%3Cpath d='M-0.7 38.8 L16.6 38.8 C32.9 38.8 38.7 33.9 52.7 40.9 L64.2 46.6 L60.7 63.7 L-0.7 63.7Z' fill='%233A7A21' clip-path='url(%23co-pod)'/%3E%3Cpath d='M13.0 22.1 C12.2 19.9 10.8 18.6 11.7 16.1 C12.7 13.8 16.2 13.2 17.8 14.8' stroke='%235A8A2A' stroke-width='2.9' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Cpath d='M17.9 22.4 C14.7 18.6 8.8 20.5 8.8 29.2 C9.5 32.1 12.2 31.1 13.5 26.0 C14.8 30.5 17.5 25.0 17.9 22.4Z' fill='%232F5E1A'/%3E%3C/svg%3E">
 <link rel="icon" type="image/png" sizes="32x32" href="/colorado-eats/favicon-32.png">
@@ -84,10 +81,6 @@
   .step { display: flex; gap: 14px; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 18px; }
   .step .n { flex: 0 0 32px; height: 32px; border-radius: 50%; background: var(--gold); color: #0f1b33; font-weight: 800; display: grid; place-items: center; }
   .step p { margin: 4px 0 0; color: var(--ink2); }
-  .shots { display: flex; gap: 14px; overflow-x: auto; margin: 0 -20px; padding: 4px 20px 14px; scroll-snap-type: x proximity; list-style: none; }
-  .shots li { flex: 0 0 auto; width: 210px; scroll-snap-align: start; }
-  .shots img { display: block; width: 210px; height: auto; border-radius: 24px; border: 1px solid var(--rule); background: var(--surface2); }
-  .shots p { font-size: 14px; color: var(--muted); margin: 8px 2px 0; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .card { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius); padding: 18px; }
   .card p { margin: 6px 0 0; color: var(--ink2); }
@@ -185,42 +178,13 @@
    "@id": "https://nickstrom5.github.io/colorado-eats/#website",
    "name": "Colorado Eats",
    "alternateName": [
-    "CO Eats",
-    "Colorado Eats app"
+    "CO Eats"
    ],
    "url": "https://nickstrom5.github.io/colorado-eats/",
    "inLanguage": "en",
    "publisher": {
     "@id": "https://nickstrom5.github.io/colorado-eats/#org"
    }
-  }
- ]
-}
-</script>
-<script type="application/ld+json">
-{
- "@context": "https://schema.org",
- "@graph": [
-  {
-   "@type": "MobileApplication",
-   "@id": "https://nickstrom5.github.io/colorado-eats/#app",
-   "name": "Colorado Eats: Restaurants",
-   "alternateName": [
-    "Colorado Eats",
-    "CO Eats",
-    "Colorado Eats: Green Chile & Brewpub Guide"
-   ],
-   "description": "A free guide to 15,691 Colorado restaurants, with hand-checked lists of 45 green chile spots, 46 ski-town restaurants and the state's oldest places, 234 licensed brewpubs and the MICHELIN Guide and James Beard honorees. Sort by distance, open Apple Maps' live place card for hours and photos, and save places for your next trip.",
-   "url": "https://nickstrom5.github.io/colorado-eats/",
-   "image": "https://nickstrom5.github.io/colorado-eats/og.png",
-   "operatingSystem": "iOS, iPadOS",
-   "applicationCategory": "TravelApplication",
-   "applicationSubCategory": "Food & Drink",
-   "inLanguage": "en",
-   "publisher": {
-    "@id": "https://nickstrom5.github.io/colorado-eats/#org"
-   },
-   "screenshot": "https://nickstrom5.github.io/colorado-eats/img/screen-home.png"
   }
  ]
 }
@@ -236,7 +200,7 @@
    "name": "Does Colorado Eats cost anything?",
    "acceptedAnswer": {
     "@type": "Answer",
-    "text": "Not a cent. Colorado Eats has no ads, no purchases and no sign-up. It runs on iPhone and iPad only (no Android build for now) and reaches the App Store soon; the web search is live already."
+    "text": "Not a cent. Colorado Eats has no ads, no purchases and no sign-up. It's a website, so it works in any browser, on any phone or computer. The same guide is in Eats Ranked for iPhone and iPad, coming soon to the App Store."
    }
   },
   {
@@ -244,7 +208,7 @@
    "name": "What's a slopper, and where can I get one?",
    "acceptedAnswer": {
     "@type": "Answer",
-    "text": "A Pueblo dish: a hamburger in a bowl, smothered in green chile. 6 places on the green chile list serve one, and 9 of the list's 45 are in Pueblo County. Search \"slopper\" in the app or on the web to see them."
+    "text": "A Pueblo dish: a hamburger in a bowl, smothered in green chile. 6 places on the green chile list serve one, and 9 of the list's 45 are in Pueblo County. Search \"slopper\" on the web to see them."
    }
   },
   {
@@ -268,7 +232,7 @@
    "name": "Can I see restaurant inspections for my county?",
    "acceptedAnswer": {
     "@type": "Answer",
-    "text": "Only Boulder County's: it's the one Colorado county that publishes inspection results in bulk. The app and the Boulder County inspections page show each place's latest recorded result from Boulder County Public Health (Pass, Re-Inspection Required or Closure) with its risk points, records through July 21, 2026. We never turn them into a grade. Other counties publish one search at a time."
+    "text": "Only Boulder County's: it's the one Colorado county that publishes inspection results in bulk. The web search and the Boulder County inspections page show each place's latest recorded result from Boulder County Public Health (Pass, Re-Inspection Required or Closure) with its risk points, records through July 21, 2026. We never turn them into a grade. Other counties publish one search at a time."
    }
   },
   {
@@ -276,7 +240,7 @@
    "name": "Who checked these lists, and why no star ratings?",
    "acceptedAnswer": {
     "@type": "Answer",
-    "text": "We checked the green chile, game and steakhouse, ski-town and oldest lists by hand in fall 2026, each place against a 2025 or 2026 source such as its own menu page or a dated local news story. Brewpubs come from the state's license list. The rest of the 15,691 places come from Overture Maps' open place data, Denver's business licenses and the state's liquor licenses. We publish no ratings: tap a place and Apple Maps' own card shows Apple's ratings, hours and photos."
+    "text": "We checked the green chile, game and steakhouse, ski-town and oldest lists by hand in fall 2026, each place against a 2025 or 2026 source such as its own menu page or a dated local news story. Brewpubs come from the state's license list. The rest of the 15,691 places come from Overture Maps' open place data, Denver's business licenses and the state's liquor licenses. We publish no ratings: in the web search, each place links to Apple Maps for Apple's ratings, hours and photos."
    }
   },
   {
@@ -284,7 +248,7 @@
    "name": "Does Colorado Eats track where I am?",
    "acceptedAnswer": {
     "@type": "Answer",
-    "text": "No. Location, if you turn it on, only orders the lists by distance, on your iPhone or iPad; we never receive it. On this website, Near me does the same inside your browser."
+    "text": "No. Location, if you share it, only orders the lists by distance, and Near me does that inside your browser; we never receive it."
    }
   },
   {
@@ -292,7 +256,7 @@
    "name": "Spotted a closed place, or one that's missing?",
    "acceptedAnswer": {
     "@type": "Answer",
-    "text": "Tell us at nick@eatsranked.com; the place's name and town are enough. We correct the lists in the next app and site update."
+    "text": "Tell us at nick@eatsranked.com; the place's name and town are enough. We correct the lists in the next update."
    }
   }
  ]
@@ -314,11 +278,11 @@
   </header>
   <main id="main">
   <section class="hero">
-    <p class="kicker">Green chile, brewpubs and mountain-town dining · iPhone and iPad</p>
+    <p class="kicker">Green chile, brewpubs and mountain-town dining</p>
     <h1>Colorado restaurants, from Pueblo sloppers to slopeside lodges</h1>
-    <p class="lede">Where's the closest bowl of green chile? Which pub brews its own beer? Where do you eat in Aspen after the last chair? Colorado Eats is a free iPhone and iPad guide built around those questions: 45 green chile spots and 46 ski-town restaurants we checked ourselves, 234 brewpubs from the state's license list, and 15,691 restaurants, cafés, bars and bakeries across 308 Colorado towns.</p>
-    <div class="cta-row"><a class="btn store-btn" href="mailto:nick@eatsranked.com?subject=Colorado%20Eats%20early%20access&amp;body=Send%20me%20the%20TestFlight%20link."><span class="store-label">Ask for early access</span></a><a class="btn btn-ghost" href="/colorado-eats/explore/">Search on the web</a><span class="pill store-note">Free, with no ads or sign-in. App Store release coming.</span></div>
-    <ul class="stats" aria-label="What's in the app">
+    <p class="lede">Where's the closest bowl of green chile? Which pub brews its own beer? Where do you eat in Aspen after the last chair? Colorado Eats is a free guide built around those questions: 45 green chile spots and 46 ski-town restaurants we checked ourselves, 234 brewpubs from the state's license list, and 15,691 restaurants, cafés, bars and bakeries across 308 Colorado towns.</p>
+    <div class="cta-row"><a class="btn" href="/colorado-eats/explore/">Search Colorado restaurants</a><span class="pill">Free, with no ads or sign-in. Also in <a href="https://eatsranked.com/#app" rel="noopener">Eats Ranked for iPhone and iPad</a>, coming soon to the App Store.</span></div>
+    <ul class="stats" aria-label="What's in the guide">
       <li><b>45</b><span>green chile spots</span></li>
       <li><b>234</b><span>licensed brewpubs</span></li>
       <li><b>85</b><span>MICHELIN &amp; James Beard</span></li>
@@ -328,7 +292,7 @@
 
   <section id="what">
     <h2>Green chile first, star ratings never</h2>
-    <p class="sub">Map apps sort by stars and crowds. This one starts from Colorado's own short list: a smothered burrito, a pint brewed behind the bar, dinner in a mountain town, elk or bison on the menu, and a saloon that's been pouring since the mining days. We checked the green chile, ski-town and game lists in fall 2026 against 2025–26 sources, and the brewpubs are matched to the state's Brew Pub and Distillery Pub license list. Ratings, hours and photos are one tap away, on the place's own Apple Maps card.</p>
+    <p class="sub">Most maps sort by stars and crowds. This one starts from Colorado's own short list: a smothered burrito, a pint brewed behind the bar, dinner in a mountain town, elk or bison on the menu, and a saloon that's been pouring since the mining days. We checked the green chile, ski-town and game lists in fall 2026 against 2025–26 sources, and the brewpubs are matched to the state's Brew Pub and Distillery Pub license list. Ratings, hours and photos are one tap away, on the place's own Apple Maps card.</p>
   </section>
 
   <section id="how">
@@ -339,16 +303,9 @@
       <li class="step"><div class="n" aria-hidden="true">3</div><div><h3>Head out.</h3><p>Open its Apple Maps card for today's hours and photos, ring the kitchen, pull up directions, or keep it for the next drive over the Divide.</p></div></li>
     </ol>
   </section>
-
-  <section id="screens">
-    <h2>What it looks like</h2>
-    <ul class="shots" tabindex="0" aria-label="Colorado Eats app screenshots">
-      <li><picture><source srcset="/colorado-eats/img/screen-home.webp" type="image/webp"><img src="/colorado-eats/img/screen-home.png" alt="Colorado Eats home screen: Green Chile, Brewpubs, Ski Town Dining, Game &amp; Steakhouses, MICHELIN &amp; James Beard, Oldest Places and Inspections guides, with a search box for Colorado restaurants." width="480" height="1043" decoding="async"></picture><p>Seven Colorado lists and a search box.</p></li><li><picture><source srcset="/colorado-eats/img/screen-greenchile.webp" type="image/webp"><img src="/colorado-eats/img/screen-greenchile.png" alt="The hand-checked Green Chile list in Colorado Eats, sorted by distance from downtown Denver." width="480" height="1043" decoding="async"></picture><p>Green chile, closest first.</p></li><li><picture><source srcset="/colorado-eats/img/screen-detail.webp" type="image/webp"><img src="/colorado-eats/img/screen-detail.png" alt="The Buckhorn Exchange in Denver in Colorado Eats: address, a button for ratings, hours and photos in Apple Maps, bison and elk on the menu, open since 1893." width="480" height="1043" loading="lazy" decoding="async"></picture><p>A place: menu notes, founding year, Apple Maps card.</p></li><li><picture><source srcset="/colorado-eats/img/screen-map.webp" type="image/webp"><img src="/colorado-eats/img/screen-map.png" alt="Colorado Eats map of Colorado with pins for green chile spots." width="480" height="1043" loading="lazy" decoding="async"></picture><p>The whole state, one list at a time.</p></li><li><picture><source srcset="/colorado-eats/img/screen-honors.webp" type="image/webp"><img src="/colorado-eats/img/screen-honors.png" alt="MICHELIN &amp; James Beard list in Colorado Eats." width="480" height="1043" loading="lazy" decoding="async"></picture><p>MICHELIN Guide Colorado and James Beard honors.</p></li>
-    </ul>
-  </section>
   <section id="guides">
     <h2>Colorado food guides</h2>
-    <p class="sub">Read the app's lists here, no download needed.</p>
+    <p class="sub">Read every list here, no download needed.</p>
     <div class="grid2">
       <a class="card" href="/colorado-eats/colorado-green-chile.html"><h3>Colorado green chile guide</h3><p>45 hand-checked places, Pueblo sloppers included.</p></a>
       <a class="card" href="/colorado-eats/colorado-brewpubs.html"><h3>Colorado brewpubs</h3><p>234 places with a state Brew Pub or Distillery Pub license.</p></a>
@@ -368,28 +325,28 @@
 
   <section id="pricing">
     <h2>Costs nothing, sells nothing</h2>
-    <p class="sub">Colorado Eats costs nothing and has nothing to sell: no ads, no subscription, no in-app purchases, no account to make. The lists ship inside the app, so they open fast and keep working when the signal drops out on a mountain pass.</p>
+    <p class="sub">Colorado Eats costs nothing and has nothing to sell: no ads, no subscription, no account to make. The guides and the search are open to anyone with a browser. The Eats Ranked app keeps a state's lists on the phone, so they keep working when the signal drops out on a mountain pass.</p>
   </section>
 
   <section id="privacy">
     <h2>Your green chile habits are nobody's business</h2>
-    <p class="sub">We don't collect a thing. If you turn on location, it orders the lists on your own device and is never sent to us; saved places stay on the device too. No cookies, analytics or trackers here either. <a href="/colorado-eats/privacy.html">The privacy policy</a> has the details.</p>
+    <p class="sub">We don't collect a thing. If you share your location, it orders the lists inside your browser and is never sent to us; saved places stay in your browser too. No cookies, analytics or trackers here either. <a href="/colorado-eats/privacy.html">The privacy policy</a> has the details.</p>
   </section>
 
   <section id="faq">
     <h2>Questions</h2>
-    <details><summary>Does Colorado Eats cost anything?</summary><p>Not a cent. Colorado Eats has no ads, no purchases and no sign-up. It runs on iPhone and iPad only (no Android build for now) and reaches the App Store soon; the web search is live already.</p></details><details><summary>What&#x27;s a slopper, and where can I get one?</summary><p>A Pueblo dish: a hamburger in a bowl, smothered in green chile. 6 places on the green chile list serve one, and 9 of the list&#x27;s 45 are in Pueblo County. Search &quot;slopper&quot; in the app or on the web to see them.</p></details><details><summary>Is a brewpub the same as a brewery taproom?</summary><p>Not in Colorado&#x27;s licensing. A Brew Pub license is for a restaurant that brews beer on site and serves it with food (a Distillery Pub license does the same for spirits); a production brewery&#x27;s taproom holds a manufacturer license and needn&#x27;t serve food. The brewpub list is the 234 places matched to those licenses on the state&#x27;s list of September 24, 2026.</p></details><details><summary>Are ski-town restaurants open in mud season?</summary><p>Many close for a few weeks in spring and fall, and on-mountain lodges open only in ski season. The ski-town list notes the seasons places publish, so check before you drive up.</p></details><details><summary>Can I see restaurant inspections for my county?</summary><p>Only Boulder County&#x27;s: it&#x27;s the one Colorado county that publishes inspection results in bulk. The app and the Boulder County inspections page show each place&#x27;s latest recorded result from Boulder County Public Health (Pass, Re-Inspection Required or Closure) with its risk points, records through July 21, 2026. We never turn them into a grade. Other counties publish one search at a time.</p></details><details><summary>Who checked these lists, and why no star ratings?</summary><p>We checked the green chile, game and steakhouse, ski-town and oldest lists by hand in fall 2026, each place against a 2025 or 2026 source such as its own menu page or a dated local news story. Brewpubs come from the state&#x27;s license list. The rest of the 15,691 places come from Overture Maps&#x27; open place data, Denver&#x27;s business licenses and the state&#x27;s liquor licenses. We publish no ratings: tap a place and Apple Maps&#x27; own card shows Apple&#x27;s ratings, hours and photos.</p></details><details><summary>Does Colorado Eats track where I am?</summary><p>No. Location, if you turn it on, only orders the lists by distance, on your iPhone or iPad; we never receive it. On this website, Near me does the same inside your browser.</p></details><details><summary>Spotted a closed place, or one that&#x27;s missing?</summary><p>Tell us at nick@eatsranked.com; the place&#x27;s name and town are enough. We correct the lists in the next app and site update.</p></details>
+    <details><summary>Does Colorado Eats cost anything?</summary><p>Not a cent. Colorado Eats has no ads, no purchases and no sign-up. It&#x27;s a website, so it works in any browser, on any phone or computer. The same guide is in Eats Ranked for iPhone and iPad, coming soon to the App Store.</p></details><details><summary>What&#x27;s a slopper, and where can I get one?</summary><p>A Pueblo dish: a hamburger in a bowl, smothered in green chile. 6 places on the green chile list serve one, and 9 of the list&#x27;s 45 are in Pueblo County. Search &quot;slopper&quot; on the web to see them.</p></details><details><summary>Is a brewpub the same as a brewery taproom?</summary><p>Not in Colorado&#x27;s licensing. A Brew Pub license is for a restaurant that brews beer on site and serves it with food (a Distillery Pub license does the same for spirits); a production brewery&#x27;s taproom holds a manufacturer license and needn&#x27;t serve food. The brewpub list is the 234 places matched to those licenses on the state&#x27;s list of September 24, 2026.</p></details><details><summary>Are ski-town restaurants open in mud season?</summary><p>Many close for a few weeks in spring and fall, and on-mountain lodges open only in ski season. The ski-town list notes the seasons places publish, so check before you drive up.</p></details><details><summary>Can I see restaurant inspections for my county?</summary><p>Only Boulder County&#x27;s: it&#x27;s the one Colorado county that publishes inspection results in bulk. The web search and the Boulder County inspections page show each place&#x27;s latest recorded result from Boulder County Public Health (Pass, Re-Inspection Required or Closure) with its risk points, records through July 21, 2026. We never turn them into a grade. Other counties publish one search at a time.</p></details><details><summary>Who checked these lists, and why no star ratings?</summary><p>We checked the green chile, game and steakhouse, ski-town and oldest lists by hand in fall 2026, each place against a 2025 or 2026 source such as its own menu page or a dated local news story. Brewpubs come from the state&#x27;s license list. The rest of the 15,691 places come from Overture Maps&#x27; open place data, Denver&#x27;s business licenses and the state&#x27;s liquor licenses. We publish no ratings: in the web search, each place links to Apple Maps for Apple&#x27;s ratings, hours and photos.</p></details><details><summary>Does Colorado Eats track where I am?</summary><p>No. Location, if you share it, only orders the lists by distance, and Near me does that inside your browser; we never receive it.</p></details><details><summary>Spotted a closed place, or one that&#x27;s missing?</summary><p>Tell us at nick@eatsranked.com; the place&#x27;s name and town are enough. We correct the lists in the next update.</p></details>
   </section>
 
   <section id="download" class="final">
     <h2>Take the lists over the pass</h2>
-    <p class="sub">Free for iPhone and iPad, with the App Store release in the works. Want it sooner? Ask for early access.</p>
-    <div class="cta-row"><a class="btn store-btn" href="mailto:nick@eatsranked.com?subject=Colorado%20Eats%20early%20access&amp;body=Send%20me%20the%20TestFlight%20link."><span class="store-label">Ask for early access</span></a></div>
+    <p class="sub">The lists and the web search are free and open now. The same Colorado guide is in <a href="https://eatsranked.com/#app" rel="noopener">Eats Ranked for iPhone and iPad</a>, one free app with the state guides inside, coming soon to the App Store.</p>
+    <div class="cta-row"><a class="btn" href="/colorado-eats/explore/">Search Colorado restaurants</a><a class="btn btn-ghost" href="https://eatsranked.com/#app" rel="noopener">About the Eats Ranked app</a></div>
   </section>
   </main>
   <footer>
     <nav aria-label="Footer">
-      <a href="/colorado-eats/">Colorado Eats app</a>
+      <a href="/colorado-eats/">Colorado Eats home</a>
       <a href="/colorado-eats/explore/">Search Colorado restaurants</a>
       <a href="/colorado-eats/colorado-green-chile.html">Colorado green chile</a>
       <a href="/colorado-eats/colorado-brewpubs.html">Colorado brewpubs</a>
@@ -399,25 +356,14 @@
       <a href="/colorado-eats/colorado-oldest-restaurants.html">Oldest restaurants</a>
       <a href="/colorado-eats/boulder-county-restaurant-inspections.html">Boulder County inspections</a>
       <a href="/colorado-eats/cities/">Cities and towns</a>
+      <a href="https://eatsranked.com/#app" rel="noopener">Eats Ranked app</a>
       <a href="/colorado-eats/privacy.html">Privacy policy</a>
       <a href="/colorado-eats/terms.html">Terms of use</a>
       <a href="mailto:nick@eatsranked.com">Email us</a>
     </nav>
     <p>Place data: hand-checked research by Colorado Eats (fall 2026); Overture Maps Foundation places (CDLA Permissive 2.0) and addresses (open address sources under permissive licenses, docs.overturemaps.org/attribution); © OpenStreetMap contributors (ODbL); U.S. Census Bureau Geocoder (public domain); Colorado Department of Revenue liquor licenses and Boulder County Public Health inspections (data.colorado.gov, public domain); City and County of Denver Open Data. Not affiliated with or endorsed by any restaurant, team, chain or government agency, the MICHELIN Guide or the James Beard Foundation. MICHELIN and the MICHELIN Guide are trademarks of Michelin; James Beard Foundation and James Beard Award are trademarks of the James Beard Foundation. Places open and close, so check before you go.</p>
-    <p>© 2026 Colorado Eats. Part of <a href="https://eatsranked.com/">Eats Ranked</a>, restaurant apps state by state.</p>
+    <p>© 2026 Colorado Eats. Part of <a href="https://eatsranked.com/">Eats Ranked</a>, free restaurant guides state by state.</p>
   </footer>
 </div>
-<script>
-  // Once the App Store listing exists, paste its URL here (looks like https://apps.apple.com/app/id123456789).
-  // Every button switches from "Ask for early access" to "Download on the App Store" automatically (then use Apple's badge artwork,
-  // see store_button() in scripts/make-site.py). Also fill in the apple-itunes-app meta tag in <head> on every page, and put the
-  // MobileApplication "offers" back in the landing page's JSON-LD (re-run scripts/make-site.py after editing it there).
-  var APP_STORE_URL = "";
-  if (APP_STORE_URL) {
-    document.querySelectorAll(".store-btn").forEach(function (b) { b.href = APP_STORE_URL; b.rel = "noopener"; });
-    document.querySelectorAll(".store-label").forEach(function (l) { l.textContent = "Download on the App Store"; });
-    document.querySelectorAll(".store-note").forEach(function (n) { n.textContent = "Free for iPhone and iPad."; });
-  }
-</script>
 </body>
 </html>

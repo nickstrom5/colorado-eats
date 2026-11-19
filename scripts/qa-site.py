@@ -70,6 +70,56 @@ MIGRATION_DATES = [r"2025-09-03", r"September 3, 2025", r"Sep 3, 2025"]
 OLD_EMAIL = "work-with-nick@gmail.com"
 SITE_EMAIL = "nick@eatsranked.com"
 HUB = "https://eatsranked.com/"
+# Nick, 2026-11-14: one app, Eats Ranked, carries the state guides; no state has an app of its own. This site is the guide on the web
+# and points to the hub's app section. Three rules, all checked on every page:
+# - OLD_APP: what a page that still presents a Colorado-only app carries, anywhere in its source (markup, meta, JSON-LD, scripts)
+# - the word "app" is read only in APP_OK's phrases, and "iPhone"/"iPad" only in a sentence that names Eats Ranked (visible text,
+#   meta and alt text, JSON-LD; the web app's own code comments aside)
+# - NOT_YET: until the app is on the App Store (the copy then says "free on the App Store"), no page says it can be had
+# (the state app's name only where it stands alone: the home title "Colorado Eats: Restaurants, Green Chile & Ski-Town Dining" is the site's own)
+APP_URL = "https://eatsranked.com/#app"
+APP_PRIVACY_URL = "https://eatsranked.com/privacy.html"
+OLD_APP = re.compile(r"apple-itunes-app|MobileApplication|APP_STORE_URL|store-btn|store-note|apps\.apple\.com|/img/screen-|TestFlight"
+                     r"|early(?:%20|\s)+access|iPhone app|Colorado Eats: Restaurants(?!, )|restaurant apps state by state", re.I)
+APP_OK = re.compile(r"\bweb app\b|\bEats Ranked app\b|\bone free app\b|\bApp Store\b|\.app\b")   # ".app": a place's own web address
+APP_WORD = re.compile(r"\bapps?\b", re.I)
+DEVICE = re.compile(r"\biPhones?\b|\biPads?\b")
+NOT_YET = re.compile(r"\b(?:download|get|install)\b[^.!?]{0,40}\b(?:Eats Ranked|App Store)\b|\b(?:available|out now|live) (?:on|in) the App Store\b", re.I)
+
+
+def readable(text):
+    """What a reader, a search engine or a link preview takes from a page: its visible text, the text in content=, alt=, title= and
+    aria-label= attributes, and its JSON-LD. Executable scripts and styles are left out."""
+    lds = re.findall(r'<script type="application/ld\+json">(.*?)</script>', text, re.S)
+    body = re.sub(r"<script\b.*?</script>|<style\b.*?</style>", " ", text, flags=re.S)
+    attrs = re.findall(r'\s(?:content|alt|title|aria-label)="([^"]*)"', body)
+    plain = re.sub(r"<[^>]+>", " ", body)
+    out = "\n".join([plain] + attrs + [x.encode().decode("unicode_escape", "replace") if "\\u" in x else x for x in lds])
+    return re.sub(r"[ \t]+", " ", html.unescape(out).replace("\u2019", "'"))
+
+
+def one_app_problems(where, text):
+    """The one-app rule for a page (see OLD_APP above)."""
+    out = []
+    for m in OLD_APP.finditer(html.unescape(text)):
+        out.append(f"{where}: still presents a Colorado-only app ({m.group(0)!r} in the page source)")
+    r = readable(text)
+    for m in APP_WORD.finditer(APP_OK.sub(lambda k: "#" * len(k.group(0)), r)):
+        out.append(f"{where}: says 'app' outside 'web app', 'Eats Ranked app', 'one free app' and 'App Store': …{r[max(0, m.start() - 50):m.end() + 30].strip()!r}…")
+    for sent in re.split(r"(?<=[.!?])\s+|\n", r):
+        if DEVICE.search(sent) and "Eats Ranked" not in sent:
+            out.append(f"{where}: names iPhone or iPad without naming Eats Ranked: {sent.strip()[:120]!r}")
+    if f'href="{APP_URL}"' not in text:
+        out.append(f"{where}: no link to the Eats Ranked app's section on the hub ({APP_URL})")
+    if "free on the App Store" not in r:
+        for m in NOT_YET.finditer(r):
+            out.append(f"{where}: says the app can be had before it is on the App Store: {m.group(0)!r}")
+    for sent in re.split(r"(?<=[.!?])\s+|\n", r):
+        if "App Store" in sent and not re.search(r"coming soon to the App Store|free on the App Store", sent):
+            out.append(f"{where}: names the App Store without 'coming soon to' (or, once live, 'free on'): {sent.strip()[:120]!r}")
+    return out
+
+
 # other state apps sharing this family: their app names and repo slugs never appear in this site (4.3(a): each state is its own
 # app), and other state names never appear in the page code or comments (place names and cuisines in the data may say "New York")
 OTHER_APPS = [r"Wisconsin Eats", r"Connecticut Eats", r"Florida Eats", r"California Eats", r"Washington Eats", r"Maine Eats", r"Idaho Eats",
@@ -288,15 +338,15 @@ def static_checks():
         for href in re.findall(r'href="([^"]*)"', text):
             if re.match(r"\s*(javascript|data|vbscript):", href, re.I) and not href.startswith("data:image/svg+xml"):
                 problems.append(f"{where}: unsafe link {href[:40]}")
-        # --- the App Store button has no Apple logo until it's Apple's own badge
-        for m in re.finditer(r'<a class="btn store-btn"[^>]*>(.*?)</a>', text, re.S):
-            if "<svg" in m.group(1):
-                problems.append(f"{where}: the early-access button carries an Apple logo")
+        # --- one app, Eats Ranked: no page presents a Colorado-only app, and every page points to the hub's app section
+        problems.extend(one_app_problems(where, text))
+        if where == "privacy.html" and (f'href="{APP_PRIVACY_URL}"' not in text or "this website doesn't track you" not in html.unescape(text).replace("\u2019", "'")):
+            problems.append("privacy.html: doesn't link the Eats Ranked app's own privacy policy, or doesn't say this website doesn't track you")
         if re.search(r"\.ex-g-[A-F]\b|\bletter grade\b", text):
             problems.append(f"{where}: letter-grade CSS or wording")
     # --- the contact address, the Eats Ranked family link, other states' names
     for path, text in pages.items():
-        if not re.search(r'<p>[^<]*Part of <a href="' + re.escape(HUB) + r'">Eats Ranked</a>, restaurant apps state by state\.</p>', text):
+        if not re.search(r'<p>[^<]*Part of <a href="' + re.escape(HUB) + r'">Eats Ranked</a>, free restaurant guides state by state\.</p>', text):
             problems.append(f"{path}: footer has no 'Part of Eats Ranked' link to {HUB}")
         orgs = [b for raw in parsed[path].ldjson for b in (lambda d: d.get("@graph", [d]) if isinstance(d, dict) else [])(json.loads(raw))
                 if b.get("@type") == "Organization" and str(b.get("@id", "")).endswith("/#org")]
@@ -304,8 +354,8 @@ def static_checks():
             problems.append(f"{path}: no #org Organization with parentOrganization {HUB}#organization")
         if SITE_EMAIL not in text:
             problems.append(f"{path}: doesn't show the contact address {SITE_EMAIL}")
-        if not re.search(r'<head>.*?<!--[^>]*?<meta name="apple-itunes-app" content="app-id=[^"]+">.*?-->.*?</head>', text, re.S):
-            problems.append(f"{path}: no apple-itunes-app placeholder in <head>")
+        if "<!--" in text:     # no comment at all: the Smart App Banner placeholder went with the Colorado-only app (2026-11-19)
+            problems.append(f"{path}: HTML comment left in the output")
         code = "\n".join(parsed[path].scripts) + "\n".join(re.findall(r"<!--(.*?)-->", text, re.S))
         for m in re.finditer(OTHER_STATES, code):
             problems.append(f"{path}: page code or a comment names another state: {m.group(0)!r}")
